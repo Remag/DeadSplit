@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-16"?>
+<Fangame title="perfect bear">
+  <AddressSpace>
+    <RoomId type="fixed" valueType="int32">0x0058D33C</RoomId>
+    <DeathCount type="nested" valueType="double" startValue="0x0058e490">
+      <Offset>0x2c</Offset>
+      <Offset>0x68</Offset>
+      <Offset>0x0</Offset>
+      <Offset>0x2b0</Offset>
+      <Offset>0x160</Offset>
+    </DeathCount>
+  </AddressSpace>
+  <DeathDetector type="memory" valueType="float64" addressName="DeathCount"/>
+  
+  <Boss name="Miku">
+    <ShowTrigger type="AddressChange" addressName="RoomId" targetValue="0"/>
+    <StartTrigger type="AddressChange" addressName="RoomId" targetValue="1"/>
+    
+    <Attack name="Intro" icon="FruitWhite.png" displayName="Intro">
+      <Time end="7"/>
+    </Attack>
+    <Attack name="First Tri-Attack" icon="FruitBlue.png" displayName="First Tri-Attack">
+      <Time end="17"/>
+    </Attack>
+    <Attack name="Fruitfall Flower" icon="FruitPurple.png" displayName="Fruitfall Flower">
+      <Time end="21"/>
+    </Attack>
+    <Attack name="Purple Ceiling, Lines" icon="FruitPurple.png" displayName="Purple Ceiling, Lines">
+      <Time end="26"/>
+    </Attack>
+    <Attack name="RNG Star" icon="FruitPurple.png" displayName="RNG Star">
+      <Time end="35"/>
+    </Attack>
+    <Attack name="Double apple line" icon="FruitRedBlue.png" displayName="Double apple line">
+      <Time end="37"/>
+    </Attack>
+    <Attack name="Bullshit Rays" icon="KappaPride.png" displayName="Bullshit Rays">
+      <Time end="40"/>
+    </Attack>
+    <Attack name="Stream, Cell" icon="FruitGreen.png" displayName="Stream, Cell">
+      <Time end="44"/>
+    </Attack>
+    <Attack name="First Firework" icon="FruitRed.png" displayName="First Firework">
+      <Time end="54"/>
+    </Attack>
+    <Attack name="Second Firework" icon="FruitBlue.png" displayName="Second Firework">
+      <Time end="64"/>
+    </Attack>
+    <Attack name="WTF" icon="FruitGreen.png" displayName="WTF">
+      <Time end="72"/>
+    </Attack>
+    <Attack name="Lines" icon="FruitAzure.png" displayName="Lines">
+      <Time end="75"/>
+    </Attack>
+    <Attack name="Fountain" icon="FruitOrange.png" displayName="Fountain">
+      <Time end="79"/>
+    </Attack>
+    <Attack name="White circle" icon="FruitWhite.png" displayName="White circle">
+      <Time end="84"/>
+    </Attack>
+    <Attack name="Second Four-Attack" icon="FruitYellow.png" displayName="Second Four-Attack">
+      <Time end="92"/>
+    </Attack>
+    <Attack name="Pattern" icon="FruitPurple.png" displayName="Pattern">
+      <Time end="103"/>
+    </Attack>
+    <Attack name="Cells" icon="FruitRed.png">
+      <Time end="111"/>
+    </Attack>
+    <Attack name="Drop down" icon="FruitViolet.png">
+      <Time end="116"/>
+    </Attack>
+    <Attack name="Big white apple" icon="FruitWhite.png">
+      <Time end="130"/>
+    </Attack>
+    <Attack name="Explosions, RNG, Explosions" icon="FruitCyan.png">
+      <Time end="145"/>
+    </Attack>
+    <Attack name="Circular Pattern" icon="FruitWhite.png">
+      <Time end="154"/>
+    </Attack>
+    <Attack name="Stream, RNG and Lines" icon="FruitWhite.png">
+      <Time end="164"/>
+    </Attack>
+    <Attack name="Last Outburst" icon="FruitAzure.png">
+      <Time end="169"/>
+    </Attack>
+    <Attack name="Final Tri and FUCKJ YOU" icon="FruitRed.png">
+      <Time end="185"/>
+    </Attack>
+  </Boss>
+</Fangame>

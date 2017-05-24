@@ -1,0 +1,14 @@
+#include <common.h>
+#pragma hdrstop
+
+#include <EmptyColumnContent.h>
+
+namespace Fangame {
+
+//////////////////////////////////////////////////////////////////////////
+
+const CExternalNameConstructor<CEmptyColumnContent> emptyCreator{ L"ColumnContent.Empty" };
+
+//////////////////////////////////////////////////////////////////////////
+
+}	// namespace Fangame.

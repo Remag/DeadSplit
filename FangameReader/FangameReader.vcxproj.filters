@@ -1,0 +1,804 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Precompiled Headers">
+      <UniqueIdentifier>{d916a83f-839f-4cee-a42e-13a71f2ccbaa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Messages">
+      <UniqueIdentifier>{fce2d822-1736-4293-8ed0-a77b8e4cc88b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Shaders">
+      <UniqueIdentifier>{69be99fa-548f-4c91-9d3a-ed49bdb06e36}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\DrawPrimitives">
+      <UniqueIdentifier>{8e59bf65-94f3-4b31-a220-226c2b3d8f40}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\DrawPrimitives">
+      <UniqueIdentifier>{f021041e-321f-4269-9fcf-c4d8d3333a6a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\GameInfo">
+      <UniqueIdentifier>{3d36a415-68a8-44ec-8455-cbac87eeb09d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Detection">
+      <UniqueIdentifier>{563b0059-969a-437b-b03d-ca8534477ff9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\General">
+      <UniqueIdentifier>{439a38f0-3109-4966-8477-7e7db2af60a3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Visualization">
+      <UniqueIdentifier>{98af69c5-049d-4e27-97fa-f7f2c267b2ac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Detection">
+      <UniqueIdentifier>{d05fab6b-9ab3-40d8-874a-891c2927ecca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Visualization">
+      <UniqueIdentifier>{1535ce16-9a7c-4352-9f6d-ac97c92799af}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\General">
+      <UniqueIdentifier>{19200d3b-ac1c-45e2-ae99-c594aefc6426}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\AddressScan">
+      <UniqueIdentifier>{22db9472-3bce-48de-b92b-b772a6d3108a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\AddressScan">
+      <UniqueIdentifier>{854fdd2c-21c7-438f-8c1b-25c27cbb76ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Progress">
+      <UniqueIdentifier>{996c1cae-bdd2-4af5-b577-e42b217efa90}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Progress">
+      <UniqueIdentifier>{758a0bcd-9907-4084-b1b2-22d7b8c7de56}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\AttackSaveData">
+      <UniqueIdentifier>{dd820fa3-8a8b-47a4-98e3-12d1f43d39c2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\AttackSaveData">
+      <UniqueIdentifier>{00f71811-4f36-4ac1-8850-33605a92f9d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Animators">
+      <UniqueIdentifier>{713526a5-da85-4b2d-92f2-fcc1fce88be6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Animators">
+      <UniqueIdentifier>{42b98daa-bbe7-4df3-adf5-0157c0df25f5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Visualization\ColumnContent">
+      <UniqueIdentifier>{3f56fd4f-1f5c-469d-9117-f0f694801df0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Visualization\ColumnContent">
+      <UniqueIdentifier>{a47cd0ff-9028-482b-9912-fbed3fdc8da9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\ValueGetters">
+      <UniqueIdentifier>{4a1a4c3f-0be2-4f4a-90a7-07776908ecaf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ValueGetters">
+      <UniqueIdentifier>{56c46eed-f856-4304-9a5e-191f19b77597}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\ValueGetters\Expressions">
+      <UniqueIdentifier>{3be05648-c908-4bca-9396-0ca83f53cb0a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\GameInfo\Kamilia 3">
+      <UniqueIdentifier>{2c96952b-138d-43be-a93f-6db2bbfe41b9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\GameInfo\Touch The Entrance">
+      <UniqueIdentifier>{a256338a-2263-4ed4-87b3-6a3875fc724e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\GameInfo\Kamilia 2">
+      <UniqueIdentifier>{99dff1bd-bf33-493b-8ee5-a2fccc79d502}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\DrawPrimitives\OpenGl">
+      <UniqueIdentifier>{9bca3686-f48a-4a90-a09d-2ee1cc867b60}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\DrawPrimitives\WinGDI">
+      <UniqueIdentifier>{6c29217e-0b2c-4257-b537-a9f2908248c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\DrawPrimitives\OpenGL">
+      <UniqueIdentifier>{3e0f83d4-5612-44b4-baa0-77e48f22e261}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\DrawPrimitives\WinGDI">
+      <UniqueIdentifier>{94f4ca2b-f4f9-493f-ad41-152a5b551f04}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Dialogs">
+      <UniqueIdentifier>{1d35a799-37f4-47e9-922c-1f756f483fdc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Dialogs">
+      <UniqueIdentifier>{4cdb7042-419b-4a79-bc82-7b3d3c3afed7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Dialogs">
+      <UniqueIdentifier>{12a7793e-0217-4aec-8c45-ad9d25456fc0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\UserActions">
+      <UniqueIdentifier>{169389f9-06d7-4fff-b471-bddecd754fd0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\UserActions">
+      <UniqueIdentifier>{1b5f4ffd-a83c-4a60-8a4e-7633bec53d56}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\GameInfo\Perfect Bear">
+      <UniqueIdentifier>{4c78a7cd-27a1-4d91-8d7d-861271acab10}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\GameInfo\Bye the Bye">
+      <UniqueIdentifier>{2fa6cbf0-73a6-4fbc-bd9f-7cf7f80547db}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="common.cpp">
+      <Filter>Precompiled Headers</Filter>
+    </ClCompile>
+    <ClCompile Include="messages.cpp">
+      <Filter>Resource Files\Messages</Filter>
+    </ClCompile>
+    <ClCompile Include="BossDeathTable.cpp">
+      <Filter>Source Files\Visualization</Filter>
+    </ClCompile>
+    <ClCompile Include="BossMap.cpp">
+      <Filter>Source Files\Visualization</Filter>
+    </ClCompile>
+    <ClCompile Include="FangameDetector.cpp">
+      <Filter>Source Files\Detection</Filter>
+    </ClCompile>
+    <ClCompile Include="FangameDetectorState.cpp">
+      <Filter>Source Files\Detection</Filter>
+    </ClCompile>
+    <ClCompile Include="FangameVisualizerState.cpp">
+      <Filter>Source Files\Visualization</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files\General</Filter>
+    </ClCompile>
+    <ClCompile Include="MainApp.cpp">
+      <Filter>Source Files\General</Filter>
+    </ClCompile>
+    <ClCompile Include="WindowSettings.cpp">
+      <Filter>Source Files\General</Filter>
+    </ClCompile>
+    <ClCompile Include="WindowUtils.cpp">
+      <Filter>Source Files\General</Filter>
+    </ClCompile>
+    <ClCompile Include="AvoidanceTimeline.cpp">
+      <Filter>Source Files\Visualization</Filter>
+    </ClCompile>
+    <ClCompile Include="FolderChangesNotifier.cpp">
+      <Filter>Source Files\Detection</Filter>
+    </ClCompile>
+    <ClCompile Include="RecordStatusIcon.cpp">
+      <Filter>Source Files\Visualization</Filter>
+    </ClCompile>
+    <ClCompile Include="LazyFixedStepEngine.cpp">
+      <Filter>Source Files\General</Filter>
+    </ClCompile>
+    <ClCompile Include="TextInfoPanel.cpp">
+      <Filter>Source Files\General</Filter>
+    </ClCompile>
+    <ClCompile Include="AssetLoader.cpp">
+      <Filter>Source Files\General</Filter>
+    </ClCompile>
+    <ClCompile Include="ProcessMemoryScanner.cpp">
+      <Filter>Source Files\AddressScan</Filter>
+    </ClCompile>
+    <ClCompile Include="FangameChangeDetector.cpp">
+      <Filter>Source Files\AddressScan</Filter>
+    </ClCompile>
+    <ClCompile Include="ProcessHandle.cpp">
+      <Filter>Source Files\General</Filter>
+    </ClCompile>
+    <ClCompile Include="FixedAddressFinder.cpp">
+      <Filter>Source Files\AddressScan</Filter>
+    </ClCompile>
+    <ClCompile Include="ChangingFile.cpp">
+      <Filter>Source Files\Detection</Filter>
+    </ClCompile>
+    <ClCompile Include="FangameLog.cpp">
+      <Filter>Source Files\General</Filter>
+    </ClCompile>
+    <ClCompile Include="NestedAddressFinder.cpp">
+      <Filter>Source Files\AddressScan</Filter>
+    </ClCompile>
+    <ClCompile Include="HpProgressReporter.cpp">
+      <Filter>Source Files\Progress</Filter>
+    </ClCompile>
+    <ClCompile Include="TimeProgressReporter.cpp">
+      <Filter>Source Files\Progress</Filter>
+    </ClCompile>
+    <ClCompile Include="SaveReaderVer1.cpp">
+      <Filter>Source Files\AttackSaveData</Filter>
+    </ClCompile>
+    <ClCompile Include="SaveReaderVer2.cpp">
+      <Filter>Source Files\AttackSaveData</Filter>
+    </ClCompile>
+    <ClCompile Include="BossAttackSaveFile.cpp">
+      <Filter>Source Files\AttackSaveData</Filter>
+    </ClCompile>
+    <ClCompile Include="ColorFadeAnimator.cpp">
+      <Filter>Source Files\Animators</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageColumnContent.cpp">
+      <Filter>Source Files\Visualization\ColumnContent</Filter>
+    </ClCompile>
+    <ClCompile Include="TextColumnContent.cpp">
+      <Filter>Source Files\Visualization\ColumnContent</Filter>
+    </ClCompile>
+    <ClCompile Include="ColumnContentUtils.cpp">
+      <Filter>Source Files\Visualization\ColumnContent</Filter>
+    </ClCompile>
+    <ClCompile Include="TableLayout.cpp">
+      <Filter>Source Files\Visualization</Filter>
+    </ClCompile>
+    <ClCompile Include="BossInfo.cpp">
+      <Filter>Source Files\Visualization</Filter>
+    </ClCompile>
+    <ClCompile Include="SaveReaderVer3.cpp">
+      <Filter>Source Files\AttackSaveData</Filter>
+    </ClCompile>
+    <ClCompile Include="CompositeColumnContent.cpp">
+      <Filter>Source Files\Visualization\ColumnContent</Filter>
+    </ClCompile>
+    <ClCompile Include="EmptyColumnContent.cpp">
+      <Filter>Source Files\Visualization\ColumnContent</Filter>
+    </ClCompile>
+    <ClCompile Include="FileValueGetter.cpp">
+      <Filter>Source Files\ValueGetters</Filter>
+    </ClCompile>
+    <ClCompile Include="MemoryValueGetter.cpp">
+      <Filter>Source Files\ValueGetters</Filter>
+    </ClCompile>
+    <ClCompile Include="OperatorExpression.cpp">
+      <Filter>Source Files\ValueGetters</Filter>
+    </ClCompile>
+    <ClCompile Include="ExpressionValueGetter.cpp">
+      <Filter>Source Files\ValueGetters</Filter>
+    </ClCompile>
+    <ClCompile Include="ValueGetter.cpp">
+      <Filter>Source Files\ValueGetters</Filter>
+    </ClCompile>
+    <ClCompile Include="WindowTitleDeathGetter.cpp">
+      <Filter>Source Files\ValueGetters</Filter>
+    </ClCompile>
+    <ClCompile Include="ConstValueGetter.cpp">
+      <Filter>Source Files\ValueGetters</Filter>
+    </ClCompile>
+    <ClCompile Include="ChangingFileCache.cpp">
+      <Filter>Source Files\Detection</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseFileValueGetter.cpp">
+      <Filter>Source Files\ValueGetters</Filter>
+    </ClCompile>
+    <ClCompile Include="FangameExpression.cpp">
+      <Filter>Source Files\ValueGetters</Filter>
+    </ClCompile>
+    <ClCompile Include="SaveDataValueGetter.cpp">
+      <Filter>Source Files\ValueGetters</Filter>
+    </ClCompile>
+    <ClCompile Include="GdiPlusRenderParams.cpp">
+      <Filter>Source Files\General</Filter>
+    </ClCompile>
+    <ClCompile Include="GlDrawPrimitive.cpp">
+      <Filter>Source Files\DrawPrimitives\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="GlFont.cpp">
+      <Filter>Source Files\DrawPrimitives\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="GlGradientRect.cpp">
+      <Filter>Source Files\DrawPrimitives\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="GlLine.cpp">
+      <Filter>Source Files\DrawPrimitives\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="GlText.cpp">
+      <Filter>Source Files\DrawPrimitives\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="GlTexturedQuad.cpp">
+      <Filter>Source Files\DrawPrimitives\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageShaders.cpp">
+      <Filter>Source Files\DrawPrimitives\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenGlRenderer.cpp">
+      <Filter>Source Files\DrawPrimitives\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="WinGdiRenderer.cpp">
+      <Filter>Source Files\DrawPrimitives\WinGDI</Filter>
+    </ClCompile>
+    <ClCompile Include="GdiFont.cpp">
+      <Filter>Source Files\DrawPrimitives\WinGDI</Filter>
+    </ClCompile>
+    <ClCompile Include="GdiGradientRect.cpp">
+      <Filter>Source Files\DrawPrimitives\WinGDI</Filter>
+    </ClCompile>
+    <ClCompile Include="GdiImage.cpp">
+      <Filter>Source Files\DrawPrimitives\WinGDI</Filter>
+    </ClCompile>
+    <ClCompile Include="GdiLine.cpp">
+      <Filter>Source Files\DrawPrimitives\WinGDI</Filter>
+    </ClCompile>
+    <ClCompile Include="GdiSprite.cpp">
+      <Filter>Source Files\DrawPrimitives\WinGDI</Filter>
+    </ClCompile>
+    <ClCompile Include="GdiText.cpp">
+      <Filter>Source Files\DrawPrimitives\WinGDI</Filter>
+    </ClCompile>
+    <ClCompile Include="AttackSettingsDialog.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="BossSettingsDialog.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="VisualizerMouseController.cpp">
+      <Filter>Source Files\Visualization</Filter>
+    </ClCompile>
+    <ClCompile Include="MouseTarget.cpp">
+      <Filter>Source Files\Visualization</Filter>
+    </ClCompile>
+    <ClCompile Include="DialogControls.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Icon.cpp">
+      <Filter>Source Files\Visualization</Filter>
+    </ClCompile>
+    <ClCompile Include="VisualizerActionController.cpp">
+      <Filter>Source Files\UserActions</Filter>
+    </ClCompile>
+    <ClCompile Include="PeekerActionController.cpp">
+      <Filter>Source Files\UserActions</Filter>
+    </ClCompile>
+    <ClCompile Include="DetectorActionController.cpp">
+      <Filter>Source Files\UserActions</Filter>
+    </ClCompile>
+    <ClCompile Include="FangameVisualizer.cpp">
+      <Filter>Source Files\Visualization</Filter>
+    </ClCompile>
+    <ClCompile Include="BossTriggerCreater.cpp">
+      <Filter>Source Files\Visualization</Filter>
+    </ClCompile>
+    <ClCompile Include="AddressSearchExpansion.cpp">
+      <Filter>Source Files\AddressScan</Filter>
+    </ClCompile>
+    <ClCompile Include="SaveReaderVer4.cpp">
+      <Filter>Source Files\AttackSaveData</Filter>
+    </ClCompile>
+    <ClCompile Include="FangamePeekerState.cpp">
+      <Filter>Source Files\Visualization</Filter>
+    </ClCompile>
+    <ClCompile Include="FangameInputHandler.cpp">
+      <Filter>Source Files\UserActions</Filter>
+    </ClCompile>
+    <ClCompile Include="GlobalStrings.cpp">
+      <Filter>Source Files\General</Filter>
+    </ClCompile>
+    <ClCompile Include="MouseInputHandler.cpp">
+      <Filter>Source Files\General</Filter>
+    </ClCompile>
+    <ClCompile Include="PeekerMouseController.cpp">
+      <Filter>Source Files\Visualization</Filter>
+    </ClCompile>
+    <ClCompile Include="DetectorMouseController.cpp">
+      <Filter>Source Files\Detection</Filter>
+    </ClCompile>
+    <ClCompile Include="EntrySettingsDialog.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="SettingsDialogFrame.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="ColorSettingsDialog.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneralSettingsDialog.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="HotkeySettingsDialog.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="SessionMonitor.cpp">
+      <Filter>Source Files\Detection</Filter>
+    </ClCompile>
+    <ClCompile Include="SolidBrush.cpp">
+      <Filter>Source Files\General</Filter>
+    </ClCompile>
+    <ClCompile Include="AutoUpdateDialog.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="AutoUpdater.cpp">
+      <Filter>Source Files\General</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="common.h">
+      <Filter>Precompiled Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="messages.h">
+      <Filter>Resource Files\Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="FangameDetector.h">
+      <Filter>Header Files\Detection</Filter>
+    </ClInclude>
+    <ClInclude Include="FangameDetectorState.h">
+      <Filter>Header Files\Detection</Filter>
+    </ClInclude>
+    <ClInclude Include="FangameEvents.h">
+      <Filter>Header Files\General</Filter>
+    </ClInclude>
+    <ClInclude Include="MainApp.h">
+      <Filter>Header Files\General</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowSettings.h">
+      <Filter>Header Files\General</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowUtils.h">
+      <Filter>Header Files\General</Filter>
+    </ClInclude>
+    <ClInclude Include="BossDeathTable.h">
+      <Filter>Header Files\Visualization</Filter>
+    </ClInclude>
+    <ClInclude Include="BossMap.h">
+      <Filter>Header Files\Visualization</Filter>
+    </ClInclude>
+    <ClInclude Include="FangameVisualizerState.h">
+      <Filter>Header Files\Visualization</Filter>
+    </ClInclude>
+    <ClInclude Include="FolderChangesNotifier.h">
+      <Filter>Header Files\Detection</Filter>
+    </ClInclude>
+    <ClInclude Include="AvoidanceTimeline.h">
+      <Filter>Header Files\Visualization</Filter>
+    </ClInclude>
+    <ClInclude Include="FangameProcessInfo.h">
+      <Filter>Header Files\Detection</Filter>
+    </ClInclude>
+    <ClInclude Include="RecordStatusIcon.h">
+      <Filter>Header Files\Visualization</Filter>
+    </ClInclude>
+    <ClInclude Include="LazyFixedStepEngine.h">
+      <Filter>Header Files\General</Filter>
+    </ClInclude>
+    <ClInclude Include="TextInfoPanel.h">
+      <Filter>Header Files\General</Filter>
+    </ClInclude>
+    <ClInclude Include="AssetLoader.h">
+      <Filter>Header Files\General</Filter>
+    </ClInclude>
+    <ClInclude Include="ProcessHandle.h">
+      <Filter>Header Files\General</Filter>
+    </ClInclude>
+    <ClInclude Include="FangameChangeDetector.h">
+      <Filter>Header Files\AddressScan</Filter>
+    </ClInclude>
+    <ClInclude Include="ProcessMemoryScanner.h">
+      <Filter>Header Files\AddressScan</Filter>
+    </ClInclude>
+    <ClInclude Include="AddressFinder.h">
+      <Filter>Header Files\AddressScan</Filter>
+    </ClInclude>
+    <ClInclude Include="FixedAddressFinder.h">
+      <Filter>Header Files\AddressScan</Filter>
+    </ClInclude>
+    <ClInclude Include="AttackEventAction.h">
+      <Filter>Header Files\Visualization</Filter>
+    </ClInclude>
+    <ClInclude Include="ChangingFile.h">
+      <Filter>Header Files\Detection</Filter>
+    </ClInclude>
+    <ClInclude Include="FangameLog.h">
+      <Filter>Header Files\General</Filter>
+    </ClInclude>
+    <ClInclude Include="NestedAddressFinder.h">
+      <Filter>Header Files\AddressScan</Filter>
+    </ClInclude>
+    <ClInclude Include="DelayedTimerAction.h">
+      <Filter>Header Files\Visualization</Filter>
+    </ClInclude>
+    <ClInclude Include="FullProgressReporter.h">
+      <Filter>Header Files\Progress</Filter>
+    </ClInclude>
+    <ClInclude Include="HpProgressReporter.h">
+      <Filter>Header Files\Progress</Filter>
+    </ClInclude>
+    <ClInclude Include="TimeProgressReporter.h">
+      <Filter>Header Files\Progress</Filter>
+    </ClInclude>
+    <ClInclude Include="ProgressReporter.h">
+      <Filter>Header Files\Progress</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files\General</Filter>
+    </ClInclude>
+    <ClInclude Include="BossAttackSaveFile.h">
+      <Filter>Header Files\AttackSaveData</Filter>
+    </ClInclude>
+    <ClInclude Include="SaveReaderVer1.h">
+      <Filter>Header Files\AttackSaveData</Filter>
+    </ClInclude>
+    <ClInclude Include="SaveReaderVer2.h">
+      <Filter>Header Files\AttackSaveData</Filter>
+    </ClInclude>
+    <ClInclude Include="ColorFadeAnimator.h">
+      <Filter>Header Files\Animators</Filter>
+    </ClInclude>
+    <ClInclude Include="TableLayout.h">
+      <Filter>Header Files\Visualization</Filter>
+    </ClInclude>
+    <ClInclude Include="ColumnContent.h">
+      <Filter>Header Files\Visualization\ColumnContent</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageColumnContent.h">
+      <Filter>Header Files\Visualization\ColumnContent</Filter>
+    </ClInclude>
+    <ClInclude Include="TextColumnContent.h">
+      <Filter>Header Files\Visualization\ColumnContent</Filter>
+    </ClInclude>
+    <ClInclude Include="ColumnContentUtils.h">
+      <Filter>Header Files\Visualization\ColumnContent</Filter>
+    </ClInclude>
+    <ClInclude Include="SaveReaderVer3.h">
+      <Filter>Header Files\AttackSaveData</Filter>
+    </ClInclude>
+    <ClInclude Include="BossInfo.h">
+      <Filter>Header Files\Visualization</Filter>
+    </ClInclude>
+    <ClInclude Include="CompositeColumnContent.h">
+      <Filter>Header Files\Visualization\ColumnContent</Filter>
+    </ClInclude>
+    <ClInclude Include="EmptyColumnContent.h">
+      <Filter>Header Files\Visualization\ColumnContent</Filter>
+    </ClInclude>
+    <ClInclude Include="MemoryValueGetter.h">
+      <Filter>Header Files\ValueGetters</Filter>
+    </ClInclude>
+    <ClInclude Include="FileValueGetter.h">
+      <Filter>Header Files\ValueGetters</Filter>
+    </ClInclude>
+    <ClInclude Include="ValueGetter.h">
+      <Filter>Header Files\ValueGetters</Filter>
+    </ClInclude>
+    <ClInclude Include="ExpressionValueGetter.h">
+      <Filter>Header Files\ValueGetters</Filter>
+    </ClInclude>
+    <ClInclude Include="FangameExpression.h">
+      <Filter>Header Files\ValueGetters\Expressions</Filter>
+    </ClInclude>
+    <ClInclude Include="FixedValueExpression.h">
+      <Filter>Header Files\ValueGetters\Expressions</Filter>
+    </ClInclude>
+    <ClInclude Include="VariableExpression.h">
+      <Filter>Header Files\ValueGetters\Expressions</Filter>
+    </ClInclude>
+    <ClInclude Include="OperatorExpression.h">
+      <Filter>Header Files\ValueGetters\Expressions</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowTitleDeathGetter.h">
+      <Filter>Header Files\ValueGetters</Filter>
+    </ClInclude>
+    <ClInclude Include="ConstValueGetter.h">
+      <Filter>Header Files\ValueGetters</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseFileValueGetter.h">
+      <Filter>Header Files\ValueGetters</Filter>
+    </ClInclude>
+    <ClInclude Include="SaveDataValueGetter.h">
+      <Filter>Header Files\ValueGetters</Filter>
+    </ClInclude>
+    <ClInclude Include="ChangingFileCache.h">
+      <Filter>Header Files\General</Filter>
+    </ClInclude>
+    <ClInclude Include="GlDrawPrimitive.h">
+      <Filter>Header Files\DrawPrimitives\OpenGl</Filter>
+    </ClInclude>
+    <ClInclude Include="GlFont.h">
+      <Filter>Header Files\DrawPrimitives\OpenGl</Filter>
+    </ClInclude>
+    <ClInclude Include="GlGradientRect.h">
+      <Filter>Header Files\DrawPrimitives\OpenGl</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageShaders.h">
+      <Filter>Header Files\DrawPrimitives\OpenGl</Filter>
+    </ClInclude>
+    <ClInclude Include="GlLine.h">
+      <Filter>Header Files\DrawPrimitives\OpenGl</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenGlRenderer.h">
+      <Filter>Header Files\DrawPrimitives\OpenGl</Filter>
+    </ClInclude>
+    <ClInclude Include="GlSizedTexture.h">
+      <Filter>Header Files\DrawPrimitives\OpenGl</Filter>
+    </ClInclude>
+    <ClInclude Include="GlTexturedQuad.h">
+      <Filter>Header Files\DrawPrimitives\OpenGl</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer.h">
+      <Filter>Header Files\DrawPrimitives</Filter>
+    </ClInclude>
+    <ClInclude Include="GlText.h">
+      <Filter>Header Files\DrawPrimitives\OpenGl</Filter>
+    </ClInclude>
+    <ClInclude Include="WinGdiRenderer.h">
+      <Filter>Header Files\DrawPrimitives\WinGDI</Filter>
+    </ClInclude>
+    <ClInclude Include="GdiText.h">
+      <Filter>Header Files\DrawPrimitives\WinGDI</Filter>
+    </ClInclude>
+    <ClInclude Include="GdiFont.h">
+      <Filter>Header Files\DrawPrimitives\WinGDI</Filter>
+    </ClInclude>
+    <ClInclude Include="GdiGradientRect.h">
+      <Filter>Header Files\DrawPrimitives\WinGDI</Filter>
+    </ClInclude>
+    <ClInclude Include="GdiImage.h">
+      <Filter>Header Files\DrawPrimitives\WinGDI</Filter>
+    </ClInclude>
+    <ClInclude Include="GdiLine.h">
+      <Filter>Header Files\DrawPrimitives\WinGDI</Filter>
+    </ClInclude>
+    <ClInclude Include="GdiPlusRenderParams.h">
+      <Filter>Header Files\DrawPrimitives\WinGDI</Filter>
+    </ClInclude>
+    <ClInclude Include="GdiSprite.h">
+      <Filter>Header Files\DrawPrimitives\WinGDI</Filter>
+    </ClInclude>
+    <ClInclude Include="gdiHeaders.h">
+      <Filter>Header Files\General</Filter>
+    </ClInclude>
+    <ClInclude Include="AttackSettingsDialog.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="BossSettingsDialog.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="VisualizerMouseController.h">
+      <Filter>Header Files\Visualization</Filter>
+    </ClInclude>
+    <ClInclude Include="MouseTarget.h">
+      <Filter>Header Files\Visualization</Filter>
+    </ClInclude>
+    <ClInclude Include="BossTriggerCreater.h">
+      <Filter>Header Files\Visualization</Filter>
+    </ClInclude>
+    <ClInclude Include="FangameVisualizer.h">
+      <Filter>Header Files\Visualization</Filter>
+    </ClInclude>
+    <ClInclude Include="Icon.h">
+      <Filter>Header Files\General</Filter>
+    </ClInclude>
+    <ClInclude Include="DialogControls.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="VisualizerActionController.h">
+      <Filter>Header Files\UserActions</Filter>
+    </ClInclude>
+    <ClInclude Include="PeekerActionController.h">
+      <Filter>Header Files\UserActions</Filter>
+    </ClInclude>
+    <ClInclude Include="UserActionController.h">
+      <Filter>Header Files\UserActions</Filter>
+    </ClInclude>
+    <ClInclude Include="DetectorActionController.h">
+      <Filter>Header Files\UserActions</Filter>
+    </ClInclude>
+    <ClInclude Include="AddressInfo.h">
+      <Filter>Header Files\AddressScan</Filter>
+    </ClInclude>
+    <ClInclude Include="AddressSearchExpansion.h">
+      <Filter>Header Files\AddressScan</Filter>
+    </ClInclude>
+    <ClInclude Include="SaveReaderVer4.h">
+      <Filter>Header Files\AttackSaveData</Filter>
+    </ClInclude>
+    <ClInclude Include="FangamePeekerState.h">
+      <Filter>Header Files\Visualization</Filter>
+    </ClInclude>
+    <ClInclude Include="FangameInputHandler.h">
+      <Filter>Header Files\UserActions</Filter>
+    </ClInclude>
+    <ClInclude Include="GlobalStrings.h">
+      <Filter>Header Files\General</Filter>
+    </ClInclude>
+    <ClInclude Include="PeekerMouseController.h">
+      <Filter>Header Files\Visualization</Filter>
+    </ClInclude>
+    <ClInclude Include="DetectorMouseController.h">
+      <Filter>Header Files\Detection</Filter>
+    </ClInclude>
+    <ClInclude Include="MouseInputHandler.h">
+      <Filter>Header Files\General</Filter>
+    </ClInclude>
+    <ClInclude Include="EntrySettingsDialog.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="SettingsDialogFrame.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="HotkeySettingsDialog.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="ColorSettingsDialog.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneralSettingsDialog.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="ChildSettingsDialog.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="SessionMonitor.h">
+      <Filter>Header Files\Detection</Filter>
+    </ClInclude>
+    <ClInclude Include="SolidBrush.h">
+      <Filter>Header Files\General</Filter>
+    </ClInclude>
+    <ClInclude Include="AutoUpdateDialog.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="AutoUpdater.h">
+      <Filter>Header Files\General</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="messages.msg">
+      <Filter>Resource Files\Messages</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="FangameResources\Shaders\imageDrawing.frag">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="FangameResources\Shaders\imageDrawing.vert">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="FangameResources\Shaders\primitiveDrawing.frag">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="FangameResources\userSettings.ini">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="FangameResources\FangameInfo\I Wanna Kill The Kamilia 3\attackAliases.ini">
+      <Filter>Resource Files\GameInfo\Kamilia 3</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="FangameResources\TableView.xml">
+      <Filter>Resource Files</Filter>
+    </Xml>
+    <Xml Include="FangameResources\FangameInfo\I Wanna Kill The Kamilia 3\layout.xml">
+      <Filter>Resource Files\GameInfo\Kamilia 3</Filter>
+    </Xml>
+    <Xml Include="FangameResources\FangameInfo\I wanna Touch the Entrance\layout.xml">
+      <Filter>Resource Files\GameInfo\Touch The Entrance</Filter>
+    </Xml>
+    <Xml Include="FangameResources\FangameInfo\I Wanna Kill The Kamilia II\layout.xml">
+      <Filter>Resource Files\GameInfo\Kamilia 2</Filter>
+    </Xml>
+    <Xml Include="FangameResources\FangameInfo\perfect bear\layout.xml">
+      <Filter>Resource Files\GameInfo\Perfect Bear</Filter>
+    </Xml>
+    <Xml Include="FangameResources\FangameInfo\I wanna bye the bye\layout.xml">
+      <Filter>Resource Files\GameInfo\Bye the Bye</Filter>
+    </Xml>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="FangameResources\Readme.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="FangameResources\BossEditIntsructions.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="FangameResources\Icons\KidHead.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="FangameReader.rc">
+      <Filter>Resource Files\Dialogs</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,15 @@
+// Automatically generated message ID definitions.
+namespace Msg {
+
+extern const int MainMenuSection;
+//////////////////////////////////////////////////////////////////////////
+
+namespace MainMenu {
+
+extern const int StartGameId;
+
+}	// namespace MainMenu.
+
+//////////////////////////////////////////////////////////////////////////
+
+}	// namespace Msg.

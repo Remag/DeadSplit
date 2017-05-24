@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<Fangame title="I wanna bye the bye" saveReader="Manual"> 
+
+<Boss name="Miku">
+
+<Attack name="LaLaLa" icon="ByeTheBye\ByeTheApple.png">
+	<Time end="17"/>
+</Attack>
+<Attack name="RNG" icon="ByeTheBye\ByeTheBlue.png">
+	<Time end="47"/>
+</Attack>
+<Attack name="Bye" icon="ByeTheBye\MikuMelt.png">
+	<Time end="64"/>
+</Attack>
+<Attack name="Even more RNG" icon="ByeTheBye\ByeTheOrange.png">
+	<Time end="83"/>
+</Attack>
+<Attack name="Bye the Bye" icon="ByeTheBye\MikuMeltx4.png">
+	<Time end="111"/>
+</Attack>
+<Attack name="Black and White" icon="ByeTheBye\ByeTheWhite.png">
+	<Time end="129"/>
+</Attack>
+<Attack name="Lines" icon="ByeTheBye\Applex4.png">
+	<Time end="151"/>
+</Attack>
+<Attack name="Bye the Bye the Bye Bye" icon="ByeTheBye\MikuMeltx16.png">
+	<Time end="179"/>
+</Attack>
+<Attack name="Dont Choke" icon="ByeTheBye\ByeTheGray.png">
+	<Time end="198"/>
+</Attack>
+
+</Boss>
+
+</Fangame> 

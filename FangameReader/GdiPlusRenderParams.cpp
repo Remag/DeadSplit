@@ -1,0 +1,17 @@
+#include <common.h>
+#pragma hdrstop
+
+#include <GdiPlusRenderParams.h>
+
+namespace Fangame {
+
+//////////////////////////////////////////////////////////////////////////
+
+CGdiPlusRenderParams::CGdiPlusRenderParams( HDC deviceContext ) :
+	graphics( deviceContext )
+{
+}
+
+//////////////////////////////////////////////////////////////////////////
+
+}	// namespace Fangame.

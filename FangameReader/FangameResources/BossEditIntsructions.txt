@@ -1,0 +1,15 @@
+How to add a fangame.
+
+1. Add a folder with a fangame name to the FangameInfo folder. The name has to be spelled exactly as it appears in a fangame window title ( without the time and death count ).
+2. Create a file named "layout.xml" in the created folder. Open the file with a text editor of your choise.
+3. Copy the header and the fangame node from an existing layout.xml of another fangame.
+4. Fill the saveReader attribute of the fangame node with the appropriate save reader. "Manual" makes you choose the current boss manually and obviously works for every game.
+4. Fill the layout file with boss information ( see the next instruction ).
+
+How to add a boss.
+
+1. Open a file "FangameInfo\<fangame name>\layout.xml" with any text editor.
+2. Add a new <Boss> child to the <Fangame> node.
+3. Fill the boss child with attack nodes. Use existing examples to fill the necessary information.
+4. If you wish to use a custom attack icon, add it to the Icons folder. Icons in PNG format are supported.
+5. If you are using a save reader, you can add a <TriggerArea> child to the boss node. Trigger area should contain boss room and position information.
