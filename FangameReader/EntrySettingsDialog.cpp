@@ -9,6 +9,7 @@
 #include <WindowUtils.h>
 #include <resource.h>
 #include <Commctrl.h>
+#include <windowsx.h>
 
 namespace Fangame {
 
@@ -28,6 +29,7 @@ CSettingsDialogData::CSettingsDialogData( CEntryInfo& targetEntry, HWND dialogWn
 
 	timeEdits.Add( IDC_SessionHours, IDC_SessionMinutes, IDC_SessionSeconds, targetEntry.SessionStats.Time, dialogWnd );
 	timeEdits.Add( IDC_TotalHours, IDC_TotalMinutes, IDC_TotalSeconds, targetEntry.TotalStats.Time, dialogWnd );
+	loadAttackStatus( targetEntry, dialogWnd );
 }
 
 CSettingsDialogData::~CSettingsDialogData()
@@ -45,6 +47,28 @@ void CSettingsDialogData::SaveChanges( CEntryInfo& targetEntry, HWND dialogWnd )
 	for( auto& edit : timeEdits ) {
 		edit.SaveChanges( dialogWnd );
 	}
+
+	saveAttackStatus( targetEntry, dialogWnd );
+}
+
+
+void CSettingsDialogData::loadAttackStatus( const CEntryInfo& target, HWND dialogWnd )
+{
+	const auto status = target.AttackStatus;
+	const auto targetId = status == ACS_Hidden ? IDC_AttackStatusHidden : status == ACS_NoProgress ? IDC_AttackStatusNoProgress : IDC_AttackStatusShown;
+	const auto targetControl = ::GetDlgItem( dialogWnd, targetId );
+	Button_SetCheck( targetControl, 1 );
+}
+
+const CUnicodeView attackStatusAttrib = L"currentStatus";
+void CSettingsDialogData::saveAttackStatus( CEntryInfo& target, HWND dialogWnd )
+{
+	const auto hiddenControl = ::GetDlgItem( dialogWnd, IDC_AttackStatusHidden );
+	const auto noProgressControl = ::GetDlgItem( dialogWnd, IDC_AttackStatusNoProgress );
+	const auto shownControl = ::GetDlgItem( dialogWnd, IDC_AttackStatusShown );
+	const auto newStatus = Button_GetCheck( hiddenControl ) == TRUE ? ACS_Hidden : Button_GetCheck( noProgressControl ) == TRUE ? ACS_NoProgress : ACS_Shown;
+	target.AttackStatus = newStatus;
+	target.SrcElement.SetAttributeValueText( attackStatusAttrib, UnicodeStr( AttackStatusToNameDict[newStatus] ) );
 }
 
 void CEntrySettingsDialog::openDialogBox( int dialogId )

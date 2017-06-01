@@ -9,6 +9,16 @@ class CWindowSettings;
 // Start information passed in command line.
 struct CStartupInfo {
 	CUnicodeString InitialFangameName;
+	CUnicodeString FangameUpdateSource;
+	bool OpenAppAfterUpdate;
+};
+
+// Command argument name type.
+enum TCommandArgumentName {
+	CAN_Fangame,
+	CAN_UpdateFrom,
+	CAN_UpdateOpen,
+	CAN_EnumCount
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -34,6 +44,11 @@ private:
 	void initializeRenderer();
 
 	CStartupInfo parseCommandLine( CUnicodeView commandLine );
+	int parseSingleArgument( int pos, CUnicodeView commandLine, CStaticArray<CUnicodeString>& argValues );
+	int skipWhitespace( int pos, CUnicodeView str );
+
+	void finalizeUpdateInstall( CUnicodeView updateSource, bool openAfter );
+	void cleanupUpdater();
 };
 
 //////////////////////////////////////////////////////////////////////////

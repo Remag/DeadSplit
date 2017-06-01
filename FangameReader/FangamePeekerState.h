@@ -14,13 +14,15 @@ class CRecordStatusIcon;
 class CFangameInputHandler;
 class CMouseInputSwitcher;
 class CSessionMonitor;
+class CAutoUpdater;
 struct CFangameProcessInfo;
 //////////////////////////////////////////////////////////////////////////
 
 class CFangamePeekerState : public IState {
 public:
 	explicit CFangamePeekerState( CUnicodeView fangameName, CEventSystem& eventSystem, CWindowSettings& windowSettings,
-		CAssetLoader& assets, CFangameInputHandler& inputHandler, CFangameDetector& detector, CSessionMonitor& sessionMonitor );
+		CAssetLoader& assets, CFangameInputHandler& inputHandler, CFangameDetector& detector, CSessionMonitor& sessionMonitor,
+		CAutoUpdater& updater );
 	~CFangamePeekerState();
 
 	CFangameInputHandler& GetInputHandler()
@@ -52,6 +54,7 @@ private:
 	CFangameDetector& detector;
 	CSessionMonitor& sessionMonitor;
 	CWindowSettings& windowSettings;
+	CAutoUpdater& updater;
 	// Responder to user actions.
 	CPtrOwner<CPeekerActionController> actionController;
 	// Save file with the attack death count on bosses.

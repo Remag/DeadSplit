@@ -14,6 +14,8 @@ extern const CUnicodeView FanagameSaveFile = L"saveData.sav";
 extern const CUnicodeView FangameLayoutFile = L"layout.xml";
 extern const CUnicodeView FangameInfoFolder = L"FangameInfo";
 extern const CUnicodeView SessionFileName = L"CurrentSession";
+extern const CUnicodeView UpdateTempFolder = L"Update";
+extern const CUnicodeView UpdatedExeName = L"Update\\DeadSplitUpdater.exe";
 
 }
 

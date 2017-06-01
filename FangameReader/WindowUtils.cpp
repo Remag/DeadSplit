@@ -65,6 +65,24 @@ CUnicodeString GetFullModuleFilePath( CUnicodeView relFilePath, HANDLE processHa
 	}
 }
 
+CUnicodeString GetCurrentModulePath()
+{
+	CUnicodeString result;
+	int bufferSize = MAX_PATH;
+	const auto moduleHandle = ::GetModuleHandle( 0 );
+	for( ;; ) {
+		auto buffer = result.CreateRawBuffer( bufferSize );
+		const int writeSize = ::GetModuleFileName( moduleHandle, buffer.Ptr(), bufferSize + 1 );
+		if( writeSize < bufferSize ) {
+			buffer.Release();
+			return result;
+		}
+		bufferSize *= 2;
+	}
+	assert( false );
+	return CUnicodeString();
+}
+
 const CUnicodeView deathSubsr = L"eath";
 COptional<int> ParseDeathCount( CUnicodeView titleStr )
 {

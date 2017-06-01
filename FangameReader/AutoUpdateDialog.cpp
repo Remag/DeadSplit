@@ -24,17 +24,49 @@ void CAutoUpdateDialog::Open()
 
 void CAutoUpdateDialog::onUpdateNow()
 {
-
+	updater.AddNotifyTarget( dialogWnd );
+	const auto updateButtonWnd = ::GetDlgItem( dialogWnd, IDC_UpdateNow );
+	::SetWindowText( updateButtonWnd, L"Downloading..." );
+	updater.DownloadUpdate();
+	closeDialogWindow();
 }
 
 void CAutoUpdateDialog::onUpdateOnExit()
 {
-
+	updater.DownloadOnExit();
+	closeDialogWindow();
 }
 
 void CAutoUpdateDialog::onUpdateCancel()
 {
+	updater.CloseUpdate();
+	closeDialogWindow();
+}
 
+void CAutoUpdateDialog::onUpdateStatusChange( int wParam )
+{
+	const auto newStatus = static_cast<TAutoUpdateStatus>( wParam );
+	switch( newStatus ) {
+		AUS_UpdateReady:
+			break;
+		AUS_Update_Failed:
+			Log::Warning( L"Failed to load the update!", this );
+			break;
+		default:
+			assert( false );
+			break;
+	}
+	updater.RemoveNotifyTarget( dialogWnd );
+	closeDialogWindow();
+}
+
+void CAutoUpdateDialog::closeDialogWindow()
+{
+	const auto disableCheck = ::GetDlgItem( dialogWnd, IDC_DisableUpdates );
+	const auto setAutoUpdate = Button_GetCheck( disableCheck );
+	windowSettings.SetAutoUpdate( setAutoUpdate != 0 );
+	::EndDialog( dialogWnd, 0 );
+	dialogWnd = nullptr;
 }
 
 void CAutoUpdateDialog::initializeDialogData( HWND wnd )
@@ -60,7 +92,7 @@ INT_PTR CAutoUpdateDialog::processControl( WPARAM wParam )
 			onUpdateOnExit();
 			return TRUE;
 		case IDC_CancelUpdate:
-			onCancelUpdate();
+			onUpdateCancel();
 			return TRUE;
 		default:
 			return FALSE;
@@ -70,6 +102,7 @@ INT_PTR CAutoUpdateDialog::processControl( WPARAM wParam )
 
 INT_PTR __stdcall CAutoUpdateDialog::dialogProcedure( HWND dlg, UINT msg, WPARAM wParam, LPARAM lParam )
 {
+	const auto updaterNotifyId = CAutoUpdater::GetStatusChangedMsg();
 	const auto settingsDlg = CAutoUpdateDialog::GetInstance();
 	switch( msg ) {
 		case WM_INITDIALOG:
@@ -78,7 +111,10 @@ INT_PTR __stdcall CAutoUpdateDialog::dialogProcedure( HWND dlg, UINT msg, WPARAM
 		case WM_COMMAND:
 			return settingsDlg->processControl( wParam );
 		case WM_CLOSE:
-			settingsDlg->onCancelUpdate();
+			settingsDlg->onUpdateCancel();
+			return TRUE;
+		case updaterNotifyId:
+			settingsDlg->onUpdateStatusChange( wParam );
 			return TRUE;
 	}
 	return FALSE;

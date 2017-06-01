@@ -20,6 +20,8 @@ private:
 	void onUpdateNow();
 	void onUpdateOnExit();
 	void onUpdateCancel();
+	void onUpdateStatusChange( int wParam );
+	void closeDialogWindow();
 	void initializeDialogData( HWND wnd );
 	INT_PTR processControl( WPARAM wParam );
 	static INT_PTR __stdcall dialogProcedure( HWND dlg, UINT msg, WPARAM wParam, LPARAM lParam );

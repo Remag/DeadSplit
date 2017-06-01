@@ -19,6 +19,7 @@
 #include <MouseInputHandler.h>
 #include <DetectorMouseController.h>
 #include <FangamePeekerState.h>
+#include <AutoUpdater.h>
 
 #include <SettingsDialogFrame.h>
 #include <SessionMonitor.h>
@@ -35,6 +36,7 @@ CFangameDetectorState::CFangameDetectorState( CEventSystem& _eventSystem, CWindo
 	assets( CreateOwner<CAssetLoader>() ),
 	detector( CreateOwner<CFangameDetector>( fangameInfoFolder ) ),
 	inputHandler( CreateOwner<CFangameInputHandler>( _windowSettings ) ),
+	updater( CreateOwner<CAutoUpdater>( _windowSettings ) ),
 	eventSystem( _eventSystem ),
 	windowSettings( _windowSettings ),
 	windowChangeTarget( createWindowChangeEvent( _eventSystem ) )
@@ -113,19 +115,22 @@ void CFangameDetectorState::detectFangame()
 	if( lastDetectResult.IsValid() ) {
 		lastDetectWnd = lastDetectResult->WndHandle;
 		detector->SuspendSearch();
-		GetStateManager().ImmediatePushState( CreateOwner<CFangameVisualizerState>( move( *lastDetectResult ), eventSystem, windowSettings, *assets, *inputHandler, *detector, *sessionMonitor ) );
+		GetStateManager().ImmediatePushState( CreateOwner<CFangameVisualizerState>( move( *lastDetectResult ), eventSystem, windowSettings, *assets, *inputHandler, 
+			*detector, *sessionMonitor, *updater ) );
 	}
 }
 
 void CFangameDetectorState::Update( TTime )
 {
+	updater->Update();
 	inputHandler->UpdateUserInput( *actionController );
 	// Scan for active fangames.
 	auto lastDetectResult = lastDetectWnd != nullptr ? detector->FindNextFangame( lastDetectWnd ) : detector->FindFangame();
 	if( lastDetectResult.IsValid() ) {
 		lastDetectWnd = lastDetectResult->WndHandle;
 		detector->SuspendSearch();
-		GetStateManager().PushState<CFangameVisualizerState>( move( *lastDetectResult ), eventSystem, windowSettings, *assets, *inputHandler, *detector, *sessionMonitor );
+		GetStateManager().PushState<CFangameVisualizerState>( move( *lastDetectResult ), eventSystem, windowSettings, *assets, *inputHandler,
+			*detector, *sessionMonitor, *updater );
 	} else {
 		lastDetectWnd = nullptr;
 	}
@@ -231,7 +236,8 @@ void CFangameDetectorState::peekFangame( CUnicodeView fangameName )
 		return;
 	}
 
-	GetStateManager().PushState<CFangamePeekerState>( fangameName, eventSystem, windowSettings, *assets, *inputHandler, *detector, *sessionMonitor );
+	GetStateManager().PushState<CFangamePeekerState>( fangameName, eventSystem, windowSettings, *assets, *inputHandler,
+		*detector, *sessionMonitor, *updater );
 }
 
 //////////////////////////////////////////////////////////////////////////

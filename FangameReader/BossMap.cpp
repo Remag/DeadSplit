@@ -253,6 +253,7 @@ void CBossMap::loadBossData( CXmlElement& bossElem, CBossInfo& bossInfo, int bos
 	bossInfo.ResetFreezeTime = bossElem.GetAttributeValue( resetFreezeAttrib, 0.0 );
 	bossInfo.IsConsistentWithChildren = bossElem.GetAttributeValue( consistentAttrib, true );
 	bossInfo.ChildOrder = getChildAttackOrder( bossElem, ECD_Sequential );
+	bossInfo.AttackStatus = getAttackStatus( bossElem );
 	bossInfo.Children.ResetBuffer( bossElem.GetChildrenCount() );
 	bossInfo.EntryId = bossId;
 	const auto& bossStats = saveFile.GetBossSaveData( bossName );
@@ -273,6 +274,15 @@ TEntryChildOrder CBossMap::getChildAttackOrder( const CXmlElement& elem, TEntryC
 	const CUnicodePart defaultName = childOrderDict[defaultValue];
 	const auto orderName = elem.GetAttributeValue( attackOrderAttrib, defaultName );
 	return childOrderDict.FindEnum( orderName, defaultValue );
+}
+
+const CUnicodeView attackStatusAttrib = L"currentStatus";
+extern const CEnumDictionary<TAttackCurrentStatus, ACS_EnumCount> AttackStatusToNameDict;
+TAttackCurrentStatus CBossMap::getAttackStatus( const CXmlElement& elem ) const
+{
+	const CUnicodePart defaultName = AttackStatusToNameDict[ACS_Shown];
+	const auto orderName = elem.GetAttributeValue( attackStatusAttrib, defaultName );
+	return AttackStatusToNameDict.FindEnum( orderName, ACS_Shown );
 }
 
 const CUnicodeView iconAttrib = L"icon";
@@ -360,6 +370,7 @@ CBossAttackInfo& CBossMap::addBossAttackAttribs( CXmlElement& elem, CEntryInfo& 
 	newAttack.ChildId = parent.Children.Size() - 1;
 	newAttack.Children.ResetBuffer( elem.GetChildrenCount() );
 	newAttack.ChildOrder = getChildAttackOrder( elem, parent.ChildOrder ); 
+	newAttack.AttackStatus = getAttackStatus( elem );
 	newAttack.IsConsistentWithChildren = elem.GetAttributeValue( consistentAttrib, true );
 	bossInfo.AttackCount++;
 	newAttack.SessionStats = attackDeathData.SessionStats;

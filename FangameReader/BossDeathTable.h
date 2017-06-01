@@ -254,7 +254,6 @@ private:
 	void changeProgressColor( int attackPos, CColor topColor, CColor bottomColor, float currentProgress, float prevProgress );
 
 	void invalidateRow( int rowPos );
-	void invalidateRowProgress( int rowPos, float progress, float prevProgress );
 	void invalidateRowProgressDelta( int rowPos, float progress, float prevProgress );
 	int findVisualPos( int rowPos ) const;
 	float findRowOffset( int rowPos ) const;

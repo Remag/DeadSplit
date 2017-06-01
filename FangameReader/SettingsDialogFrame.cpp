@@ -98,7 +98,7 @@ void CSettingsDialogFrame::reloadProcess()
 	}
 
 	controller.SaveData();
-	CUnicodeString commandArgs = L'"' + modulePath + L"\" \"" + currentFangameName + L'"';
+	CUnicodeString commandArgs = L'"' + modulePath + L"\" \"Fangame:" + currentFangameName + L'"';
 	CProcess::CreateAndAbandon( move( commandArgs ) );
 	::ExitProcess( 0 );
 }

@@ -25,6 +25,7 @@
 #include <MouseInputHandler.h>
 #include <SessionMonitor.h>
 #include <SettingsDialogFrame.h>
+#include <AutoUpdater.h>
 
 namespace Fangame {
 
@@ -32,7 +33,8 @@ namespace Fangame {
 
 const CUnicodeView visualizerInputSection = L"Visualizer";
 CFangameVisualizerState::CFangameVisualizerState( CFangameProcessInfo _processInfo, CEventSystem& _eventSystem, CWindowSettings& _windowSettings, 
-		CAssetLoader& _assets, CFangameInputHandler& _inputHandler, CFangameDetector& _detector, CSessionMonitor& _sessionMonitor ) :
+		CAssetLoader& _assets, CFangameInputHandler& _inputHandler, CFangameDetector& _detector, CSessionMonitor& _sessionMonitor,
+		CAutoUpdater& _updater ) :
 	detector( _detector ),
 	sessionMonitor( _sessionMonitor ),
 	processInfo( move( _processInfo ) ),
@@ -40,6 +42,7 @@ CFangameVisualizerState::CFangameVisualizerState( CFangameProcessInfo _processIn
 	eventSystem( _eventSystem ),
 	windowSettings( _windowSettings ),
 	inputHandler( _inputHandler ),
+	updater( _updater ),
 	windowEventTarget( createWindowChangeEvent( _eventSystem ) ),
 	statusChangeTarget( createStatusChangeEvent( _eventSystem ) ),
 	currentFrameTime( ::GetTickCount() ),
@@ -292,6 +295,9 @@ void CFangameVisualizerState::OnStart()
 
 void CFangameVisualizerState::Update( TTime )
 {
+	if( currentTimeline->GetStatus() != BTS_Recording ) {
+		updater.Update();
+	}
 	if( !isFangameProcessActive() ) {
 		GetStateManager().PopState();
 		return;
@@ -358,6 +364,10 @@ void CFangameVisualizerState::Draw( const IRenderParameters& renderParams ) cons
 
 void CFangameVisualizerState::doDraw( const IRenderParameters& renderParams ) const
 {
+	if( visualizer == nullptr ) {
+		return;
+	}
+
 	GetRenderer().InitializeFrame();
 
 	if( visualizer->HasActiveTable() ) {
@@ -529,7 +539,7 @@ void CFangameVisualizerState::onShowSettings()
 
 	const auto resetStateAction = [this]() {
 		auto newState = CreateOwner<CFangameVisualizerState>( move( processInfo ), eventSystem, windowSettings,
-			assets, inputHandler, detector, sessionMonitor );
+			assets, inputHandler, detector, sessionMonitor, updater );
 		GetStateManager().ImmediatePopState();
 		GetStateManager().ImmediatePushState( move( newState ) );
 	};
@@ -545,7 +555,8 @@ void CFangameVisualizerState::onOpenFangame()
 	}
 
 	GetStateManager().PopState();
-	GetStateManager().PushState<CFangamePeekerState>( fangameName, eventSystem, windowSettings, assets, inputHandler, detector, sessionMonitor );
+	GetStateManager().PushState<CFangamePeekerState>( fangameName, eventSystem, windowSettings, assets, inputHandler, 
+		detector, sessionMonitor, updater );
 }
 
 void CFangameVisualizerState::updateViewCycle( float secondsPassed )

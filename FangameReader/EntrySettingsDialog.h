@@ -20,6 +20,9 @@ private:
 	CPtrOwner<CXmlAttributeEdit> nameEdit;
 	CArray<CIntegerEdit> intEdits;
 	CArray<CTimeEdit> timeEdits;
+	
+	void loadAttackStatus( const CEntryInfo& target, HWND dialogWnd );
+	void saveAttackStatus( CEntryInfo& target, HWND dialogWnd );
 };
 
 //////////////////////////////////////////////////////////////////////////

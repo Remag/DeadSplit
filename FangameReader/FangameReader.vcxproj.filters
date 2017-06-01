@@ -130,6 +130,12 @@
     <Filter Include="Resource Files\GameInfo\Bye the Bye">
       <UniqueIdentifier>{2fa6cbf0-73a6-4fbc-bd9f-7cf7f80547db}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\GameInfo\Call Me It">
+      <UniqueIdentifier>{d57f3619-4d39-451d-9bec-35b1edb03be0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\GameInfo\Crayon">
+      <UniqueIdentifier>{4da4a0fa-7536-48ae-ae79-df178d6859f4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="common.cpp">
@@ -762,6 +768,9 @@
     <None Include="FangameResources\FangameInfo\I Wanna Kill The Kamilia 3\attackAliases.ini">
       <Filter>Resource Files\GameInfo\Kamilia 3</Filter>
     </None>
+    <None Include="..\ManifestSite\index.html">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="FangameResources\TableView.xml">
@@ -781,6 +790,12 @@
     </Xml>
     <Xml Include="FangameResources\FangameInfo\I wanna bye the bye\layout.xml">
       <Filter>Resource Files\GameInfo\Bye the Bye</Filter>
+    </Xml>
+    <Xml Include="FangameResources\FangameInfo\I wanna call me it\layout.xml">
+      <Filter>Resource Files\GameInfo\Call Me It</Filter>
+    </Xml>
+    <Xml Include="FangameResources\FangameInfo\I wanna buy the crayon\layout.xml">
+      <Filter>Resource Files\GameInfo\Crayon</Filter>
     </Xml>
   </ItemGroup>
   <ItemGroup>

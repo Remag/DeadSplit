@@ -11,6 +11,8 @@ extern const CUnicodeView FanagameSaveFile;
 extern const CUnicodeView FangameLayoutFile;
 extern const CUnicodeView FangameInfoFolder;
 extern const CUnicodeView SessionFileName;
+extern const CUnicodeView UpdateTempFolder;
+extern const CUnicodeView UpdatedExeName;
 
 }
 

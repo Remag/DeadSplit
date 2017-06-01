@@ -6,10 +6,12 @@
 #include <FangameEvents.h>
 #include <WindowSettings.h>
 #include <LazyFixedStepEngine.h>
+#include <WindowUtils.h>
 #include <resource.h>
 
 #include <OpenGlRenderer.h>
 #include <WinGdiRenderer.h>
+#include <GlobalStrings.h>
 
 namespace Fangame {
 
@@ -36,6 +38,11 @@ CPtrOwner<IState> CMainApp::onInitialize( CUnicodeView commandLine )
 {
 	Relib::SetAppTitle( L"DeadSplit" );
 	auto startInfo = parseCommandLine( commandLine );
+	if( !startInfo.FangameUpdateSource.IsEmpty() ) {
+		finalizeUpdateInstall( startInfo.FangameUpdateSource, startInfo.OpenAppAfterUpdate );
+		return nullptr;
+	}
+
 	windowSettings = CreateOwner<CWindowSettings>( settingsPath );
 	const auto fps = windowSettings->GetFPS();
 	CPtrOwner<CEngine> newEngine = CreateOwner<CLazyFixedStepEngine>( fps );
@@ -43,36 +50,108 @@ CPtrOwner<IState> CMainApp::onInitialize( CUnicodeView commandLine )
 
 	initializeRenderer();
 
+	cleanupUpdater();
 	return CreateOwner<CFangameDetectorState>( eventSystem, *windowSettings, move( startInfo ) );
 }
 
-const CUnicodeView newSessionPrefix = L"NewSession:";
+const CUnicodeView fangameArgName = L"Fangame:";
+const CUnicodeView updateFromArgName = L"UpdateFrom:";
+const CUnicodeView updateOpenArgName = L"UpdateOpen:";
 CStartupInfo CMainApp::parseCommandLine( CUnicodeView commandLine )
 {
 	CStartupInfo result;
-	CUnicodePart nameArg = commandLine.TrimSpaces();
-	int startPos;
+
+
+	CStaticArray<CUnicodeString> commandArgs;
+	commandArgs.ResetSize( CAN_EnumCount );
+	int pos = 0;
+	while( pos < commandLine.Length() ) {
+		const int newPos = parseSingleArgument( pos, commandLine, commandArgs );
+		assert( newPos > pos );
+		pos = newPos;
+	}
+
+	if( !commandArgs[CAN_Fangame].IsEmpty() && FileSystem::DirAccessible( commandArgs[CAN_Fangame] ) ) {
+		result.InitialFangameName = move( commandArgs[CAN_Fangame] );
+	}
+
+	result.FangameUpdateSource = move( commandArgs[CAN_UpdateFrom] );
+	
+	const auto updateOpenValue = Value<bool>( commandArgs[CAN_UpdateOpen] );
+	result.OpenAppAfterUpdate = !updateOpenValue.IsValid() || *updateOpenValue;
+
+	return result;
+}
+
+const CEnumDictionary<TCommandArgumentName, CAN_EnumCount> commandArgNameDict {
+	{ CAN_Fangame, L"Fangame" },
+	{ CAN_UpdateFrom, L"UpdateFrom" },
+	{ CAN_UpdateOpen, L"UpdateOpen" }
+};
+int CMainApp::parseSingleArgument( int pos, CUnicodeView commandLine, CStaticArray<CUnicodeString>& argValues )
+{
+	pos = skipWhitespace( pos, commandLine );
 	wchar_t stopSymbol;
-	if( nameArg.Length() >= 2 && nameArg[0] == L'"' ) {
-		startPos = 1;
+	int startPos;
+	if( commandLine.Length() > pos && commandLine[pos] == L'"' ) {
+		startPos = pos + 1;
 		stopSymbol = L'"';
 	} else {
-		startPos = 0;
+		startPos = pos;
 		stopSymbol = L' ';
 	}
 
-	const int stopPos = nameArg.Find( stopSymbol, startPos );
+	int stopPos = commandLine.Find( stopSymbol, startPos );
+	CUnicodePart fullArg;
 	if( stopPos != NotFound ) {
-		nameArg = nameArg.Mid( startPos, stopPos - 1 ).TrimSpaces();
+		fullArg = commandLine.Mid( startPos, stopPos - startPos );
+		stopPos++;
+	} else {
+		fullArg = commandLine.Mid( startPos );
+		stopPos = commandLine.Length() - startPos;
 	}
 
-	CUnicodeString fangameName( nameArg );
-	if( FileSystem::DirAccessible( fangameName ) ) {
-		result.InitialFangameName = move( fangameName );
+	fullArg = fullArg.TrimSpaces();
+	const auto colonPos = fullArg.Find( L':' );
+	if( colonPos != NotFound ) {
+		const auto resultName = fullArg.Left( colonPos ).TrimRight();
+		const auto argNameType = commandArgNameDict.FindEnum( resultName, CAN_EnumCount );
+		if( argNameType != CAN_EnumCount ) {
+			argValues[argNameType] = fullArg.Mid( colonPos + 1 ).TrimLeft();
+		}
 	}
-	
+	return stopPos;
+}
 
-	return result;
+int CMainApp::skipWhitespace( int pos, CUnicodeView str )
+{
+	while( CUnicodeString::IsCharWhiteSpace( str[pos] ) ) {
+		pos++;
+	}
+	return pos;
+}
+
+void CMainApp::finalizeUpdateInstall( CUnicodeView updateSource, bool openAfter )
+{
+	for( ;; ) {
+		try {
+			FileSystem::Copy( GetCurrentModulePath(), updateSource );
+			break;
+		} catch( CException& ) {
+			Sleep( 500 );
+		}
+	}
+
+	if( openAfter ) {
+		CProcess::CreateAndAbandon( UnicodeStr( updateSource ) );
+	}
+}
+
+void CMainApp::cleanupUpdater()
+{
+	try {
+		FileSystem::DeleteTree( Paths::UpdateTempFolder );
+	} catch( CException& ) {}
 }
 
 void CMainApp::initializeRenderer()

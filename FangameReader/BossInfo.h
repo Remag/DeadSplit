@@ -13,6 +13,13 @@ enum TEntryChildOrder {
 	ECD_EnumCount
 };
 
+enum TAttackCurrentStatus {
+	ACS_Hidden,
+	ACS_NoProgress,
+	ACS_Shown,
+	ACS_EnumCount
+};
+
 struct CEntryStats {
 	int DeathCount = 0;
 	int PassCount = 0;
@@ -33,6 +40,7 @@ struct CEntryInfo {
 	CDynamicBitSet<> ChildrenStartAddressMask;
 	TEntryChildOrder ChildOrder = ECD_Sequential;
 	CBossInfo& Root;
+	TAttackCurrentStatus AttackStatus = ACS_Shown;
 	bool IsConsistentWithChildren = true;
 
 	explicit CEntryInfo( CXmlElement& srcElem, CBossInfo& root ) : SrcElement( srcElem ), Root( root ) {}
@@ -78,6 +86,7 @@ struct CBossInfo : public CEntryInfo {
 	explicit CBossInfo( CXmlElement& srcElem, const IFontRenderData& font ) : CEntryInfo( srcElem, *this ), BossFont( font ) {}
 };
 
+extern const CEnumDictionary<TAttackCurrentStatus, ACS_EnumCount> AttackStatusToNameDict;
 void MakeParentsConsistentWithChildren( CBossAttackInfo& entry );
 void MakeConsistentWithChildData( CBossInfo& entry );
 const CBossAttackInfo& FindAttackById( const CBossInfo& boss, int id );

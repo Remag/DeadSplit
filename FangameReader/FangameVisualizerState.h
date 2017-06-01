@@ -24,6 +24,7 @@ class CFangameInputHandler;
 class CFangameDetector;
 class CMouseInputSwitcher;
 class CSessionMonitor;
+class CAutoUpdater;
 struct CFangameProcessInfo;
 struct CBossInfo;
 struct CActionKeyInfo;
@@ -35,7 +36,8 @@ enum TReaderActionKey;
 class CFangameVisualizerState : public IState {
 public:
 	explicit CFangameVisualizerState( CFangameProcessInfo _processInfo, CEventSystem& eventSystem, CWindowSettings& windowSettings,
-		CAssetLoader& assets, CFangameInputHandler& inputHandler, CFangameDetector& detector, CSessionMonitor& sessionMonitor );
+		CAssetLoader& assets, CFangameInputHandler& inputHandler, CFangameDetector& detector, CSessionMonitor& sessionMonitor,
+		CAutoUpdater& updater );
 	~CFangameVisualizerState();
 
 	CVisualizerActionController& GetController()
@@ -95,6 +97,7 @@ private:
 	// Session monitor used to detect if emptying session counts is necessary.
 	CSessionMonitor& sessionMonitor;
 	CWindowSettings& windowSettings;
+	CAutoUpdater& updater;
 	// Responder to user actions.
 	CPtrOwner<CVisualizerActionController> actionController;
 	CPtrOwner<CFangameChangeDetector> changeDetector;

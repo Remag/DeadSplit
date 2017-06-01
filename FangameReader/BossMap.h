@@ -88,6 +88,7 @@ private:
 	void loadBossView( CXmlElement& bossElem, int bossId, const CBossAttackSaveFile& saveFile, const CIniFile& aliasMap );
 	void loadBossData( CXmlElement& bossElem, CBossInfo& bossInfo, int bossId, const CBossAttackSaveFile& saveFile );
 	TEntryChildOrder getChildAttackOrder( const CXmlElement& elem, TEntryChildOrder defaultValue ) const;
+	TAttackCurrentStatus getAttackStatus( const CXmlElement& elem ) const;
 	void addBossAttack( CXmlElement& elem, CEntryInfo& parent, CBossInfo& bossInfo, const CBossAttackSaveFile& saveFile, const CIniFile& aliasMap );
 	CBossAttackInfo& addBossAttackView( CXmlElement& elem, CEntryInfo& parent, CBossInfo& bossInfo, const CBossAttackSaveFile& saveFile, const CIniFile& aliasMap );
 	CBossAttackInfo& addBossAttackAttribs( CXmlElement& elem, CEntryInfo& parent, int attackId, CBossInfo& bossInfo, const CBossAttackSaveFile& saveFile, const CIniFile& aliasMap );

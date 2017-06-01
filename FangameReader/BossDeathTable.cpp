@@ -930,7 +930,7 @@ void CBossDeathTable::drawBackgroundRects( const IRenderParameters& renderParams
 	const auto lineHeigth = linePixelHeight;
 	const auto lineColor = windowSettings.GetSeparatorColor();
 	const auto activeLineColor = windowSettings.GetActiveSeparatorColor();
-	const auto drawCurrentBg = windowSettings.ShouldDrawCurrentAttack();
+	const auto drawCurrentBg = windowSettings.ShouldDrawCurrentAttack() && srcBossInfo.AttackStatus != ACS_Hidden;
 	const auto drawPbMark = windowSettings.ShouldDrawPBMarks();
 	const auto drawVerticalLine = dataColumnCount > 2;
 	const auto verticalLineOffset = sectionSeparatorPos;
@@ -940,9 +940,10 @@ void CBossDeathTable::drawBackgroundRects( const IRenderParameters& renderParams
 	for( int currentPos = findFirstVisibleSplit(); currentPos != NotFound; currentPos = findNextVisibleSplit( currentPos ) ) {
 
 		renderer.DrawRect( renderParams, *attackBackgroundRect, modelToClip, currentBgColor, currentBgColor );
+		const auto drawCurrentStatus = drawCurrentBg && rowList[currentPos].SrcAttack.AttackStatus != ACS_Hidden;
 
 		const auto isCurrentActive = rowList[currentPos].ProgressStatus == APS_Current;
-		const auto verticalLineColor = drawCurrentBg && isCurrentActive ? activeLineColor : lineColor;
+		const auto verticalLineColor = drawCurrentStatus && isCurrentActive ? activeLineColor : lineColor;
 
 		if( drawVerticalLine ) {
 			modelToClip( 2, 0 ) = baseModelToClip( 2, 0 ) + modelToClip( 0, 0 ) * tableVerticalScale * verticalLineOffset;
@@ -950,7 +951,7 @@ void CBossDeathTable::drawBackgroundRects( const IRenderParameters& renderParams
 			modelToClip( 2, 0 ) = baseModelToClip( 2, 0 );
 		}
 
-		if( drawCurrentBg ) {
+		if( drawCurrentStatus ) {
 			drawProgressRect( renderParams, rowList[currentPos], modelToClip );
 		}
 		if( drawPbMark ) {
@@ -958,7 +959,8 @@ void CBossDeathTable::drawBackgroundRects( const IRenderParameters& renderParams
 		}
 
 		const auto isPrevActive = rowList[prevPos].ProgressStatus == APS_Current;
-		const bool isLineActive = drawCurrentBg && ( isCurrentActive || isPrevActive );
+		const auto drawPrevStatus = drawCurrentBg && rowList[prevPos].SrcAttack.AttackStatus != ACS_Hidden;
+		const bool isLineActive = ( drawCurrentStatus && isCurrentActive ) || ( drawPrevStatus && isPrevActive );
 		const auto currentLineColor = isLineActive ? activeLineColor : lineColor; 
 		renderer.DrawLine( renderParams, *separatorLine, modelToClip, currentLineColor );
 		addMatrixVOffset( modelToClip, -lineHeigth );
@@ -981,8 +983,11 @@ void CBossDeathTable::drawProgressRect( const IRenderParameters& renderParams, c
 	}
 
 	const auto progress = drawInfo.CurrentProgress;
+	const auto drawProgress = windowSettings.ShouldDrawProgress() 
+		&& srcBossInfo.AttackStatus != ACS_NoProgress 
+		&& drawInfo.SrcAttack.AttackStatus != ACS_NoProgress;
 
-	if( windowSettings.ShouldDrawProgress() ) {
+	if( drawProgress ) {
 		modelToClip( 0, 0 ) *= progress;
 	}
 	GetRenderer().DrawRect( renderParams, *attackBackgroundRect, modelToClip, drawInfo.ProgressTopColor, drawInfo.ProgressBottomColor );
@@ -1262,7 +1267,7 @@ void CBossDeathTable::changeProgressColor( int attackPos, CColor topColor, CColo
 	if( attack.ProgressTopColor != topColor || attack.ProgressBottomColor != bottomColor ) {
 		attack.ProgressTopColor = topColor;
 		attack.ProgressBottomColor = bottomColor;
-		invalidateRowProgress( attackPos, currentProgress, prevProgress );
+		invalidateRow( attackPos );
 	} else {
 		invalidateRowProgressDelta( attackPos, currentProgress, prevProgress );
 	}
@@ -1281,26 +1286,6 @@ void CBossDeathTable::invalidateRow( int rowPos )
 	const auto rowHeight = linePixelHeight + 1;
 	const auto rowOffset = findRowOffset( visualPos ); 
 	CPixelRect rowRect( 0.0f, rowOffset + rowHeight, tableWindowSize.X(), rowOffset );
-	InvalidateWindowRect( rowRect, modelToClip );
-}
-
-void CBossDeathTable::invalidateRowProgress( int rowPos, float progress, float prevProgress )
-{
-	const int visualPos = findVisualPos( rowPos );
-	if( visualPos == NotFound ) {
-		return;
-	}
-
-	TMatrix3 modelToClip = baseModelToClip;
-	modelToClip( 1, 1 ) *= tableVerticalScale;
-
-	const auto rowHeight = linePixelHeight + 1;
-	const auto rowOffset = findRowOffset( visualPos ); 
-
-	const float currentProgressPos = tableWindowSize.X() * progress;
-	const float previousProgressPos = tableWindowSize.X() * prevProgress;
-	const auto maxPos = 1.0f * Ceil( max( currentProgressPos, previousProgressPos ) );
-	CPixelRect rowRect( 0.0f, rowOffset + rowHeight, maxPos, rowOffset );
 	InvalidateWindowRect( rowRect, modelToClip );
 }
 

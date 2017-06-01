@@ -45,6 +45,7 @@ void CGeneralSettingsDialog::SaveData()
 	windowSettings.SetAppearOnTop( getButtonCheck( IDC_AppearOnTopCheck ) );
 	windowSettings.SetUpdateRealtime( getButtonCheck( IDC_RealtimeUpdateCheck ) );
 	windowSettings.SetUseSubsplits( getButtonCheck( IDC_UseSubsplitsCheck ) );
+	windowSettings.SetAutoUpdate( getButtonCheck( IDC_AutoUpdateCheck ) );
 
 	const auto cyclePeriod = getButtonCheck( IDC_CycleCheck ) ? getEditInt( IDC_CyclePeriod ) : 0;
 	windowSettings.SetViewCyclePeriod( static_cast<float>( cyclePeriod ) );
@@ -99,6 +100,7 @@ void CGeneralSettingsDialog::fillDefaultControlData()
 	setButtonCheck( IDC_AppearOnTopCheck, windowSettings.ShouldDefaultAppearOnTop() );
 	setButtonCheck( IDC_UseSubsplitsCheck, windowSettings.ShouldDefaultUseSubsplits() );
 	setButtonCheck( IDC_RealtimeUpdateCheck, windowSettings.DefaultIsUpdateRealtime() );
+	setButtonCheck( IDC_AutoUpdateCheck, windowSettings.ShouldAutoUpdate() );
 
 	setCycleControl( windowSettings.GetDefaultCyclePeriod() );
 	setFontControl( windowSettings.GetDefaultFontName() );
@@ -136,6 +138,7 @@ void CGeneralSettingsDialog::fillControlData()
 	setButtonCheck( IDC_AppearOnTopCheck, windowSettings.ShouldAppearOnTop() );
 	setButtonCheck( IDC_UseSubsplitsCheck, windowSettings.ShouldUseSubsplits() );
 	setButtonCheck( IDC_RealtimeUpdateCheck, windowSettings.IsUpdateRealtime() );
+	setButtonCheck( IDC_AutoUpdateCheck, windowSettings.ShouldDefaultAutoUpdate() );
 
 	setCycleControl( windowSettings.GetViewCyclePeriod() );
 	setFontControl( windowSettings.GetNameFontName() );

@@ -5,6 +5,11 @@
 
 namespace Fangame {
 
+extern const CEnumDictionary<TAttackCurrentStatus, ACS_EnumCount> AttackStatusToNameDict {
+	{ ACS_Hidden, L"hidden" },
+	{ ACS_NoProgress, L"noProgress" },
+	{ ACS_Shown, L"shown" },
+};
 //////////////////////////////////////////////////////////////////////////
 
 CEntryInfo::~CEntryInfo()

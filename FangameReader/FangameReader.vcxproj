@@ -239,6 +239,7 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\ManifestSite\index.html" />
     <None Include="FangameResources\FangameInfo\I Wanna Kill The Kamilia 3\attackAliases.ini" />
     <None Include="FangameResources\Shaders\imageDrawing.frag" />
     <None Include="FangameResources\Shaders\imageDrawing.vert" />
@@ -246,7 +247,9 @@
     <None Include="FangameResources\userSettings.ini" />
   </ItemGroup>
   <ItemGroup>
+    <Xml Include="FangameResources\FangameInfo\I wanna buy the crayon\layout.xml" />
     <Xml Include="FangameResources\FangameInfo\I wanna bye the bye\layout.xml" />
+    <Xml Include="FangameResources\FangameInfo\I wanna call me it\layout.xml" />
     <Xml Include="FangameResources\FangameInfo\I Wanna Kill The Kamilia 3\layout.xml">
       <SubType>Designer</SubType>
     </Xml>

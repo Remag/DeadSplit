@@ -18,13 +18,15 @@
 #include <FangameVisualizerState.h>
 #include <SessionMonitor.h>
 #include <SettingsDialogFrame.h>
+#include <AutoUpdater.h>
 
 namespace Fangame {
 
 //////////////////////////////////////////////////////////////////////////
 
 CFangamePeekerState::CFangamePeekerState( CUnicodeView _fangameFolder, CEventSystem& _eventSystem, CWindowSettings& _windowSettings, 
-		CAssetLoader& _assets, CFangameInputHandler& _inputHandler, CFangameDetector& _detector, CSessionMonitor& _sessionMonitor ) :
+		CAssetLoader& _assets, CFangameInputHandler& _inputHandler, CFangameDetector& _detector, CSessionMonitor& _sessionMonitor,
+		CAutoUpdater& _updater ) :
 	fangameFolder( _fangameFolder ),
 	sessionMonitor( _sessionMonitor ),
 	detector( _detector ),
@@ -32,6 +34,7 @@ CFangamePeekerState::CFangamePeekerState( CUnicodeView _fangameFolder, CEventSys
 	windowSettings( _windowSettings ),
 	assets( _assets ),
 	inputHandler( _inputHandler ),
+	updater( _updater ),
 	windowEventTarget( createWindowChangeEvent( _eventSystem ) )
 {
 	actionController = CreateOwner<CPeekerActionController>( *this );
@@ -125,7 +128,8 @@ void CFangamePeekerState::ShowSettings()
 	}
 	
 	GetStateManager().PopState();
-	GetStateManager().PushState<CFangamePeekerState>( fangameFolder, eventSystem, windowSettings, assets, inputHandler, detector, sessionMonitor );
+	GetStateManager().PushState<CFangamePeekerState>( fangameFolder, eventSystem, windowSettings, assets, inputHandler,
+		detector, sessionMonitor, updater );
 }
 
 void CFangamePeekerState::OpenFangame()
@@ -137,7 +141,8 @@ void CFangamePeekerState::OpenFangame()
 	}
 
 	GetStateManager().PopState();
-	GetStateManager().PushState<CFangamePeekerState>( fangameName, eventSystem, windowSettings, assets, inputHandler, detector, sessionMonitor );
+	GetStateManager().PushState<CFangamePeekerState>( fangameName, eventSystem, windowSettings, assets, inputHandler,
+		detector, sessionMonitor, updater );
 }
 
 void CFangamePeekerState::SaveData()
@@ -158,6 +163,7 @@ void CFangamePeekerState::OnStart()
 
 void CFangamePeekerState::Update( TTime )
 {
+	updater.Update();
 	if( checkFangameProcessActivation() ) {
 		return;
 	}
@@ -185,7 +191,8 @@ void CFangamePeekerState::initializeVisualizer( CFangameProcessInfo processInfo 
 {
 	GetStateManager().PopState();
 	detector.SuspendSearch();
-	GetStateManager().PushState<CFangameVisualizerState>( move( processInfo ), eventSystem, windowSettings, assets, inputHandler, detector, sessionMonitor );
+	GetStateManager().PushState<CFangameVisualizerState>( move( processInfo ), eventSystem, windowSettings, assets, inputHandler,
+		detector, sessionMonitor, updater );
 }
 
 void CFangamePeekerState::Draw( const IRenderParameters& renderParams ) const

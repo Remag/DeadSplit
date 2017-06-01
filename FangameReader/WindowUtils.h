@@ -7,6 +7,7 @@ namespace Fangame {
 void GetWindowTitle( HWND windowHandle, CUnicodeString& result );
 CUnicodeString GetModuleFileName( HANDLE processHandle );
 CUnicodeString GetFullModuleFilePath( CUnicodeView relFilePath, HANDLE processHandle );
+CUnicodeString GetCurrentModulePath();
 COptional<int> ParseDeathCount( CUnicodeView title );
 void InvalidateWindowRect( CPixelRect rect, const TMatrix3& modelToClip );
 void StartMouseLeaveTracking();

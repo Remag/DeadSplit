@@ -16,6 +16,7 @@ class CDetectorMouseController;
 class CDetectorActionController;
 class CMouseInputSwitcher;
 class CSessionMonitor;
+class CAutoUpdater;
 struct CStartupInfo;
 //////////////////////////////////////////////////////////////////////////
 
@@ -48,6 +49,7 @@ private:
 	CPtrOwner<CAssetLoader> assets;
 	CPtrOwner<CFangameDetector> detector;
 	CPtrOwner<CTextInfoPanel> scanningPanel;
+	CPtrOwner<CAutoUpdater> updater;
 	HWND lastDetectWnd = nullptr;
 	CEventSystem& eventSystem;
 	CWindowSettings& windowSettings;
