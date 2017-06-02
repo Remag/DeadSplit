@@ -65,7 +65,6 @@ void CSettingsDialogData::saveAttackStatus( CEntryInfo& target, HWND dialogWnd )
 {
 	const auto hiddenControl = ::GetDlgItem( dialogWnd, IDC_AttackStatusHidden );
 	const auto noProgressControl = ::GetDlgItem( dialogWnd, IDC_AttackStatusNoProgress );
-	const auto shownControl = ::GetDlgItem( dialogWnd, IDC_AttackStatusShown );
 	const auto newStatus = Button_GetCheck( hiddenControl ) == TRUE ? ACS_Hidden : Button_GetCheck( noProgressControl ) == TRUE ? ACS_NoProgress : ACS_Shown;
 	target.AttackStatus = newStatus;
 	target.SrcElement.SetAttributeValueText( attackStatusAttrib, UnicodeStr( AttackStatusToNameDict[newStatus] ) );

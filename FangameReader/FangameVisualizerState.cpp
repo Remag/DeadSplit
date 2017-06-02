@@ -532,7 +532,7 @@ void CFangameVisualizerState::onMakeScreenshot()
 
 void CFangameVisualizerState::onShowSettings()
 {
-	CSettingsDialogFrame settingsDlg( processInfo.BossInfoPath, windowSettings, *actionController );
+	CSettingsDialogFrame settingsDlg( processInfo.BossInfoPath, windowSettings, *actionController, sessionMonitor );
 	if( !settingsDlg.Show() ) {
 		return;
 	}

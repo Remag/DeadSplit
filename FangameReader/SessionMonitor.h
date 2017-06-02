@@ -18,9 +18,14 @@ public:
 	// Add a new fangame or return false is the fangame was already opened during the session.
 	bool InitializeFangame( CUnicodeView fangamePath );
 
+	// Set the session preservation flag. When the flag is set the session will not be closed on exit.
+	void PreserveCurrentSession()
+		{ sessionPreserveFlag = true; }
+
 private:
 	const CWindowSettings& windowSettings;
 	CHashTable<CUnicodeString> sessionFangames;
+	bool sessionPreserveFlag = false;
 
 	void initializeSessionFromFile( CUnicodeView fileName );
 

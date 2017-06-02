@@ -26,7 +26,7 @@ void CSessionMonitor::initializeSessionFromFile( CUnicodeView fileName )
 
 CSessionMonitor::~CSessionMonitor()
 {
-	if( windowSettings.ShouldCollapseSessionOnQuit() ) {
+	if( !sessionPreserveFlag && windowSettings.ShouldCollapseSessionOnQuit() ) {
 		ClearSession();
 	}
 }

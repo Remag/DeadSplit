@@ -4,6 +4,7 @@ namespace Fangame {
 
 class CAutoUpdateDialog;
 class CWindowSettings;
+class CSessionMonitor;
 //////////////////////////////////////////////////////////////////////////
 
 enum TAutoUpdateStatus {
@@ -33,11 +34,13 @@ public:
 // Mechanism for fetching application update data from the internet.
 class CAutoUpdater {
 public:
-	explicit CAutoUpdater( CWindowSettings& windowSettings );
+	explicit CAutoUpdater( CWindowSettings& windowSettings, CSessionMonitor& _monitor );
 	~CAutoUpdater();
 
 	static constexpr UINT GetStatusChangedMsg()
 		{ return WM_APP; }
+	static constexpr UINT GetUpdateReadyMsg()
+		{ return WM_APP + 1; }
 
 	// Finalize update installation.
 	void FinalizeUpdate();
@@ -59,12 +62,15 @@ public:
 	void CloseUpdate();
 	// Open the prompt informing the user of a new update.
 	void OpenUpdateDialog();
+	// Inform the updater that the dialog has received the update ready status.
+	void SetUpdateReadyStatus();
 
-	// Check for the update thread status. Return false if the update is ready and the application needs to be closed.
-	bool Update();
+	// Check for the update thread status.
+	void Update();
 
 private:
 	CWindowSettings& windowSettings;
+	CSessionMonitor& monitor;
 	CPtrOwner<CAutoUpdateDialog> dialog;
 	CThread connectionThread;
 	CAtomic<TAutoUpdateStatus> updateStatus{ AUS_Initial };
@@ -86,6 +92,7 @@ private:
 	void doFetchManifest();
 	int fetchManifestAction();
 	int fetchUpdateAction();
+	void checkDataConsistency();
 	void parseManifestData();
 	int parseManifestVersion( CStringPart manifestStr );
 	int skipWhitespace( int pos, CStringPart str ) const;

@@ -21,6 +21,7 @@ private:
 	void onUpdateOnExit();
 	void onUpdateCancel();
 	void onUpdateStatusChange( int wParam );
+	void onUpdateReady();
 	void closeDialogWindow();
 	void initializeDialogData( HWND wnd );
 	INT_PTR processControl( WPARAM wParam );

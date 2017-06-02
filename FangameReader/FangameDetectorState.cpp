@@ -36,7 +36,7 @@ CFangameDetectorState::CFangameDetectorState( CEventSystem& _eventSystem, CWindo
 	assets( CreateOwner<CAssetLoader>() ),
 	detector( CreateOwner<CFangameDetector>( fangameInfoFolder ) ),
 	inputHandler( CreateOwner<CFangameInputHandler>( _windowSettings ) ),
-	updater( CreateOwner<CAutoUpdater>( _windowSettings ) ),
+	updater( CreateOwner<CAutoUpdater>( _windowSettings, *sessionMonitor ) ),
 	eventSystem( _eventSystem ),
 	windowSettings( _windowSettings ),
 	windowChangeTarget( createWindowChangeEvent( _eventSystem ) )
@@ -87,6 +87,7 @@ void CFangameDetectorState::initTextPanel()
 
 CFangameDetectorState::~CFangameDetectorState()
 {
+	updater->FinalizeUpdate();
 }
 
 void CFangameDetectorState::OnStart()
@@ -211,7 +212,7 @@ void CFangameDetectorState::ClearIconHighlight()
 
 void CFangameDetectorState::ShowSettings()
 {
-	CSettingsDialogFrame settingsDlg( CUnicodeView(), windowSettings, *actionController );
+	CSettingsDialogFrame settingsDlg( CUnicodeView(), windowSettings, *actionController, *sessionMonitor );
 	settingsDlg.Show();
 	initTextPanel();
 	::InvalidateRect( GetMainWindow().Handle(), nullptr, false );

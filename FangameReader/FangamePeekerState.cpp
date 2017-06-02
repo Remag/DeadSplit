@@ -122,7 +122,7 @@ void CFangamePeekerState::ClearTable( HWND foregroundWnd )
 
 void CFangamePeekerState::ShowSettings()
 {
-	CSettingsDialogFrame settingsDlg( fangameFolder, windowSettings, *actionController );
+	CSettingsDialogFrame settingsDlg( fangameFolder, windowSettings, *actionController, sessionMonitor );
 	if( !settingsDlg.Show() ) {
 		return;
 	}

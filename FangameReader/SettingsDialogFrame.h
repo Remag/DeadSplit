@@ -8,18 +8,20 @@ class CWindowSettings;
 class CGeneralSettingsDialog;
 class CHotkeySettingsDialog;
 class CColorSettingsDialog;
+class CSessionMonitor;
 //////////////////////////////////////////////////////////////////////////
 
 // Modal dialog that hosts child settings dialogs.
 class CSettingsDialogFrame : public CSingleton<CSettingsDialogFrame> {
 public:
-	CSettingsDialogFrame( CUnicodeView currentFangameName, CWindowSettings& windowSettings, IUserActionController& controller );
+	CSettingsDialogFrame( CUnicodeView currentFangameName, CWindowSettings& windowSettings, IUserActionController& controller, CSessionMonitor& monitor );
 	~CSettingsDialogFrame();
 
 	bool Show();
 
 private:
 	CUnicodeView currentFangameName;
+	CSessionMonitor& monitor;
 	CWindowSettings& windowSettings;
 	IUserActionController& controller;
 	CPtrOwner<CGeneralSettingsDialog> generalSettings;

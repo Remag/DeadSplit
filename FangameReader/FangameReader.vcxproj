@@ -404,13 +404,13 @@
       <StringPooling>true</StringPooling>
       <TreatWarningAsError>true</TreatWarningAsError>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <PreprocessorDefinitions>_UNICODE;UNICODE;USE_STATIC_RELIB;USE_STATIC_GIN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_UNICODE;UNICODE;USE_STATIC_RELIB;USE_STATIC_GIN;CURL_STATICLIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(OutDir);$(ReBuildRoot)\ReversedSolution\GraphicsInversed\Lib\$(Configuration);$(ReBuildRoot)\ReversedSolution\ReversedLibrary\Lib\$(Configuration);$(ReBuildRoot)\ReversedSolution\FreeType\Lib\StaticRelease;$(ReBuildRoot)\ReversedSolution\LibVorbis\Lib\StaticRelease;$(ReBuildRoot)\ReversedSolution\LibOGG\Lib\StaticRelease;$(ReBuildRoot)\ReversedSolution\GlLoad\Lib\StaticRelease;$(ReBuildRoot)\ReversedSolution\OpenAL\Lib\Release;$(ReBuildRoot)\ReversedSolution\LibPNG\Lib\StaticRelease;$(ReBuildRoot)\ReversedSolution\LibCurl\Lib\StaticRelease;</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(OutDir);$(ReBuildRoot)\ReversedSolution\GraphicsInversed\Lib\$(Configuration);$(ReBuildRoot)\ReversedSolution\ReversedLibrary\Lib\$(Configuration);$(ReBuildRoot)\ReversedSolution\FreeType\Lib\StaticRelease;$(ReBuildRoot)\ReversedSolution\LibVorbis\Lib\StaticRelease;$(ReBuildRoot)\ReversedSolution\LibOGG\Lib\StaticRelease;$(ReBuildRoot)\ReversedSolution\GlLoad\Lib\StaticRelease;$(ReBuildRoot)\ReversedSolution\OpenAL\Lib\Release;$(ReBuildRoot)\ReversedSolution\LibPNG\Lib\StaticRelease;$(ReBuildRoot)\ReversedSolution\LibCurl\Lib\$(Configuration);</AdditionalLibraryDirectories>
       <EntryPointSymbol>wWinMainCRTStartup</EntryPointSymbol>
     </Link>
     <CustomBuildStep>

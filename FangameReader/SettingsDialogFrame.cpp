@@ -8,6 +8,8 @@
 #include <HotkeySettingsDialog.h>
 #include <UserActionController.h>
 #include <WindowSettings.h>
+#include <WindowUtils.h>
+#include <SessionMonitor.h>
 
 #include <resource.h>
 #include <CommCtrl.h>
@@ -16,8 +18,9 @@ namespace Fangame {
 
 //////////////////////////////////////////////////////////////////////////
 
-CSettingsDialogFrame::CSettingsDialogFrame( CUnicodeView _currentFangameName, CWindowSettings& _windowSettings, IUserActionController& _controller ) :
+CSettingsDialogFrame::CSettingsDialogFrame( CUnicodeView _currentFangameName, CWindowSettings& _windowSettings, IUserActionController& _controller, CSessionMonitor& _monitor ) :
 	windowSettings( _windowSettings ),
+	monitor( _monitor ),
 	controller( _controller ),
 	currentFangameName( _currentFangameName )
 {
@@ -85,22 +88,12 @@ void CSettingsDialogFrame::saveDialogData()
 
 void CSettingsDialogFrame::reloadProcess()
 {
-	const auto currentModule = ::GetModuleHandle( nullptr );
-	CUnicodeString modulePath;
-	int pathSize = MAX_PATH;
-	for( ;; ) {
-		auto pathBuffer = modulePath.CreateRawBuffer( pathSize );
-		const int writeSize = ::GetModuleFileName( currentModule, pathBuffer.Ptr(), pathSize );
-		if( writeSize < pathSize ) {
-			break;
-		}
-		pathSize *= 2;
-	}
-
+	const CUnicodeString modulePath = GetCurrentModulePath();
 	controller.SaveData();
 	CUnicodeString commandArgs = L'"' + modulePath + L"\" \"Fangame:" + currentFangameName + L'"';
 	CProcess::CreateAndAbandon( move( commandArgs ) );
-	::ExitProcess( 0 );
+	monitor.PreserveCurrentSession();
+	GetMainWindow().Close();
 }
 
 void CSettingsDialogFrame::restoreDefaultSettings()

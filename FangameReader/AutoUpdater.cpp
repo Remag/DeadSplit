@@ -4,6 +4,7 @@
 #include <AutoUpdater.h>
 #include <AutoUpdateDialog.h>
 #include <WindowSettings.h>
+#include <SessionMonitor.h>
 #include <GlobalStrings.h>
 #include <WindowUtils.h>
 
@@ -18,8 +19,9 @@ CUnicodeString CManifestParseException::GetMessageText() const
 
 //////////////////////////////////////////////////////////////////////////
 
-CAutoUpdater::CAutoUpdater( CWindowSettings& _windowSettings ) :
+CAutoUpdater::CAutoUpdater( CWindowSettings& _windowSettings, CSessionMonitor& _monitor ) :
 	windowSettings( _windowSettings ),
+	monitor( _monitor ),
 	dialog( CreateOwner<CAutoUpdateDialog>( *this, _windowSettings ) )
 {
 }
@@ -217,11 +219,11 @@ void CAutoUpdater::parseManifestUrl( int pos, CStringPart manifestStr )
 	pos = skipWhitespace( pos, manifestStr );
 	const auto length = manifestStr.Length();
 	const int startPos = pos;
-	while( pos < length && !CString::IsCharWhiteSpace( manifestStr[pos] ) && manifestStr[pos] != L'/' ) {
+	while( pos < length && !CString::IsCharWhiteSpace( manifestStr[pos] ) && manifestStr[pos] != L'/' && manifestStr[pos] != L'<' ) {
 		pos++;
 	}
 	const auto potentialDomainPos = pos;
-	while( pos < length && !CString::IsCharWhiteSpace( manifestStr[pos] ) ) {
+	while( pos < length && !CString::IsCharWhiteSpace( manifestStr[pos] ) && manifestStr[pos] != L'<' ) {
 		pos++;
 	}
 	const auto domainPos = potentialDomainPos < length && manifestStr[potentialDomainPos] == L'/' ? potentialDomainPos : pos;
@@ -250,7 +252,7 @@ void CAutoUpdater::DownloadUpdate()
 	const auto currentStatus = updateStatus.Load();
 	assert( currentStatus == AUS_UpdateDialog );
 	updateStatus.Store( AUS_FetchingUpdate );
-	connectionThread.Start( &CAutoUpdater::fetchUpdateAction, this );
+	connectionThread = CThread( &CAutoUpdater::fetchUpdateAction, this );
 }
 
 int CAutoUpdater::fetchUpdateAction()
@@ -259,13 +261,29 @@ int CAutoUpdater::fetchUpdateAction()
 		connectionFile.SetUrl( manifestData.UpdateUrl );
 		rawUpdateData.Empty();
 		connectionFile.DownloadFile( rawUpdateData );
-		changeStatusAndNotify( AUS_UpdateReady );
+		checkDataConsistency();
 		
 	} catch( CException& ) {
 		changeStatusAndNotify( AUS_UpdateFailed );
 	}
 
 	return 0;
+}
+
+void CAutoUpdater::checkDataConsistency()
+{
+	if( rawUpdateData.Size() < sizeof( int ) ) {
+		changeStatusAndNotify( AUS_UpdateFailed );
+		return;
+	}
+	const int magicNumber = *reinterpret_cast<int*>( rawUpdateData.Ptr() );
+	if( magicNumber != CFileCollection::GetMagicNumber() ) {
+		changeStatusAndNotify( AUS_UpdateFailed );
+	} else {
+		for( auto wnd : notifyListeners ) {
+			::PostMessage( wnd, GetUpdateReadyMsg(), 0, 0 );
+		}
+	}
 }
 
 void CAutoUpdater::DownloadOnExit()
@@ -278,14 +296,13 @@ void CAutoUpdater::DownloadOnExit()
 void CAutoUpdater::CloseUpdate()
 {
 	const auto currentStatus = updateStatus.Load();
-	assert( currentStatus == AUS_UpdateDialog );
 	updateStatus.Store( AUS_UpdateClosed );
 }
 
-bool CAutoUpdater::Update()
+void CAutoUpdater::Update()
 {
 	if( !windowSettings.ShouldAutoUpdate() ) {
-		return true;
+		return;
 	}
 
 	switch( updateStatus.Load() ) {
@@ -306,10 +323,10 @@ bool CAutoUpdater::Update()
 			OpenUpdateDialog();
 			break;
 		case AUS_UpdateReady:
-			return false;
+			monitor.PreserveCurrentSession();
+			GetMainWindow().Close();
+			break;
 	}
-
-	return true;
 }
 
 void CAutoUpdater::OpenUpdateDialog()
@@ -318,6 +335,11 @@ void CAutoUpdater::OpenUpdateDialog()
 	assert( currentStatus == AUS_ManifestNew );
 	updateStatus.Store( AUS_UpdateDialog );
 	dialog->Open();
+}
+
+void CAutoUpdater::SetUpdateReadyStatus()
+{
+	changeStatusAndNotify( AUS_UpdateReady );
 }
 
 //////////////////////////////////////////////////////////////////////////
