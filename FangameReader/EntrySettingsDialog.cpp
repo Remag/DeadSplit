@@ -7,6 +7,7 @@
 #include <BossInfo.h>
 #include <GlobalStrings.h>
 #include <WindowUtils.h>
+#include <UserAliasFile.h>
 #include <resource.h>
 #include <Commctrl.h>
 #include <windowsx.h>
@@ -15,9 +16,10 @@ namespace Fangame {
 
 //////////////////////////////////////////////////////////////////////////
 
-CSettingsDialogData::CSettingsDialogData( CEntryInfo& targetEntry, HWND dialogWnd, CUnicodeView nameAttrib )
+const CUnicodeView nameAliasAttrib = L"nameAlias";
+CSettingsDialogData::CSettingsDialogData( CUserAliasFile& _aliases, CEntryInfo& targetEntry, HWND dialogWnd ) :
+	aliases( _aliases )
 {
-	nameEdit = CreateOwner<CXmlAttributeEdit>( IDC_Name, targetEntry.SrcElement, nameAttrib, dialogWnd );
 	intEdits.Add( IDC_SessionDeaths, targetEntry.SessionStats.DeathCount, dialogWnd );
 	intEdits.Add( IDC_TotalDeaths, targetEntry.TotalStats.DeathCount, dialogWnd );
 	intEdits.Add( IDC_SessionPasses, targetEntry.SessionStats.PassCount, dialogWnd );
@@ -30,6 +32,7 @@ CSettingsDialogData::CSettingsDialogData( CEntryInfo& targetEntry, HWND dialogWn
 	timeEdits.Add( IDC_SessionHours, IDC_SessionMinutes, IDC_SessionSeconds, targetEntry.SessionStats.Time, dialogWnd );
 	timeEdits.Add( IDC_TotalHours, IDC_TotalMinutes, IDC_TotalSeconds, targetEntry.TotalStats.Time, dialogWnd );
 	loadAttackStatus( targetEntry, dialogWnd );
+	loadEntryName( targetEntry, dialogWnd );
 }
 
 CSettingsDialogData::~CSettingsDialogData()
@@ -39,8 +42,6 @@ CSettingsDialogData::~CSettingsDialogData()
 
 void CSettingsDialogData::SaveChanges( CEntryInfo& targetEntry, HWND dialogWnd )
 {
-	nameEdit->SaveChanges( dialogWnd );
-	targetEntry.VisualName = nameEdit->GetTargetValue();
 	for( auto& edit : intEdits ) {
 		edit.SaveChanges( dialogWnd );
 	}
@@ -49,6 +50,8 @@ void CSettingsDialogData::SaveChanges( CEntryInfo& targetEntry, HWND dialogWnd )
 	}
 
 	saveAttackStatus( targetEntry, dialogWnd );
+	saveEntryName( targetEntry, dialogWnd );
+	aliases.SaveChanges();
 }
 
 
@@ -60,6 +63,13 @@ void CSettingsDialogData::loadAttackStatus( const CEntryInfo& target, HWND dialo
 	Button_SetCheck( targetControl, 1 );
 }
 
+void CSettingsDialogData::loadEntryName( const CEntryInfo& target, HWND dialogWnd )
+{
+	const CUnicodeView entryName = target.UserVisualName;
+	const auto targetControl = ::GetDlgItem( dialogWnd, IDC_Name );
+	::SetWindowText( targetControl, entryName.Ptr() );
+}
+
 const CUnicodeView attackStatusAttrib = L"currentStatus";
 void CSettingsDialogData::saveAttackStatus( CEntryInfo& target, HWND dialogWnd )
 {
@@ -67,7 +77,23 @@ void CSettingsDialogData::saveAttackStatus( CEntryInfo& target, HWND dialogWnd )
 	const auto noProgressControl = ::GetDlgItem( dialogWnd, IDC_AttackStatusNoProgress );
 	const auto newStatus = Button_GetCheck( hiddenControl ) == TRUE ? ACS_Hidden : Button_GetCheck( noProgressControl ) == TRUE ? ACS_NoProgress : ACS_Shown;
 	target.AttackStatus = newStatus;
-	target.SrcElement.SetAttributeValueText( attackStatusAttrib, UnicodeStr( AttackStatusToNameDict[newStatus] ) );
+
+	if( &target.Root == &target ) {
+		aliases.SetUserBossStatus( target.KeyName, newStatus );
+	} else {
+		aliases.SetUserAttackStatus( target.Root.KeyName, target.KeyName, newStatus );
+	}
+}
+
+void CSettingsDialogData::saveEntryName( CEntryInfo& target, HWND dialogWnd )
+{
+	const auto text = GetWindowControlText( dialogWnd, IDC_Name );
+	if( &target.Root == &target ) {
+		aliases.SetUserBossName( target.KeyName, text );
+	} else {
+		aliases.SetUserAttackName( target.Root.KeyName, target.KeyName, text );
+	}
+	target.UserVisualName = text;
 }
 
 void CEntrySettingsDialog::openDialogBox( int dialogId )

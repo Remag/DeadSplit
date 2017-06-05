@@ -70,9 +70,14 @@ bool CChangingFile::tryObtainFullFileName()
 
 COptional<CFile> CChangingFile::createOpenFile()
 {
-	assert( !fullPath.IsEmpty() );
-	CFile result( fullPath, CFile::OF_Read | CFile::OF_ShareDenyNone );
-	return CreateOptional( move( result ) );
+	try {
+		assert( !fullPath.IsEmpty() );
+		CFile result( fullPath, CFile::OF_Read | CFile::OF_ShareDenyNone );
+		return CreateOptional( move( result ) );
+	} catch( CException& ) {
+		// Sharing violation, most likely.
+		return COptional<CFile>();
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////

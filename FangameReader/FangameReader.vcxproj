@@ -105,6 +105,7 @@
     <ClCompile Include="GlGradientRect.cpp" />
     <ClCompile Include="TextInfoPanel.cpp" />
     <ClCompile Include="GlTexturedQuad.cpp" />
+    <ClCompile Include="UserAliasFile.cpp" />
     <ClCompile Include="ValueGetter.cpp" />
     <ClCompile Include="VisualizerActionController.cpp" />
     <ClCompile Include="VisualizerMouseController.cpp" />
@@ -146,6 +147,7 @@
     <ClInclude Include="SettingsDialogFrame.h" />
     <ClInclude Include="SolidBrush.h" />
     <ClInclude Include="UserActionController.h" />
+    <ClInclude Include="UserAliasFile.h" />
     <ClInclude Include="VisualizerActionController.h" />
     <ClInclude Include="VisualizerMouseController.h" />
     <ClInclude Include="ExpressionValueGetter.h" />
@@ -244,6 +246,7 @@
     <None Include="FangameResources\Shaders\imageDrawing.frag" />
     <None Include="FangameResources\Shaders\imageDrawing.vert" />
     <None Include="FangameResources\Shaders\primitiveDrawing.frag" />
+    <None Include="FangameResources\Update.new.txt" />
     <None Include="FangameResources\userSettings.ini" />
   </ItemGroup>
   <ItemGroup>

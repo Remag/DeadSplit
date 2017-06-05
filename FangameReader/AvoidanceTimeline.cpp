@@ -26,6 +26,7 @@ CAvoidanceTimeline::CAvoidanceTimeline( const CFangameProcessInfo& processInfo, 
 {
 	recordIcon = CreateOwner<CRecordStatusIcon>();
 	bossChildrenExpansion = CreateOwner<CAddressSearchExpansion>();
+	bossStartTime = ::GetTickCount();
 }
 
 void CAvoidanceTimeline::EmptyBossData()
@@ -145,19 +146,55 @@ bool CAvoidanceTimeline::tryFinilizeAttack( const CBossAttackInfo& attack )
 		return false;
 	}
 
-	assert( attacksTimeline.Size() > attackId );
-	auto& targetAttack = attacksTimeline[attackId];
-	assert( targetAttack.HasStarted );
-	targetAttack.HasFinished = true;
-	targetAttack.EndTime = visualizer.GetCurrentFrameTime();
+	stopAttackTimer( attackId );
 	deathTable->EndAttack( attackId );
-	attackEndExpansions[attackId] = CAddressSearchExpansion{};
-	attackChildrenExpansions[attackId] = CAddressSearchExpansion{};
 
 	for( const auto& child : attack.Children ) {
 		tryFinilizeAttack( child );
 	}
 	return true;
+}
+
+void CAvoidanceTimeline::PauseBossAttack( int attackId )
+{
+	if( status != BTS_Recording ) {
+		return;
+	}
+
+	const auto& attack = FindAttackById( *bossInfo, attackId );
+	if( tryPauseAttack( attack ) ) {
+		events.Notify( CBossAttackEndEvent( visualizer, attack ) );
+		if( attack.NotifyAddressChangeOnEnd ) {
+			visualizer.GetChangeDetector().ResendCurrentAddressChanges();
+		}
+	}
+}
+
+bool CAvoidanceTimeline::tryPauseAttack( const CBossAttackInfo& attack )
+{
+	const auto attackId = attack.EntryId;
+	if( !IsAttackCurrent( attackId ) ) {
+		return false;
+	}
+
+	stopAttackTimer( attackId );
+	deathTable->PauseAttack( attackId );
+
+	for( const auto& child : attack.Children ) {
+		tryPauseAttack( child );
+	}
+	return true;
+}
+
+void CAvoidanceTimeline::stopAttackTimer( int attackId )
+{
+	assert( attacksTimeline.Size() > attackId );
+	auto& targetAttack = attacksTimeline[attackId];
+	assert( targetAttack.HasStarted );
+	targetAttack.HasFinished = true;
+	targetAttack.EndTime = visualizer.GetCurrentFrameTime();
+	attackEndExpansions[attackId] = CAddressSearchExpansion{};
+	attackChildrenExpansions[attackId] = CAddressSearchExpansion{};
 }
 
 void CAvoidanceTimeline::AbortBossAttack( int attackId )
@@ -298,17 +335,18 @@ void CAvoidanceTimeline::TogglePauseRecording()
 	PauseRecording( status != BTS_Paused );
 }
 
+const auto babyRageFadeTime = 3.0f;
 void CAvoidanceTimeline::UpdateStatus( DWORD currentTicks )
 {
 	events.Notify( CUpdateEvent( visualizer, currentTicks ) );
 
-	if( status != BTS_Recording ) {
-		return;
+	const auto timePasseed = getTimeDelta( currentTicks, lastRestartTime );
+	if( timePasseed > babyRageFadeTime ) {
+		recordIcon->EmptyBabyRage();
 	}
 
-	const auto timePasseed = getTimeDelta( currentTicks, bossStartTime );
-	if( timePasseed > babyRagePeriod ) {
-		recordIcon->EmptyBabyRage();
+	if( status != BTS_Recording ) {
+		return;
 	}
 
 	const int currentDeaths = getCurrentDeathCount();

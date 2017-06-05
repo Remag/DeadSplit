@@ -5,24 +5,27 @@ namespace Fangame {
 class CXmlAttributeEdit;
 class CIntegerEdit;
 class CTimeEdit;
+class CUserAliasFile;
 struct CEntryInfo;
 //////////////////////////////////////////////////////////////////////////
 
 // Common settings dialog controls.
 class CSettingsDialogData {
 public:
-	explicit CSettingsDialogData( CEntryInfo& targetEntry, HWND dialogWnd, CUnicodeView nameAttrib );
+	explicit CSettingsDialogData( CUserAliasFile& aliases, CEntryInfo& targetEntry, HWND dialogWnd );
 	virtual ~CSettingsDialogData();
 
 	void SaveChanges( CEntryInfo& targetEntry, HWND dialogWnd );
 
 private:
-	CPtrOwner<CXmlAttributeEdit> nameEdit;
+	CUserAliasFile& aliases;
 	CArray<CIntegerEdit> intEdits;
 	CArray<CTimeEdit> timeEdits;
 	
 	void loadAttackStatus( const CEntryInfo& target, HWND dialogWnd );
+	void loadEntryName( const CEntryInfo& target, HWND dialogWnd );
 	void saveAttackStatus( CEntryInfo& target, HWND dialogWnd );
+	void saveEntryName( CEntryInfo& target, HWND dialogWnd );
 };
 
 //////////////////////////////////////////////////////////////////////////

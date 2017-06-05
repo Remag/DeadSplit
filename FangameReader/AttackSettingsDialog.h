@@ -10,24 +10,27 @@ struct CBossAttackInfo;
 
 class CAttackDialogData {
 public:
-	explicit CAttackDialogData( CBossAttackInfo& target, HWND dialogWnd );
+	explicit CAttackDialogData( CUserAliasFile& aliases, CBossAttackInfo& target, HWND dialogWnd );
 	~CAttackDialogData();
 
 	void SaveChanges( CAssetLoader& assets, CBossAttackInfo& target, HWND dialogWnd );
 	void SetIconPath( CBossAttackInfo& target, CUnicodeString newPath, HWND dialogWnd );
 
 private:
+	CUserAliasFile& aliases;
 	CPtrOwner<CSettingsDialogData> commonData;
-	CPtrOwner<CXmlAttributeEdit> iconName;
 	CPtrOwner<CDoubleSlider> sessionPB;
 	CPtrOwner<CDoubleSlider> totalPB;
+
+	void loadIconName( CBossAttackInfo& target, HWND dialogWnd );
+	void saveIconName( CAssetLoader& assets, CBossAttackInfo& target, HWND dialogWnd );
 };
 
 //////////////////////////////////////////////////////////////////////////
 
 class CAttackSettingsDialog : public CEntrySettingsDialog {
 public:
-	explicit CAttackSettingsDialog( CBossAttackInfo& targetInfo, CAssetLoader& assets );
+	explicit CAttackSettingsDialog( CUserAliasFile& aliases, CBossAttackInfo& targetInfo, CAssetLoader& assets );
 
 	// Open a modal dialog box with attack settings. Control does not return until the box is closed by the user.
 	// Returns true if changes to the attack have been saved.
@@ -37,6 +40,7 @@ public:
 	void SetIconPath( CUnicodeString newPath, HWND dialogWnd );
 
 private:
+	CUserAliasFile& aliases;
 	CAssetLoader& assets;
 	CBossAttackInfo& targetInfo;
 	CPtrOwner<CAttackDialogData> attackData;

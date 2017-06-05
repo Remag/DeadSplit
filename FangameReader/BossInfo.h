@@ -31,9 +31,9 @@ struct CEntryStats {
 };
 
 struct CEntryInfo {
-	CXmlElement& SrcElement;
 	int EntryId = 0;
-	CUnicodeString VisualName;
+	CUnicodeString KeyName;
+	CUnicodeString UserVisualName;
 	CEntryStats SessionStats;
 	CEntryStats TotalStats;
 	CStaticArray<CBossAttackInfo> Children;
@@ -43,15 +43,15 @@ struct CEntryInfo {
 	TAttackCurrentStatus AttackStatus = ACS_Shown;
 	bool IsConsistentWithChildren = true;
 
-	explicit CEntryInfo( CXmlElement& srcElem, CBossInfo& root ) : SrcElement( srcElem ), Root( root ) {}
-	CEntryInfo( CXmlElement& srcElem, CBossInfo& root, int entryId, CUnicodeString visualName ) : SrcElement( srcElem ), Root( root ), EntryId( entryId ), VisualName( move( visualName ) ) {}
+	explicit CEntryInfo( CBossInfo& root ) : Root( root ) {}
+	CEntryInfo( CBossInfo& root, int entryId ) : Root( root ), EntryId( entryId ) {}
 	~CEntryInfo();
 };
 
 struct CBossAttackInfo : public CEntryInfo {
 	int ChildId = NotFound;
 	CEntryInfo& Parent;
-	CUnicodeString KeyName;
+	CUnicodeString IconPath;
 	const IImageRenderData* Icon = nullptr;
 	CDynamicBitSet<> EndTriggerAddressMask;
 	CPtrOwner<IProgressReporter> Progress;
@@ -62,9 +62,8 @@ struct CBossAttackInfo : public CEntryInfo {
 	bool IsRepeatable = false;
 	bool NotifyAddressChangeOnEnd = false;
 
-	CBossAttackInfo( CXmlElement& srcElem, CBossInfo& root, CEntryInfo& parent, int attackId, CUnicodeString keyName, CUnicodeString visualName, 
-			const IImageRenderData& icon, double totalPB, double sessionPB ) : 
-		CEntryInfo{ srcElem, root, attackId, move( visualName ) }, Parent( parent ), KeyName( move( keyName ) ), Icon( &icon ), TotalPB( totalPB ), SessionPB( sessionPB ) {}
+	CBossAttackInfo( CBossInfo& root, CEntryInfo& parent, int attackId, const IImageRenderData& icon, double totalPB, double sessionPB ) : 
+		CEntryInfo{ root, attackId }, Parent( parent ), Icon( &icon ), TotalPB( totalPB ), SessionPB( sessionPB ) {}
 };
 
 struct CBossEventData {
@@ -83,7 +82,7 @@ struct CBossInfo : public CEntryInfo {
 	const IFontRenderData& BossFont;
 	bool SessionClearFlag = false;
 
-	explicit CBossInfo( CXmlElement& srcElem, const IFontRenderData& font ) : CEntryInfo( srcElem, *this ), BossFont( font ) {}
+	explicit CBossInfo( const IFontRenderData& font ) : CEntryInfo( *this ), BossFont( font ) {}
 };
 
 extern const CEnumDictionary<TAttackCurrentStatus, ACS_EnumCount> AttackStatusToNameDict;

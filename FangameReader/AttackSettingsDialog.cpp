@@ -5,6 +5,8 @@
 #include <AssetLoader.h>
 #include <BossInfo.h>
 #include <DialogControls.h>
+#include <UserAliasFile.h>
+#include <WindowUtils.h>
 #include <resource.h>
 
 namespace Fangame {
@@ -12,19 +14,14 @@ namespace Fangame {
 //////////////////////////////////////////////////////////////////////////
 
 const CUnicodeView attackNameAttrib = L"name";
-const CUnicodeView attackDisplayNameAttrib = L"displayName";
 const CUnicodeView iconNameAttrib = L"icon";
-CAttackDialogData::CAttackDialogData( CBossAttackInfo& target, HWND dialogWnd )
+CAttackDialogData::CAttackDialogData( CUserAliasFile& _aliases, CBossAttackInfo& target, HWND dialogWnd ) :
+	aliases( _aliases )
 {
-	auto& srcElem = target.SrcElement;
-	if( !srcElem.HasAttribute( attackDisplayNameAttrib ) ) {
-		srcElem.AddAttribute( attackDisplayNameAttrib, srcElem.GetAttributeValue( attackNameAttrib, CUnicodePart() ) );
-	}
-
-	commonData = CreateOwner<CSettingsDialogData>( target, dialogWnd, attackDisplayNameAttrib );
-	iconName = CreateOwner<CXmlAttributeEdit>( IDC_Icon, target.SrcElement, iconNameAttrib, dialogWnd );
+	commonData = CreateOwner<CSettingsDialogData>( aliases, target, dialogWnd );
 	sessionPB = CreateOwner<CDoubleSlider>( IDC_SessionPB, target.SessionPB, dialogWnd );
 	totalPB = CreateOwner<CDoubleSlider>( IDC_TotalPB, target.TotalPB, dialogWnd );
+	loadIconName( target, dialogWnd );
 }
 
 CAttackDialogData::~CAttackDialogData()
@@ -33,29 +30,43 @@ CAttackDialogData::~CAttackDialogData()
 
 void CAttackDialogData::SaveChanges( CAssetLoader& assets, CBossAttackInfo& target, HWND dialogWnd )
 {
+	saveIconName( assets, target, dialogWnd );
+
 	commonData->SaveChanges( target, dialogWnd );
 	sessionPB->SaveChanges( dialogWnd );
 	totalPB->SaveChanges( dialogWnd );
-
-	iconName->SaveChanges( dialogWnd );
-	const auto currentName = iconName->GetTargetValue();
-	target.Icon = &assets.GetOrCreateIcon( currentName );
-
-	auto& srcDoc = target.SrcElement.GetDocument();
-	srcDoc.SaveToFile( srcDoc.GetName() );
 }
 
 void CAttackDialogData::SetIconPath( CBossAttackInfo& target, CUnicodeString newPath, HWND dialogWnd )
 {
 	if( !newPath.IsEmpty() ) {
-		target.SrcElement.SetAttributeValueText( iconNameAttrib, move( newPath ) );
-		iconName->LoadChanges( dialogWnd );
+		aliases.SetUserIconPath( target.Root.KeyName, target.KeyName, newPath );
+		const auto targetControl = ::GetDlgItem( dialogWnd, IDC_Icon );
+		::SetWindowText( targetControl, newPath.Ptr() );
+	}
+}
+
+void CAttackDialogData::loadIconName( CBossAttackInfo& target, HWND dialogWnd )
+{
+	const auto iconName = aliases.GetUserIconPath( target.Root.KeyName, target.KeyName, target.IconPath );
+	const CUnicodeView iconView( iconName.begin(), iconName.Length() );
+	const auto targetControl = ::GetDlgItem( dialogWnd, IDC_Icon );
+	::SetWindowText( targetControl, iconView.Ptr() );
+}
+
+void CAttackDialogData::saveIconName( CAssetLoader& assets, CBossAttackInfo& target, HWND dialogWnd )
+{
+	const auto text = GetWindowControlText( dialogWnd, IDC_Icon );
+	if( !text.IsEmpty() ) {
+		aliases.SetUserIconPath( target.Root.KeyName, target.KeyName, text );
+		target.Icon = &assets.GetOrCreateIcon( text );
 	}
 }
 
 //////////////////////////////////////////////////////////////////////////
 
-CAttackSettingsDialog::CAttackSettingsDialog( CBossAttackInfo& _targetInfo, CAssetLoader& _assets ) :
+CAttackSettingsDialog::CAttackSettingsDialog( CUserAliasFile& _aliases, CBossAttackInfo& _targetInfo, CAssetLoader& _assets ) :
+	aliases( _aliases ),
 	assets( _assets ),
 	targetInfo( _targetInfo )
 {
@@ -68,7 +79,7 @@ void CAttackSettingsDialog::Open()
 
 CUnicodePart CAttackSettingsDialog::GetIconPath() const
 {
-	return targetInfo.SrcElement.GetAttributeValue( iconNameAttrib, CUnicodePart() );
+	return aliases.GetUserIconPath( targetInfo.Root.KeyName, targetInfo.KeyName, targetInfo.IconPath );
 }
 
 void CAttackSettingsDialog::SetIconPath( CUnicodeString newPath, HWND dialogWnd )
@@ -78,7 +89,7 @@ void CAttackSettingsDialog::SetIconPath( CUnicodeString newPath, HWND dialogWnd 
 
 void CAttackSettingsDialog::initializeDialogData( HWND dialogWnd )
 {
-	attackData = CreateOwner<CAttackDialogData>( targetInfo, dialogWnd );
+	attackData = CreateOwner<CAttackDialogData>( aliases, targetInfo, dialogWnd );
 }
 
 void CAttackSettingsDialog::saveDialogData( HWND dialogWnd )

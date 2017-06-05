@@ -3,16 +3,18 @@
 
 namespace Fangame {
 
+class CUserAliasFile;
 struct CBossInfo;
 //////////////////////////////////////////////////////////////////////////
 
 class CBossSettingsDialog : public CEntrySettingsDialog {
 public:
-	explicit CBossSettingsDialog( CBossInfo& targetInfo );
+	explicit CBossSettingsDialog( CUserAliasFile& aliases, CBossInfo& targetInfo );
 
 	void Open();
 
 private:
+	CUserAliasFile& aliases;
 	CBossInfo& targetBoss;
 	COptional<CSettingsDialogData> dialogData;
 

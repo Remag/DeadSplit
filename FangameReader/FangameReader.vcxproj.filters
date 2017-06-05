@@ -417,6 +417,9 @@
     <ClCompile Include="AutoUpdater.cpp">
       <Filter>Source Files\General</Filter>
     </ClCompile>
+    <ClCompile Include="UserAliasFile.cpp">
+      <Filter>Source Files\General</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common.h">
@@ -746,6 +749,9 @@
     <ClInclude Include="AutoUpdater.h">
       <Filter>Header Files\General</Filter>
     </ClInclude>
+    <ClInclude Include="UserAliasFile.h">
+      <Filter>Header Files\General</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="messages.msg">
@@ -769,6 +775,9 @@
       <Filter>Resource Files\GameInfo\Kamilia 3</Filter>
     </None>
     <None Include="..\ManifestSite\index.html">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="FangameResources\Update.new.txt">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

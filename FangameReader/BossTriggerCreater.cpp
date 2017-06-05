@@ -213,6 +213,33 @@ void CBossTriggerCreater::AddAttackAbortTrigger( const CXmlElement& elem, CBossI
 	addTrigger( elem, bossInfo, abortReaction, attackId, attack.EndTriggerAddressMask, result );
 }
 
+static void doPauseAttackReaction( CFangameVisualizerState& visualizer, int attackId )
+{
+	auto& timeline = visualizer.GetTimeline();
+	timeline.PauseBossAttack( attackId );
+}
+
+static void pauseAttackReaction( CEventSystem& events, double delay, CFangameVisualizerState& visualizer, int attackId )
+{
+	if( delay <= 0 ) {
+		doPauseAttackReaction( visualizer, attackId );
+	} else {
+		CDelayedTimerAction<CFangameVisualizerState&, int> timerAction( delay, doPauseAttackReaction, visualizer, attackId );
+		auto newTarget = events.AddEventTarget( Events::CTimePassedEvent(), move( timerAction ) );
+		visualizer.AttachTimerEvent( move( newTarget ) );
+	}
+}
+
+void CBossTriggerCreater::AddAttackPauseTrigger( const CXmlElement& elem, CBossInfo& bossInfo, CBossAttackInfo& attack, CArray<CBossEventData>& result ) const
+{
+	const auto attackId = attack.EntryId;
+	const auto delay = elem.GetAttributeValue( delayAttrib, 0.0 );
+	const auto pauseReaction = [this, delay, attackId]( CFangameVisualizerState& visualizer ) {
+		pauseAttackReaction( events, delay, visualizer, attackId );
+	};
+	addTrigger( elem, bossInfo, pauseReaction, attackId, attack.EndTriggerAddressMask, result );
+}
+
 static void startAttackReaction( CFangameVisualizerState& visualizer, int attackId )
 {
 	doStartBossAttack( visualizer, attackId );

@@ -19,6 +19,7 @@ class CWindowSettings;
 class CAssetLoader;
 class CColorFadeAnimator;
 class CTableLayout;
+class CUserAliasFile;
 class IColumnContentData;
 struct CBossInfo;
 struct CTableColumnData;
@@ -29,7 +30,7 @@ enum TTableColumnZone;
 // Table containing boss death counts.
 class CBossDeathTable {
 public:
-	CBossDeathTable( IUserActionController& controller, const CTableLayout& layout, CBossInfo& srcBoss, 
+	CBossDeathTable( CUserAliasFile& aliases, IUserActionController& controller, const CTableLayout& layout, CBossInfo& srcBoss, 
 		const CWindowSettings& windowSettings, CAssetLoader& assets, int startViewPos, bool drawAutoCycle );
 	~CBossDeathTable();
 
@@ -69,6 +70,7 @@ public:
 	void ZeroPbMarks();
 	void StartAttack( int attackPos, DWORD currentTime );
 	void EndAttack( int attackPos );
+	void PauseAttack( int attackPos );
 	void ToggleSubsplit( int rowPos );
 
 	void Draw( const IRenderParameters& renderParams ) const;
@@ -118,6 +120,7 @@ private:
 	IUserActionController& controller;
 	const CTableLayout& layout;
 	CAssetLoader& assets;
+	CUserAliasFile& aliases;
 	const CWindowSettings& windowSettings;
 	CBossInfo& srcBossInfo;
 

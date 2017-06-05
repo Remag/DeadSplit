@@ -12,6 +12,7 @@ class IValueGetter;
 class CSaveDataValueGetter;
 class CAssetLoader;
 class CBossTriggerCreater;
+class CUserAliasFile;
 struct CBossAttackInfo;
 struct CFangameProcessInfo;
 struct CAddressInfo;
@@ -25,6 +26,11 @@ public:
 	// Load the boss table without the trigger information.
 	explicit CBossMap( CUnicodeView bossFolder, const CWindowSettings& windowSettings, const CBossAttackSaveFile& saveFile, CAssetLoader& assets );
 	~CBossMap();
+
+	const CUserAliasFile& GetUserAliases() const
+		{ return *userAliases; }
+	CUserAliasFile& GetUserAliases()
+		{ return *userAliases; }
 
 	CFangameVisualizerState& GetVisualizer()
 		{ return *visualizer; }
@@ -61,8 +67,8 @@ public:
 	void EmptySessionCounts();
 
 private:
-	CXmlDocument layoutDoc;
 	CAssetLoader& assets;
+	CPtrOwner<CUserAliasFile> userAliases;
 	CFangameVisualizerState* visualizer = nullptr;
 	CEventSystem* events = nullptr;
 	const CWindowSettings& windowSettings;
@@ -80,18 +86,18 @@ private:
 
 	CMap<CUnicodeString, CAddressInfo> addressNameToInfo;
 
-	CXmlElement& initLayoutDocument( CUnicodeView bossFolder );
+	CXmlElement& initLayoutDocument( CUnicodeView bossFolder, CXmlDocument& layoutDoc );
 	void initDeathDetector( const CXmlElement& bossElem );
 	void initSaveDetector( const CXmlElement& bossElem );
 	CPtrOwner<CSaveDataValueGetter> createValueGetter( const CXmlElement& elem );
-	void loadBoss( CXmlElement& bossElem, int bossId, const CBossAttackSaveFile& saveFile, const CIniFile& aliasMap );
-	void loadBossView( CXmlElement& bossElem, int bossId, const CBossAttackSaveFile& saveFile, const CIniFile& aliasMap );
+	void loadBoss( CXmlElement& bossElem, int bossId, const CBossAttackSaveFile& saveFile );
+	void loadBossView( CXmlElement& bossElem, int bossId, const CBossAttackSaveFile& saveFile );
 	void loadBossData( CXmlElement& bossElem, CBossInfo& bossInfo, int bossId, const CBossAttackSaveFile& saveFile );
 	TEntryChildOrder getChildAttackOrder( const CXmlElement& elem, TEntryChildOrder defaultValue ) const;
 	TAttackCurrentStatus getAttackStatus( const CXmlElement& elem ) const;
-	void addBossAttack( CXmlElement& elem, CEntryInfo& parent, CBossInfo& bossInfo, const CBossAttackSaveFile& saveFile, const CIniFile& aliasMap );
-	CBossAttackInfo& addBossAttackView( CXmlElement& elem, CEntryInfo& parent, CBossInfo& bossInfo, const CBossAttackSaveFile& saveFile, const CIniFile& aliasMap );
-	CBossAttackInfo& addBossAttackAttribs( CXmlElement& elem, CEntryInfo& parent, int attackId, CBossInfo& bossInfo, const CBossAttackSaveFile& saveFile, const CIniFile& aliasMap );
+	void addBossAttack( CXmlElement& elem, CEntryInfo& parent, CBossInfo& bossInfo, const CBossAttackSaveFile& saveFile );
+	CBossAttackInfo& addBossAttackView( CXmlElement& elem, CEntryInfo& parent, CBossInfo& bossInfo, const CBossAttackSaveFile& saveFile );
+	CBossAttackInfo& addBossAttackAttribs( CXmlElement& elem, CEntryInfo& parent, int attackId, CBossInfo& bossInfo, const CBossAttackSaveFile& saveFile );
 	void addBossArea( const CXmlElement& elem, CBossInfo& bossInfo );
 	void addClearTrigger( const CXmlElement& elem, CBossInfo& bossInfo );
 	void addBossStartTrigger( const CXmlElement& elem, CBossInfo& bossInfo );
@@ -109,6 +115,7 @@ private:
 
 	void addAttackStartTrigger( const CXmlElement& elem, CBossInfo& bossInfo, CBossAttackInfo& attackInfo );
 	void addAttackEndTrigger( const CXmlElement& elem, CBossInfo& bossInfo, CBossAttackInfo& attackInfo );
+	void addAttackPauseTrigger( const CXmlElement& elem, CBossInfo& bossInfo, CBossAttackInfo& attackInfo );
 	void addAttackAbortTrigger( const CXmlElement& elem, CBossInfo& bossInfo, CBossAttackInfo& attackInfo );
 
 	void addAttackProgress( const CXmlElement& elem, CBossAttackInfo& attack ) const;

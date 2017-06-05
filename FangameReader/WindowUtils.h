@@ -14,6 +14,7 @@ void StartMouseLeaveTracking();
 bool AskUser( CUnicodeView questionStr, HWND foregroundWnd );
 CUnicodeString OpenFileNameDialog( HWND owner, CUnicodeView startFile, CUnicodeView initialDir, CUnicodeView fileFilter, CUnicodeView defaultExt );
 CUnicodeString AskFangameLayoutName();
+CUnicodeString GetWindowControlText( HWND wnd, int controlId );
 
 //////////////////////////////////////////////////////////////////////////
 

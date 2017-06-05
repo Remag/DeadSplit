@@ -20,8 +20,8 @@ CMemoryValueGetter::CMemoryValueGetter( const CXmlElement& elem, CBossMap& bossM
 {
 	const auto addressName = elem.GetAttributeValue( addressNameAttrib, CUnicodePart() );
 	addressId = bossMap.FindAddressId( addressName );
-	addressBitset |= addressId;
 	check( addressId >= 0, Err_BadAddressName, addressName );
+	addressBitset |= addressId;
 	addressExpansion = fangameChangeDetector.ExpandAddressSearch( addressBitset, false );
 
 	const auto valueTypeStr = elem.GetAttributeValue( valueTypeAttrib, DefaultValueTypeName );

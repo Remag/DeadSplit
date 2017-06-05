@@ -42,7 +42,7 @@ void CAttackMouseTarget::editAttack( IUserActionController& controller )
 {
 	const auto startSessionStats = targetAttack.SessionStats;
 	const auto startTotalStats = targetAttack.TotalStats;
-	CAttackSettingsDialog settingsDlg( targetAttack, deathTable.GetAssetLoader() );
+	CAttackSettingsDialog settingsDlg( aliases, targetAttack, deathTable.GetAssetLoader() );
 	settingsDlg.Open();
 
 	// Recount parent entry values.
@@ -82,7 +82,7 @@ void CBossMouseTarget::OnMouseDClick( IUserActionController& controller )
 
 void CBossMouseTarget::editBoss( IUserActionController& controller )
 {
-	CBossSettingsDialog settingsDialog( targetBoss );
+	CBossSettingsDialog settingsDialog( aliases, targetBoss );
 	settingsDialog.Open();
 	deathTable.RefreshTableData();
 
@@ -119,7 +119,7 @@ void CFooterMouseTarget::OnMouseDClick( IUserActionController& controller )
 
 void CFooterMouseTarget::editBoss( IUserActionController& controller )
 {
-	CBossSettingsDialog settingsDialog( targetBoss );
+	CBossSettingsDialog settingsDialog( aliases, targetBoss );
 	settingsDialog.Open();
 	deathTable.RefreshTableData();
 

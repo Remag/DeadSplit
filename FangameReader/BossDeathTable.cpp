@@ -23,8 +23,9 @@ namespace Fangame {
 
 const CUnicodeView sampleStr = L"h";
 const CError invalidViewErr( L"No views found in the table layout." );
-CBossDeathTable::CBossDeathTable( IUserActionController& _controller, const CTableLayout& _layout, CBossInfo& srcBoss, const CWindowSettings& _windowSettings, 
+CBossDeathTable::CBossDeathTable( CUserAliasFile& _aliases, IUserActionController& _controller, const CTableLayout& _layout, CBossInfo& srcBoss, const CWindowSettings& _windowSettings, 
 		CAssetLoader& _assets, int startViewPos, bool _drawAutoCycle ) :
+	aliases( _aliases ),
 	controller( _controller ),
 	layout( _layout ),
 	assets( _assets ),
@@ -38,7 +39,7 @@ CBossDeathTable::CBossDeathTable( IUserActionController& _controller, const CTab
 	currentRowCount = windowSettings.ShouldUseSubsplits() ? srcBoss.Children.Size() : maxRowCount;
 	const auto& nameRenderer = srcBoss.BossFont;
 	const auto& textRenderer = assets.GetOrCreateFont( windowSettings.GetTextFontName(), windowSettings.GetTextFontSize() );
-	bossName = GetRenderer().CreateTextData( srcBoss.VisualName, nameRenderer );
+	bossName = GetRenderer().CreateTextData( srcBoss.UserVisualName, nameRenderer );
 	check( layout.GetViewCount() > 0, invalidViewErr );
 	sampleNameText = GetRenderer().CreateTextData( sampleStr, nameRenderer );
 	sampleDescrText = GetRenderer().CreateTextData( sampleStr, textRenderer );
@@ -364,8 +365,8 @@ void CBossDeathTable::initializeAttackRows()
 	attackMouseTargets.ReserveBuffer( rowCount );
 	addChildren( srcBossInfo );
 
-	bossMouseTarget = CreateOwner<CBossMouseTarget>( srcBossInfo, *this );
-	footerMouseTarget = CreateOwner<CFooterMouseTarget>( srcBossInfo, *this );
+	bossMouseTarget = CreateOwner<CBossMouseTarget>( aliases, srcBossInfo, *this );
+	footerMouseTarget = CreateOwner<CFooterMouseTarget>( aliases, srcBossInfo, *this );
 }
 
 int CBossDeathTable::findAttackCount() const
@@ -377,7 +378,7 @@ void CBossDeathTable::addChildren( CEntryInfo& entry )
 {
 	for( auto& attack : entry.Children ) {
 		rowList.Add( attack );
-		attackMouseTargets.Add( attack, *this );
+		attackMouseTargets.Add( aliases, attack, *this );
 		rowColorList.Add( CColor( 0, 0, 0, 0 ) );
 		addChildren( attack );
 	}
@@ -673,7 +674,7 @@ void CBossDeathTable::doClearTableColors()
 void CBossDeathTable::RefreshTableData()
 {
 	const auto& nameRenderer = srcBossInfo.BossFont;
-	bossName = GetRenderer().CreateTextData( srcBossInfo.VisualName, nameRenderer );
+	bossName = GetRenderer().CreateTextData( srcBossInfo.UserVisualName, nameRenderer );
 	initializeTableView( currentTableView );
 	invalidateTable();
 }
@@ -753,15 +754,14 @@ void CBossDeathTable::FreezeCurrentAttacks( DWORD currentTime )
 	bool totalPBFound = false;
 	for( auto& attack : rowList ) {
 		if( attack.ProgressStatus == APS_Current ) {
-			
 			attack.ProgressTopColor = windowSettings.GetFrozenProgressTopColor();
 			attack.ProgressBottomColor = windowSettings.GetFrozenProgressBottomColor();
-			if( attack.SrcAttack.SessionPB > attack.CurrentProgress ) {
+			if( attack.SrcAttack.SessionPB >= attack.CurrentProgress ) {
 				attack.ProgressTopColor = windowSettings.GetSessionPBFrozenTopColor();
 				attack.ProgressBottomColor = windowSettings.GetSessionPBFrozenBottomColor();
 				attack.SrcAttack.SessionPB = attack.CurrentProgress;
 			}
-			if( attack.SrcAttack.TotalPB > attack.CurrentProgress ) {
+			if( attack.SrcAttack.TotalPB >= attack.CurrentProgress ) {
 				attack.ProgressTopColor = windowSettings.GetTotalPBFrozenTopColor();
 				attack.ProgressBottomColor = windowSettings.GetTotalPBFrozenBottomColor();
 				attack.SrcAttack.TotalPB = attack.CurrentProgress;
@@ -872,14 +872,20 @@ void CBossDeathTable::ensureChildrenVisibility( const CEntryInfo& target, int at
 
 void CBossDeathTable::EndAttack( int attackPos )
 {
+	PauseAttack( attackPos );
+	auto& attackInfo = rowList[attackPos].SrcAttack;
+	attackInfo.SessionPB = 0.0;
+	attackInfo.TotalPB = 0.0;
+}
+
+void CBossDeathTable::PauseAttack( int attackPos )
+{
 	assert( attackPos < rowList.Size() );
 	auto& attack = rowList[attackPos];
 	auto& attackInfo = attack.SrcAttack;
 	assert( attack.ProgressStatus == APS_Current );
 	attack.ProgressStatus = APS_NoProgress;
 	attackInfo.Progress->OnProgressTrackFinish();
-	attackInfo.SessionPB = 0.0;
-	attackInfo.TotalPB = 0.0;
 	addEntryPass( attackInfo.SessionStats );
 	addEntryPass( attackInfo.TotalStats );
 
@@ -940,7 +946,8 @@ void CBossDeathTable::drawBackgroundRects( const IRenderParameters& renderParams
 	for( int currentPos = findFirstVisibleSplit(); currentPos != NotFound; currentPos = findNextVisibleSplit( currentPos ) ) {
 
 		renderer.DrawRect( renderParams, *attackBackgroundRect, modelToClip, currentBgColor, currentBgColor );
-		const auto drawCurrentStatus = drawCurrentBg && rowList[currentPos].SrcAttack.AttackStatus != ACS_Hidden;
+		const auto isStatusHidden = rowList[currentPos].SrcAttack.AttackStatus == ACS_Hidden;
+		const auto drawCurrentStatus = drawCurrentBg && !isStatusHidden;
 
 		const auto isCurrentActive = rowList[currentPos].ProgressStatus == APS_Current;
 		const auto verticalLineColor = drawCurrentStatus && isCurrentActive ? activeLineColor : lineColor;
@@ -997,10 +1004,10 @@ void CBossDeathTable::drawAttackPbMark( const IRenderParameters& renderParams, c
 {
 	const auto sessionProgress = drawInfo.SrcAttack.SessionPB;
 	const auto totalProgress = drawInfo.SrcAttack.TotalPB;
-	if( drawInfo.ProgressStatus == APS_NoProgress || drawInfo.CurrentProgress >= sessionProgress ) {
+	if( drawInfo.ProgressStatus != APS_Current || drawInfo.CurrentProgress > sessionProgress ) {
 		drawAttackPbMark( renderParams, sessionProgress, windowSettings.GetSessionPBCurrentTopColor(), windowSettings.GetSessionPBCurrentBottomColor(), modelToClip );
 	}
-	if( drawInfo.ProgressStatus == APS_NoProgress || drawInfo.CurrentProgress >= totalProgress ) {
+	if( drawInfo.ProgressStatus != APS_Current || drawInfo.CurrentProgress > totalProgress ) {
 		drawAttackPbMark( renderParams, totalProgress, windowSettings.GetTotalPBCurrentTopColor(), windowSettings.GetTotalPBCurrentBottomColor(), modelToClip );
 	}
 }
@@ -1226,10 +1233,13 @@ void CBossDeathTable::updateAttackProgress( float secDelta )
 			// Clamp to the minimal float number because GDI+ doesn't like scaling by 0.
 			const auto currentProgress = safeClamp( static_cast<float>( attack.SrcAttack.Progress->FindProgress() ), FLT_MIN, 1.0f );
 			attack.CurrentProgress = currentProgress;
-			if( attack.CurrentProgress < attack.SrcAttack.TotalPB ) {
+			if( attack.CurrentProgress <= attack.SrcAttack.TotalPB ) {
 				changeProgressColor( i, windowSettings.GetTotalPBCurrentTopColor(), windowSettings.GetTotalPBCurrentBottomColor(), currentProgress, prevProgress );
-			} else if( attack.CurrentProgress < attack.SrcAttack.SessionPB ) {
+				attack.SrcAttack.TotalPB = attack.CurrentProgress;
+				attack.SrcAttack.SessionPB = attack.CurrentProgress;
+			} else if( attack.CurrentProgress <= attack.SrcAttack.SessionPB ) {
 				changeProgressColor( i, windowSettings.GetSessionPBCurrentTopColor(), windowSettings.GetSessionPBCurrentBottomColor(), currentProgress, prevProgress );
+				attack.SrcAttack.SessionPB = attack.CurrentProgress;
 			} else {
 				invalidateRowProgressDelta( i, currentProgress, prevProgress );
 			}

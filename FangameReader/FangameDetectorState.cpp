@@ -99,6 +99,7 @@ void CFangameDetectorState::OnStart()
 	mouseInputHandler = CreateOwner<CMouseInputHandler>();
 
 	Log::Message( L"Detection initiated", this );
+	seekUpdateChanges();
 	mouseController = CreateOwner<CDetectorMouseController>( *this );
 	mouseSwt = CreateOwner<CMouseInputSwitcher>( *mouseController );
 
@@ -107,6 +108,16 @@ void CFangameDetectorState::OnStart()
 	} else {
 		detectFangame();
 	}
+}
+
+const CUnicodeView updateNewFileName = L"Update.new";
+void CFangameDetectorState::seekUpdateChanges()
+{
+	try {
+		const auto updateStr = CFile::ReadUnicodeText( updateNewFileName );
+		::MessageBox( GetMainWindow().Handle(), updateStr.Ptr(), L"DeadSplit", MB_OK | MB_ICONINFORMATION );
+		FileSystem::Delete( updateNewFileName );
+	} catch( CFileException& ) {}
 }
 
 // Try to search for a fangame right away and change states immediately if found.

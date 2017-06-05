@@ -28,6 +28,7 @@ public:
 	void AddAttackStartTrigger( const CXmlElement& elem, CBossInfo& bossInfo, CBossAttackInfo& attack, CArray<CBossEventData>& result ) const;
 	void AddAttackEndTrigger( const CXmlElement& elem, CBossInfo& bossInfo, CBossAttackInfo& attack, CArray<CBossEventData>& result ) const;
 	void AddAttackAbortTrigger( const CXmlElement& elem, CBossInfo& bossInfo, CBossAttackInfo& attack, CArray<CBossEventData>& result ) const;
+	void AddAttackPauseTrigger( const CXmlElement& elem, CBossInfo& bossInfo, CBossAttackInfo& attack, CArray<CBossEventData>& result ) const;
 
 	void AddTimeStartTrigger( double startTime, int attackId, CArray<CBossEventData>& result ) const;
 	void AddTimeEndTrigger( double endTime, int attackId, CArray<CBossEventData>& result ) const;

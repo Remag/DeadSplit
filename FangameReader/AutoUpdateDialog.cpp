@@ -6,6 +6,7 @@
 #include <AutoUpdater.h>
 #include <resource.h>
 #include <windowsx.h>
+#include <CommCtrl.h>
 
 namespace Fangame {
 
@@ -31,7 +32,22 @@ void CAutoUpdateDialog::onUpdateNow()
 	::SetWindowText( updateNowButtonWnd, L"Updating..." );
 	::EnableWindow( updateNowButtonWnd, FALSE );
 	::EnableWindow( updateOnExitButtonWnd, FALSE );
-	updater.DownloadUpdate();
+
+	const auto updateCheckWnd = ::GetDlgItem( dialogWnd, IDC_DisableUpdates );
+	::ShowWindow( updateCheckWnd, 0 );
+	const auto progressWnd = ::GetDlgItem( dialogWnd, IDC_UpdateProgress );	
+	::ShowWindow( progressWnd, 1 );
+
+	const auto updateCallback = [progressWnd]( __int64 current, __int64 total ) { 
+		if( total <= 0 ) {
+			return true;
+		}
+		const auto ratio = current * 1.0 / total;
+		const auto progressValue = Round( 100 * ratio );
+		::PostMessage( progressWnd, PBM_SETPOS, progressValue, 0 );
+		return true;
+	};
+	updater.DownloadUpdate( updateCallback );
 }
 
 void CAutoUpdateDialog::onUpdateOnExit()
@@ -68,6 +84,7 @@ void CAutoUpdateDialog::onUpdateStatusChange( int wParam )
 void CAutoUpdateDialog::onUpdateReady()
 {
 	updater.RemoveNotifyTarget( dialogWnd );
+	updater.SetUpdateReadyStatus();
 	closeDialogWindow();
 }
 

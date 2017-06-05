@@ -44,6 +44,7 @@ public:
 	void StartBoss();
 	void StartBossAttack( int attackId );
 	void FinishBossAttack( int attackId );
+	void PauseBossAttack( int attackId );
 	void AbortBossAttack( int attackId );
 	void ClearBoss();
 	void CheckBossAttacksFinish();
@@ -93,7 +94,9 @@ private:
 
 	void shrinkCurrentAttacks();
 	bool tryFinilizeAttack( const CBossAttackInfo& attack );
+	bool tryPauseAttack( const CBossAttackInfo& attack );
 	void tryAbortAttack( const CBossAttackInfo& attack );
+	void stopAttackTimer( int attackId );
 	void setRecordStatus( TBossTimelineStatus newValue );
 	void startBoss( DWORD currentTime );
 	void clearCurrentBoss();

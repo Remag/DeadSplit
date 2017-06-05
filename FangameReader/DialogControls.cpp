@@ -3,6 +3,7 @@
 
 #include <DialogControls.h>
 #include <Commctrl.h>
+#include <WindowUtils.h>
 
 namespace Fangame {
 
@@ -10,18 +11,7 @@ namespace Fangame {
 
 void CXmlAttributeEdit::SaveChanges( HWND dialogWnd )
 {
-	unsigned resultLength = 64;
-	CUnicodeString result;
-	for( ;; ) {
-		auto resultBuffer = result.CreateRawBuffer( resultLength );
-		const auto charCount = ::GetDlgItemText( dialogWnd, editId, resultBuffer.Ptr(), resultLength + 1 );
-		resultBuffer.Release( charCount );
-		if( charCount < resultLength ) {
-			break;
-		}
-		resultLength *= 2;
-	}
-
+	auto result = GetWindowControlText( dialogWnd, editId );
 	targetElem.SetAttributeValueText( attributeName, move( result ) );
 }
 

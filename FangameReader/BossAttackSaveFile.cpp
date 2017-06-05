@@ -128,7 +128,7 @@ void CBossAttackSaveFile::SaveBackupData( CArrayView<CBossInfo> bossesInfo )
 void CBossAttackSaveFile::saveAttackData( CArrayView<CBossInfo> bossesInfo, CUnicodeView name )
 {
 	for( const auto& bossInfo : bossesInfo ) {
-		const CUnicodePart bossName = bossInfo.VisualName;
+		const CUnicodePart bossName = bossInfo.KeyName;
 		auto& bossData = bossNameToData.GetOrCreate( bossName ).Value();
 		bossData.SessionStats = bossInfo.SessionStats;
 		bossData.TotalStats = bossInfo.TotalStats;

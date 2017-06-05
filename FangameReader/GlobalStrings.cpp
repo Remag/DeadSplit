@@ -11,6 +11,7 @@ namespace Paths {
 
 extern const CUnicodeView IconDir = L"Icons";
 extern const CUnicodeView FanagameSaveFile = L"saveData.sav";
+extern const CUnicodeView FangameAliasesFile = L"attackAliases.xml";
 extern const CUnicodeView FangameLayoutFile = L"layout.xml";
 extern const CUnicodeView FangameInfoFolder = L"FangameInfo";
 extern const CUnicodeView SessionFileName = L"CurrentSession";

@@ -217,6 +217,22 @@ CUnicodeString AskFangameLayoutName()
 	return FileSystem::GetDrivePath( openResult );
 }
 
+CUnicodeString GetWindowControlText( HWND wnd, int controlId )
+{
+	unsigned resultLength = 64;
+	CUnicodeString result;
+	for( ;; ) {
+		auto resultBuffer = result.CreateRawBuffer( resultLength );
+		const auto charCount = ::GetDlgItemText( wnd, controlId, resultBuffer.Ptr(), resultLength + 1 );
+		resultBuffer.Release( charCount );
+		if( charCount < resultLength ) {
+			break;
+		}
+		resultLength *= 2;
+	}
+	return result;
+}
+
 //////////////////////////////////////////////////////////////////////////
 
 }	// namespace Fangame.

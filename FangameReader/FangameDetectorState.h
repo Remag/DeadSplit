@@ -72,6 +72,7 @@ private:
 	void initializeSettingsIcon();
 	void initializeOpenIcon();
 
+	void seekUpdateChanges();
 	void detectFangame();
 
 	void doDraw( const IRenderParameters& renderParams ) const;

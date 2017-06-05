@@ -9,7 +9,8 @@ namespace Fangame {
 
 //////////////////////////////////////////////////////////////////////////
 
-CBossSettingsDialog::CBossSettingsDialog( CBossInfo& target ) :
+CBossSettingsDialog::CBossSettingsDialog( CUserAliasFile& _aliases, CBossInfo& target ) :
+	aliases( _aliases ),
 	targetBoss( target )
 {
 }
@@ -19,17 +20,14 @@ void CBossSettingsDialog::Open()
 	openDialogBox( IDD_BossSettings );
 }
 
-const CUnicodeView bossNameAttrib = L"name";
 void CBossSettingsDialog::initializeDialogData( HWND dialogWnd )
 {
-	dialogData.CreateValue( targetBoss, dialogWnd, bossNameAttrib );
+	dialogData.CreateValue( aliases, targetBoss, dialogWnd );
 }
 
 void CBossSettingsDialog::saveDialogData( HWND dialogWnd )
 {
 	dialogData->SaveChanges( targetBoss, dialogWnd );
-	auto& srcDoc = targetBoss.SrcElement.GetDocument();
-	srcDoc.SaveToFile( srcDoc.GetName() );
 }
 
 //////////////////////////////////////////////////////////////////////////

@@ -1,15 +1,81 @@
-How to add a fangame.
 
-1. Add a folder with a fangame name to the FangameInfo folder. The name has to be spelled exactly as it appears in a fangame window title ( without the time and death count ).
-2. Create a file named "layout.xml" in the created folder. Open the file with a text editor of your choise.
-3. Copy the header and the fangame node from an existing layout.xml of another fangame.
-4. Fill the saveReader attribute of the fangame node with the appropriate save reader. "Manual" makes you choose the current boss manually and obviously works for every game.
-4. Fill the layout file with boss information ( see the next instruction ).
+=============================================================
+Step 1: Adding a fangame.
+=============================================================
 
-How to add a boss.
+In order for your fangame to get detected you need to create a layout file for it. A layout file contains all the needed information about the bosses, attacks
+and the way DeadSplit switches between them.
 
-1. Open a file "FangameInfo\<fangame name>\layout.xml" with any text editor.
-2. Add a new <Boss> child to the <Fangame> node.
-3. Fill the boss child with attack nodes. Use existing examples to fill the necessary information.
-4. If you wish to use a custom attack icon, add it to the Icons folder. Icons in PNG format are supported.
-5. If you are using a save reader, you can add a <TriggerArea> child to the boss node. Trigger area should contain boss room and position information.
+First, we need to create a folder for the layout file. The folder must be put in the FangameInfo parent folder. The name of the folder start the same way as the name of your fangame
+as it appears on the window title. So, if the game window is titled "I Wanna Kill The Kamilia 3 Death:0 Time:0:00:00" the folder name should be "I Wanna Kill The Kamilia 3".
+Shorter names for the folder will also work, for example naming the folder "I Wanna Kill The K" will match it correctly.
+
+Next, we need to create a layout file in the new folder. File must be named "layout.xml". To solve potential encoding problems you should copy an existing layout file from another fangame folder
+and delete all but the minial layout information:
+
+<?xml version="1.0" encoding="utf-16"?> 
+<Fangame title="Fangame Name Goes Here"> 
+</Fangame>
+
+After you've done that, save the layout file, open up the counter and start playing the fangame you created the layout for. The counter should detect it and notify you.
+Note that the fangame will be detected as soon as death information appears on its window title.
+
+
+=============================================================
+Step 2: Creating a simple boss.
+=============================================================
+
+Not that we have the layout file, let's add a time-based boss to it. The boss information ( as well as all other layout data ) goes between <Fangame ...> and </Fangame> nodes in the layout.
+The simple boss node looks like this:
+
+<Boss name="Boss Name Goes Here">
+</Boss>
+
+That's not very useful so far. Let's add a few attacks to it.
+
+<Boss name="Boss Name Goes Here">
+	<Attack name="First Attack" icon="Path To an icon relative from the Icons folder. Optional, the default icon is a red fruit.">
+	</Attack>
+	<Attack name="Second Attack With Default Icon">
+	</Attack>
+</Boss>
+
+The attack names must be unique strings: a single boss cannot have duplicate attack names. See the footnotes if you want to work around this limitation.
+The last information the we are going to put is the attack duration. For this we must create a <Time> node inside the attack node.
+
+<Boss name="Boss Name Goes Here">
+	<Attack name="First Attack"...>
+		<Time duration="Duration of the attack in seconds"/>
+	</Attack>
+	<Attack name="Second Attack With Default Icon">
+		<Time end="Time from the start of the boss when the attack ends. Also in seconds."
+	</Attack>
+</Boss>
+
+Both end and duration attributes serve the same purpose and can be used interchangeably.
+
+There you go! The simple boss you've created will show up as you start playing. The attack splits will start immediately after you press the restart game button.
+The counter will detect that the hero died as soon as the window title updates the death count. For some fangames it happens right after the death. Unfortunately, other fangames update the death count
+only after you press restart so the splits will stop ( and restart right away ) later than they are supposed to.
+
+This boss has quite a few obvious limitations: the splits start too early, they might finish too late, only simple time-based bosses can be properly done... The problem is, in order
+to improve the boss you will require to properly connect the counter with the running fangame. To do that you will require ranging levels of knowledge in one or all of these fields:
+- Memory scanner ( CheatEngine )
+- Hex editor
+- GameMaker ( mostly optional )
+
+The good news is, most of the tasks require only basic level of knowledge and it's never too late to learn! While these instructions cannot serve as a proper tutorial,
+the problems themselves are a good entry level task. Here's what constitutes a basic level of knowledge for the purposes of this document:
+- CheatEngine - install the latest release ( free ) and pass the tutorial.
+- Hex editor - install the editor of your choice and learn to count byte offsets in files.
+- GameMaker - install the version of GamemMaker that was used for the target fangame. Ask the developer for the source code or decompile the game. Complete an entry level programming course in any language.
+
+The following steps will note what level of knowledge is expected from you.
+
+=============================================================
+
+If you want to create several attacks with the same name, add the displayName attribute:
+
+<Attack name="Third Attack" displayName="Actually Displayed Name">
+</Attack>
+displayName can be the same for different attacks but their name must be different.

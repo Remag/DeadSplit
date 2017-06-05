@@ -24,6 +24,7 @@ CAutoUpdater::CAutoUpdater( CWindowSettings& _windowSettings, CSessionMonitor& _
 	monitor( _monitor ),
 	dialog( CreateOwner<CAutoUpdateDialog>( *this, _windowSettings ) )
 {
+	connectionFile.SetFollowRedirects( true );
 }
 
 CAutoUpdater::~CAutoUpdater()
@@ -37,8 +38,7 @@ void CAutoUpdater::FinalizeUpdate()
 	if( currentStatus == AUS_UpdateReady ) {
 		installUpdate( true );
 	} else if( currentStatus == AUS_UpdateOnExit ) {
-		fetchUpdateAction();
-		if( updateStatus.Load() == AUS_UpdateReady ) {
+		if( fetchUpdateAction( CInternetFile::TProgressAction() ) == 0 ) {
 			installUpdate( false );
 		}
 	}
@@ -53,6 +53,7 @@ void CAutoUpdater::installUpdate( bool reopenAfter )
 	const auto currentName = getModuleName();
 	const auto currentFolder = FileSystem::GetPath( currentName );
 	assert( FileSystem::DirAccessible( currentFolder ) );
+	filterUserFiles( updateFiles );
 	if( !writeUpdateFiles( updateFiles, currentFolder ) ) {
 		return;
 	}
@@ -67,6 +68,18 @@ CUnicodeString CAutoUpdater::getModuleName() const
 	return GetCurrentModulePath();
 }
 
+void CAutoUpdater::filterUserFiles( CFileCollection& collection )
+{
+	const auto fileCount = collection.GetFileCount();
+	for( int i = fileCount - 1; i >= 0; i-- ) {
+		const auto filePath = collection.GetFileName( i );
+		const auto fileName = FileSystem::GetNameExt( filePath );
+		if( fileName == Paths::FanagameSaveFile || fileName == Paths::FangameAliasesFile ) {
+			collection.DeleteFile( i );
+		}
+	}
+}
+
 bool CAutoUpdater::writeUpdateFiles( CFileCollection& collection, CUnicodeView destination )
 {
 	for( ;; ) {
@@ -74,12 +87,32 @@ bool CAutoUpdater::writeUpdateFiles( CFileCollection& collection, CUnicodeView d
 			collection.WriteToFolder( destination );
 			return true;
 		} catch( CException& ) {
-			const auto userInput = ::MessageBox( GetMainWindow().Handle(), L"DeadSplit installation failed!\r\nMake sure no other copies of the application are running on the background.", L"DeadSplit", MB_OKCANCEL );
-			if( userInput == IDCANCEL ) {
+			if( tryFixDuplicateExe( collection, destination ) ) {
+				continue;
+			}
+			const auto userInput = ::MessageBox( nullptr, L"DeadSplit installation failed!\r\nMake sure no other copies of the application are running on the background.", L"DeadSplit", MB_OKCANCEL );
+			if( userInput == 0 || userInput == IDCANCEL ) {
 				return false;
 			}
 		}
 	}
+}
+
+bool CAutoUpdater::tryFixDuplicateExe( CFileCollection& collection, CUnicodeView destination )
+{
+	const auto moduleName = GetCurrentModulePath();
+	const auto fullDestination = FileSystem::CreateFullPath( destination );
+	const int fileCount = collection.GetFileCount();
+	for( int i = 0; i < fileCount; i++ ) {
+		const auto fileName = collection.GetFileName( i );
+		const auto fullName = FileSystem::MergePath( fullDestination, fileName );
+		if( fullName == moduleName ) {
+			collection.SetFileName( i, Paths::UpdatedExeName );
+			return true;
+		}
+	}
+
+	return false;
 }
 
 void CAutoUpdater::RemoveNotifyTarget( HWND wnd )
@@ -124,6 +157,7 @@ int CAutoUpdater::fetchManifestAction()
 {
 	try {
 		connectionFile.SetUrl( manifestUrl );
+		connectionFile.SetProgressFunction( CInternetFile::TProgressAction() );
 		rawManifestData.Empty();
 		connectionFile.DownloadFile( rawManifestData );
 		parseManifestData();
@@ -135,7 +169,7 @@ int CAutoUpdater::fetchManifestAction()
 	return 0;
 }
 
-const int deadsplitUpdateVersion = 0;
+const int deadsplitUpdateVersion = 1;
 void CAutoUpdater::parseManifestData()
 {
 	const char* manifestRawStr = reinterpret_cast<char*>( rawManifestData.Ptr() );
@@ -247,27 +281,28 @@ void CAutoUpdater::checkManifestException( bool condition ) const
 	}
 }
 
-void CAutoUpdater::DownloadUpdate()
+void CAutoUpdater::DownloadUpdate( CInternetFile::TProgressAction progressCallback )
 {
 	const auto currentStatus = updateStatus.Load();
 	assert( currentStatus == AUS_UpdateDialog );
 	updateStatus.Store( AUS_FetchingUpdate );
-	connectionThread = CThread( &CAutoUpdater::fetchUpdateAction, this );
+	connectionThread = CThread( &CAutoUpdater::fetchUpdateAction, this, move( progressCallback ) );
 }
 
-int CAutoUpdater::fetchUpdateAction()
+int CAutoUpdater::fetchUpdateAction( CInternetFile::TProgressAction progressCallback )
 {
 	try {
 		connectionFile.SetUrl( manifestData.UpdateUrl );
+		connectionFile.SetProgressFunction( move( progressCallback ) );
 		rawUpdateData.Empty();
 		connectionFile.DownloadFile( rawUpdateData );
 		checkDataConsistency();
+		return 0;
 		
 	} catch( CException& ) {
 		changeStatusAndNotify( AUS_UpdateFailed );
+		return 1;
 	}
-
-	return 0;
 }
 
 void CAutoUpdater::checkDataConsistency()
@@ -276,8 +311,8 @@ void CAutoUpdater::checkDataConsistency()
 		changeStatusAndNotify( AUS_UpdateFailed );
 		return;
 	}
-	const int magicNumber = *reinterpret_cast<int*>( rawUpdateData.Ptr() );
-	if( magicNumber != CFileCollection::GetMagicNumber() ) {
+	const char magicNumber = *reinterpret_cast<char*>( rawUpdateData.Ptr() );
+	if( magicNumber != 0x78 ) {
 		changeStatusAndNotify( AUS_UpdateFailed );
 	} else {
 		for( auto wnd : notifyListeners ) {

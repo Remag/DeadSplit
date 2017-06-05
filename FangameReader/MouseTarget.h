@@ -4,6 +4,7 @@ namespace Fangame {
 
 class IUserActionController;
 class CBossDeathTable;
+class CUserAliasFile;
 struct CBossInfo;
 struct CBossAttackInfo;
 //////////////////////////////////////////////////////////////////////////
@@ -21,13 +22,15 @@ public:
 
 class CAttackMouseTarget : public IMouseTarget {
 public:
-	explicit CAttackMouseTarget( CBossAttackInfo& attack, CBossDeathTable& _deathTable ) : targetAttack( attack ), deathTable( _deathTable ) {}
+	explicit CAttackMouseTarget( CUserAliasFile& _aliases, CBossAttackInfo& attack, CBossDeathTable& _deathTable ) : 
+		aliases( _aliases ), targetAttack( attack ), deathTable( _deathTable ) {}
 
 	virtual void OnMouseMove() const override final;
 	virtual void OnMouseClick( IUserActionController& controller ) override final;
 	virtual void OnMouseDClick( IUserActionController& controller ) override final;
 
 private:
+	CUserAliasFile& aliases;
 	CBossAttackInfo& targetAttack;
 	CBossDeathTable& deathTable;
 
@@ -38,13 +41,15 @@ private:
 
 class CBossMouseTarget : public IMouseTarget {
 public:
-	explicit CBossMouseTarget( CBossInfo& boss, CBossDeathTable& _deathTable ) : targetBoss( boss ), deathTable( _deathTable ) {}
+	explicit CBossMouseTarget( CUserAliasFile& _aliases, CBossInfo& boss, CBossDeathTable& _deathTable ) :
+		aliases( _aliases ), targetBoss( boss ), deathTable( _deathTable ) {}
 
 	virtual void OnMouseMove() const override final;
 	virtual void OnMouseClick( IUserActionController& controller ) override final;
 	virtual void OnMouseDClick( IUserActionController& controller ) override final;
 
 private:
+	CUserAliasFile& aliases;
 	CBossInfo& targetBoss;
 	CBossDeathTable& deathTable;
 
@@ -55,13 +60,15 @@ private:
 
 class CFooterMouseTarget : public IMouseTarget {
 public:
-	explicit CFooterMouseTarget( CBossInfo& boss, CBossDeathTable& _deathTable ) : targetBoss( boss ), deathTable( _deathTable ) {}
+	explicit CFooterMouseTarget( CUserAliasFile& _aliases, CBossInfo& boss, CBossDeathTable& _deathTable ) : 
+		aliases( _aliases ), targetBoss( boss ), deathTable( _deathTable ) {}
 
 	virtual void OnMouseMove() const override final;
 	virtual void OnMouseClick( IUserActionController& controller ) override final;
 	virtual void OnMouseDClick( IUserActionController& controller ) override final;
 
 private:
+	CUserAliasFile& aliases;
 	CBossInfo& targetBoss;
 	CBossDeathTable& deathTable;
 

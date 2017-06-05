@@ -135,7 +135,7 @@ static CUnicodeString findSubstituteStr( TColumnContentVariable type, const CEnt
 		case CCV_AttackNumber:
 			return UnicodeStr( entry.EntryId );
 		case CCV_AttackName:
-			return UnicodeStr( entry.VisualName );
+			return UnicodeStr( entry.UserVisualName );
 		case CCV_DeathCount:
 			return zone == TCZ_Session ? UnicodeStr( entry.SessionStats.DeathCount ) : UnicodeStr( entry.TotalStats.DeathCount );
 		case CCV_SessionDeathCount:

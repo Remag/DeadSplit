@@ -55,7 +55,7 @@ public:
 	// Initialize the auto update process by fetching the latest version info.
 	void FetchManifest();
 	// Use the downloaded manifest data to fetch an update.
-	void DownloadUpdate();
+	void DownloadUpdate( CInternetFile::TProgressAction progressCallback );
 	// Set the download on exit flag.
 	void DownloadOnExit();
 	// Cancel current download.
@@ -72,7 +72,6 @@ private:
 	CWindowSettings& windowSettings;
 	CSessionMonitor& monitor;
 	CPtrOwner<CAutoUpdateDialog> dialog;
-	CThread connectionThread;
 	CAtomic<TAutoUpdateStatus> updateStatus{ AUS_Initial };
 	CInternetFile connectionFile;
 	CArray<HWND> notifyListeners;
@@ -84,14 +83,17 @@ private:
 	};
 	CManifestData manifestData;
 	CArray<BYTE> rawUpdateData;
+	CThread connectionThread;
 
 	void installUpdate( bool reopenAfter );
 	CUnicodeString getModuleName() const;
 	bool writeUpdateFiles( CFileCollection& collection, CUnicodeView destination );
+	void filterUserFiles( CFileCollection& collection );
+	bool tryFixDuplicateExe( CFileCollection& collection, CUnicodeView destination );
 
 	void doFetchManifest();
 	int fetchManifestAction();
-	int fetchUpdateAction();
+	int fetchUpdateAction( CInternetFile::TProgressAction progressCallback );
 	void checkDataConsistency();
 	void parseManifestData();
 	int parseManifestVersion( CStringPart manifestStr );

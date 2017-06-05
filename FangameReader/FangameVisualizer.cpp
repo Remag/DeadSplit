@@ -56,7 +56,7 @@ void CFangameVisualizer::SetBossTable( CBossInfo& bossTable )
 {
 	currentTablePos = bossTable.EntryId;
 	if( bossTables[currentTablePos] == nullptr ) {
-		bossTables[currentTablePos] = CreateOwner<CBossDeathTable>( controller, *tableLayout, bossTable, windowSettings, assets, currentTableView, drawAutoCycle );
+		bossTables[currentTablePos] = CreateOwner<CBossDeathTable>( bossInfo.GetUserAliases(), controller, *tableLayout, bossTable, windowSettings, assets, currentTableView, drawAutoCycle );
 	} else {
 		bossTables[currentTablePos]->ResetTable( CPixelVector( GetMainWindow().WindowSize() ), currentTableView );
 	}

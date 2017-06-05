@@ -21,12 +21,11 @@
 
 #include <GlobalStrings.h>
 #include <BossTriggerCreater.h>
+#include <UserAliasFile.h>
 
 namespace Fangame {
 
 //////////////////////////////////////////////////////////////////////////
-
-const CUnicodeView nameAliasMapFile = L"attackAliases.ini";
 
 const CUnicodeView fangameTitleAttrib = L"title";
 const CUnicodeView bossElemName = L"Boss";
@@ -41,15 +40,16 @@ CBossMap::CBossMap( CUnicodeView bossFolder, CFangameVisualizerState& _visualize
 	processInfo( &_visualizer.GetProcessInfo() )
 {
 	triggerCreater = CreateOwner<CBossTriggerCreater>( _visualizer, *events, windowSettings, addressNameToInfo );
-	auto& bossesRoot = initLayoutDocument( bossFolder );
-	const auto aliasMapName = FileSystem::MergePath( bossFolder, nameAliasMapFile );
-	CIniFile aliasMap( aliasMapName );
+	CXmlDocument layoutDoc;
+	auto& bossesRoot = initLayoutDocument( bossFolder, layoutDoc );
+	const auto aliasMapName = FileSystem::MergePath( bossFolder, Paths::FangameAliasesFile );
+	userAliases = CreateOwner<CUserAliasFile>( aliasMapName );
 
 	int bossId = 0;
 	for( auto& elem : bossesRoot.Children() ) {
 		const auto name = elem.Name();
 		if( name == bossElemName ) {
-			loadBoss( elem, bossId, saveFile, aliasMap );
+			loadBoss( elem, bossId, saveFile );
 			bossId++;
 		} else if( name == addressSpaceElemName ) {
 			loadAddressSpace( elem, _visualizer.GetChangeDetector() );
@@ -69,20 +69,21 @@ CBossMap::CBossMap( CUnicodeView bossFolder, const CWindowSettings& _windowSetti
 	assets( _assets ),
 	windowSettings( _windowSettings )
 {
-	auto& bossesRoot = initLayoutDocument( bossFolder );
-	const auto aliasMapName = FileSystem::MergePath( bossFolder, nameAliasMapFile );
-	CIniFile aliasMap( aliasMapName );
+	CXmlDocument layoutDoc;
+	auto& bossesRoot = initLayoutDocument( bossFolder, layoutDoc );
+	const auto aliasMapName = FileSystem::MergePath( bossFolder, Paths::FangameAliasesFile );
+	userAliases = CreateOwner<CUserAliasFile>( aliasMapName );
 	int bossId = 0;
 	for( auto& elem : bossesRoot.Children() ) {
 		const auto name = elem.Name();
 		if( name == bossElemName ) {
-			loadBossView( elem, bossId, saveFile, aliasMap );
+			loadBossView( elem, bossId, saveFile );
 			bossId++;
 		}
 	}
 }
 
-CXmlElement& CBossMap::initLayoutDocument( CUnicodeView bossFolder )
+CXmlElement& CBossMap::initLayoutDocument( CUnicodeView bossFolder, CXmlDocument& layoutDoc )
 {
 	const auto layoutName = FileSystem::MergePath( bossFolder, Paths::FangameLayoutFile );
 	layoutDoc.LoadFromFile( layoutName );
@@ -190,12 +191,13 @@ const CUnicodeView showTriggerName = L"ShowTrigger";
 const CUnicodeView attackChildName = L"Attack";
 const CUnicodeView startTriggerChildName = L"StartTrigger";
 const CUnicodeView endTriggerChildName = L"EndTrigger";
+const CUnicodeView pauseTriggerChildName = L"PauseTrigger";
 const CUnicodeView abortTriggerChildName = L"AbortTrigger";
 const CUnicodeView unknownBossChild = L"Unknown boss child: %0.";
-void CBossMap::loadBoss( CXmlElement& bossElem, int bossId, const CBossAttackSaveFile& saveFile, const CIniFile& aliasMap )
+void CBossMap::loadBoss( CXmlElement& bossElem, int bossId, const CBossAttackSaveFile& saveFile )
 {
 	const auto& bossFont = assets.GetOrCreateFont( windowSettings.GetNameFontName(), windowSettings.GetNameFontSize() );
-	auto& bossInfo = bossesInfo.Add( bossElem, bossFont );
+	auto& bossInfo = bossesInfo.Add( bossFont );
 	loadBossData( bossElem, bossInfo, bossId, saveFile );
 
 	bool startTriggerFound = false;
@@ -203,7 +205,7 @@ void CBossMap::loadBoss( CXmlElement& bossElem, int bossId, const CBossAttackSav
 	for( auto& child : bossElem.Children() ) {
 		const auto name = child.Name();
 		if( name == attackChildName ) {
-			addBossAttack( child, bossInfo, bossInfo, saveFile, aliasMap );
+			addBossAttack( child, bossInfo, bossInfo, saveFile );
 		} else if( name == bossAreaName ) {
 			addBossArea( child, bossInfo );
 		} else if( name == endTriggerChildName ) {
@@ -229,16 +231,16 @@ void CBossMap::loadBoss( CXmlElement& bossElem, int bossId, const CBossAttackSav
 	MakeConsistentWithChildData( bossInfo );
 }
 
-void CBossMap::loadBossView( CXmlElement& bossElem, int bossId, const CBossAttackSaveFile& saveFile, const CIniFile& aliasMap )
+void CBossMap::loadBossView( CXmlElement& bossElem, int bossId, const CBossAttackSaveFile& saveFile )
 {
 	const auto& bossFont = assets.GetOrCreateFont( windowSettings.GetNameFontName(), windowSettings.GetNameFontSize() );
-	auto& bossInfo = bossesInfo.Add( bossElem, bossFont );
+	auto& bossInfo = bossesInfo.Add( bossFont );
 	loadBossData( bossElem, bossInfo, bossId, saveFile );
 
 	for( auto& child : bossElem.Children() ) {
 		const auto name = child.Name();
 		if( name == attackChildName ) {
-			addBossAttackView( child, bossInfo, bossInfo, saveFile, aliasMap );
+			addBossAttackView( child, bossInfo, bossInfo, saveFile );
 		} 
 	}
 
@@ -249,11 +251,15 @@ const CUnicodeView consistentAttrib = L"consistentWithChildren";
 void CBossMap::loadBossData( CXmlElement& bossElem, CBossInfo& bossInfo, int bossId, const CBossAttackSaveFile& saveFile )
 {
 	const auto bossName = bossElem.GetAttributeValue( nameAttrib, CUnicodePart( L"Unknown" ) );
-	bossInfo.VisualName = bossName;
+	const auto visualName = userAliases->GetUserBossName( bossName );
+	const auto baseStatus = getAttackStatus( bossElem );
+	const auto status = userAliases->GetUserBossStatus( bossName, baseStatus );
+	bossInfo.KeyName = bossName;
+	bossInfo.UserVisualName = visualName;
 	bossInfo.ResetFreezeTime = bossElem.GetAttributeValue( resetFreezeAttrib, 0.0 );
 	bossInfo.IsConsistentWithChildren = bossElem.GetAttributeValue( consistentAttrib, true );
 	bossInfo.ChildOrder = getChildAttackOrder( bossElem, ECD_Sequential );
-	bossInfo.AttackStatus = getAttackStatus( bossElem );
+	bossInfo.AttackStatus = status;
 	bossInfo.Children.ResetBuffer( bossElem.GetChildrenCount() );
 	bossInfo.EntryId = bossId;
 	const auto& bossStats = saveFile.GetBossSaveData( bossName );
@@ -294,17 +300,17 @@ const CUnicodeView attackProgressName = L"Progress";
 const CUnicodeView unknownAttackChild = L"Unknown attack child: %0.";
 const CUnicodeView defaultIconName = L"FruitRed.png";
 const CUnicodeView unknownIconNameMsg = L"Unknown icon name: %0.";
-void CBossMap::addBossAttack( CXmlElement& elem, CEntryInfo& parent, CBossInfo& bossInfo, const CBossAttackSaveFile& saveFile, const CIniFile& aliasMap )
+void CBossMap::addBossAttack( CXmlElement& elem, CEntryInfo& parent, CBossInfo& bossInfo, const CBossAttackSaveFile& saveFile )
 {
 	const int attackId = bossInfo.AttackCount;
-	auto& newAttack = addBossAttackAttribs( elem, parent, attackId, bossInfo, saveFile, aliasMap );
+	auto& newAttack = addBossAttackAttribs( elem, parent, attackId, bossInfo, saveFile );
 
 	bool startTriggerFound = false;
 	bool endTriggerFound = false;
 	for( auto& child : elem.Children() ) {
 		const auto name = child.Name();
 		if( name == attackChildName ) {
-			addBossAttack( child, newAttack, bossInfo, saveFile, aliasMap );
+			addBossAttack( child, newAttack, bossInfo, saveFile );
 		} else if( name == timeName ) {
 			addAttackTime( child, attackId, bossInfo, newAttack, startTriggerFound, endTriggerFound );
 		} else if( name == startTriggerChildName ) {
@@ -313,6 +319,8 @@ void CBossMap::addBossAttack( CXmlElement& elem, CEntryInfo& parent, CBossInfo& 
 		} else if( name == endTriggerChildName ) {
 			endTriggerFound = true;
 			addAttackEndTrigger( child, bossInfo, newAttack );
+		} else if( name == pauseTriggerChildName ) {
+			addAttackPauseTrigger( child, bossInfo, newAttack );
 		} else if( name == abortTriggerChildName ) {
 			addAttackAbortTrigger( child, bossInfo, newAttack );
 		} else if( name == attackProgressName ) {
@@ -333,15 +341,15 @@ void CBossMap::addBossAttack( CXmlElement& elem, CEntryInfo& parent, CBossInfo& 
 	}
 }
 
-CBossAttackInfo& CBossMap::addBossAttackView( CXmlElement& elem, CEntryInfo& parent, CBossInfo& bossInfo, const CBossAttackSaveFile& saveFile, const CIniFile& aliasMap )
+CBossAttackInfo& CBossMap::addBossAttackView( CXmlElement& elem, CEntryInfo& parent, CBossInfo& bossInfo, const CBossAttackSaveFile& saveFile )
 {
 	const int attackId = bossInfo.AttackCount;
-	auto& newAttack = addBossAttackAttribs( elem, parent, attackId, bossInfo, saveFile, aliasMap );
+	auto& newAttack = addBossAttackAttribs( elem, parent, attackId, bossInfo, saveFile );
 
 	for( auto& child : elem.Children() ) {
 		const auto name = child.Name();
 		if( name == attackChildName ) {
-			addBossAttackView( child, newAttack, bossInfo, saveFile, aliasMap );
+			addBossAttackView( child, newAttack, bossInfo, saveFile );
 		}
 	}
 
@@ -349,14 +357,17 @@ CBossAttackInfo& CBossMap::addBossAttackView( CXmlElement& elem, CEntryInfo& par
 }
 
 const CUnicodeView notifyAddressChangeAttrib = L"notifyAddressChangeOnEnd";
-CBossAttackInfo& CBossMap::addBossAttackAttribs( CXmlElement& elem, CEntryInfo& parent, int attackId, CBossInfo& bossInfo, const CBossAttackSaveFile& saveFile, const CIniFile& aliasMap )
+CBossAttackInfo& CBossMap::addBossAttackAttribs( CXmlElement& elem, CEntryInfo& parent, int attackId, CBossInfo& bossInfo, const CBossAttackSaveFile& saveFile )
 {
-	const auto iconName = elem.GetAttributeValue( iconAttrib, defaultIconName );
 	const auto attackName = elem.GetAttributeValue( nameAttrib, CUnicodeView( L"Unknown" ) );
 	const auto attackVisualName = elem.GetAttributeValue( attackVisualNameAttrib, attackName );
-	const auto attackResultName = aliasMap.GetValue( bossInfo.VisualName, attackName, attackVisualName );
+	const auto attackResultName = userAliases->GetUserAttackName( bossInfo.KeyName, attackName, attackVisualName );
+	const auto iconBaseName = elem.GetAttributeValue( iconAttrib, defaultIconName );
+	const auto iconName = userAliases->GetUserIconPath( bossInfo.KeyName, attackName, iconBaseName );
+	const auto baseStatus = getAttackStatus( elem );
+	const auto attackStatus = userAliases->GetUserAttackStatus( bossInfo.KeyName, attackName, baseStatus );
 
-	const auto attackDeathData = saveFile.GetAttackData( bossInfo.VisualName, attackName );
+	const auto attackDeathData = saveFile.GetAttackData( bossInfo.KeyName, attackName );
 
 	const IImageRenderData* icon;
 	try {
@@ -366,11 +377,14 @@ CBossAttackInfo& CBossMap::addBossAttackAttribs( CXmlElement& elem, CEntryInfo& 
 		icon = &assets.GetOrCreateIcon( defaultIconName );
 	}
 
-	auto& newAttack = parent.Children.Add( elem, bossInfo, parent, attackId, UnicodeStr( attackName ), UnicodeStr( attackResultName ), *icon, attackDeathData.TotalPB, attackDeathData.SessionPB );
+	auto& newAttack = parent.Children.Add( bossInfo, parent, attackId, *icon, attackDeathData.TotalPB, attackDeathData.SessionPB );
+	newAttack.KeyName = UnicodeStr( attackName );
+	newAttack.UserVisualName = UnicodeStr( attackResultName );
+	newAttack.IconPath = iconName;
 	newAttack.ChildId = parent.Children.Size() - 1;
 	newAttack.Children.ResetBuffer( elem.GetChildrenCount() );
 	newAttack.ChildOrder = getChildAttackOrder( elem, parent.ChildOrder ); 
-	newAttack.AttackStatus = getAttackStatus( elem );
+	newAttack.AttackStatus = attackStatus;
 	newAttack.IsConsistentWithChildren = elem.GetAttributeValue( consistentAttrib, true );
 	bossInfo.AttackCount++;
 	newAttack.SessionStats = attackDeathData.SessionStats;
@@ -440,6 +454,11 @@ void CBossMap::addAttackStartTrigger( const CXmlElement& elem, CBossInfo& bossIn
 void CBossMap::addAttackEndTrigger( const CXmlElement& elem, CBossInfo& bossInfo, CBossAttackInfo& attackInfo )
 {
 	triggerCreater->AddAttackEndTrigger( elem, bossInfo, attackInfo, bossInfo.BossEvents );
+}
+
+void CBossMap::addAttackPauseTrigger( const CXmlElement& elem, CBossInfo& bossInfo, CBossAttackInfo& attackInfo )
+{
+	triggerCreater->AddAttackPauseTrigger( elem, bossInfo, attackInfo, bossInfo.BossEvents );
 }
 
 void CBossMap::addAttackAbortTrigger( const CXmlElement& elem, CBossInfo& bossInfo, CBossAttackInfo& attackInfo )
