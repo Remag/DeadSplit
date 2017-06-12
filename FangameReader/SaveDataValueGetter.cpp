@@ -24,6 +24,8 @@ CSaveDataValueGetter::CSaveDataValueGetter( const CXmlElement& elem )
 	fileGetter = CreateOwner<CBaseFileValueGetter>( elem );
 }
 
+CSaveDataValueGetter::CSaveDataValueGetter( CSaveDataValueGetter&& other ) = default;
+
 CSaveDataValueGetter::~CSaveDataValueGetter()
 {
 

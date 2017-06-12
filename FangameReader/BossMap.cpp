@@ -22,6 +22,7 @@
 #include <GlobalStrings.h>
 #include <BossTriggerCreater.h>
 #include <UserAliasFile.h>
+#include <SaveReaderData.h>
 
 namespace Fangame {
 
@@ -39,11 +40,11 @@ CBossMap::CBossMap( CUnicodeView bossFolder, CFangameVisualizerState& _visualize
 	events( &_visualizer.GetEventSystem() ),
 	processInfo( &_visualizer.GetProcessInfo() )
 {
-	triggerCreater = CreateOwner<CBossTriggerCreater>( _visualizer, *events, windowSettings, addressNameToInfo );
-	CXmlDocument layoutDoc;
-	auto& bossesRoot = initLayoutDocument( bossFolder, layoutDoc );
 	const auto aliasMapName = FileSystem::MergePath( bossFolder, Paths::FangameAliasesFile );
 	userAliases = CreateOwner<CUserAliasFile>( aliasMapName );
+	triggerCreater = CreateOwner<CBossTriggerCreater>( _visualizer, *events, windowSettings, assets, *userAliases, addressNameToInfo );
+	CXmlDocument layoutDoc;
+	auto& bossesRoot = initLayoutDocument( bossFolder, layoutDoc );
 
 	int bossId = 0;
 	for( auto& elem : bossesRoot.Children() ) {
@@ -120,27 +121,28 @@ const CUnicodeView heroYChildName = L"HeroY";
 const CUnicodeView roomIdChildName = L"RoomId";
 void CBossMap::initSaveDetector( const CXmlElement& elem )
 {
-	saveFileName = elem.GetAttributeValue( saveFileNameAttrib, CUnicodePart() );
+	auto& saveReaderData = gameSaveReaders.Add();
+	saveReaderData.SaveFileName = elem.GetAttributeValue( saveFileNameAttrib, CUnicodePart() );
+
 	for( const auto& child : elem.Children() ) {
 		const auto name = child.Name();
 
 		if( name == heroXChildName ) {
-			heroXGetter = createValueGetter( child );
+			addValueGetter( child, saveReaderData.HeroXGetters );
 		} else if( name == heroYChildName ) {
-			heroYGetter = createValueGetter( child );
+			addValueGetter( child, saveReaderData.HeroYGetters );
 		} else if( name == roomIdChildName ) {
-			roomIdGetter = createValueGetter( child );
+			addValueGetter( child, saveReaderData.RoomIdGetters );
 		}
 	}
 }
 
-CPtrOwner<CSaveDataValueGetter> CBossMap::createValueGetter( const CXmlElement& elem )
+void CBossMap::addValueGetter( const CXmlElement& elem, CArray<CSaveDataValueGetter>& result )
 {
 	try {
-		return CreateOwner<CSaveDataValueGetter>( elem );
+		result.Add( elem );
 	} catch( CException& e ) {
 		Log::Exception( e );
-		return nullptr;
 	}
 }
 
@@ -156,18 +158,12 @@ void CBossMap::loadAddressSpace( const CXmlElement& elem, CFangameChangeDetector
 	if( !windowSettings.ShouldReadMemory() ) {
 		return;
 	}
-
-	static const CEnumDictionary<TAddressValueType, AVT_EnumCount, int> addressTypeSizeDict {
-		{ AVT_Int32, 4 },
-		{ AVT_Double, 8 },
-	};
-
 	for( const auto& child : elem.Children() ) {
 		const auto addressName = child.Name();
 		const CUnicodeString finderType = addressFinderPrefix + child.GetAttributeValue( finderTypeAttrib, CUnicodePart() );
 		auto finder = CreateUniqueObject<IAddressFinder>( finderType, child );
 		const auto valueType = getAddressValueType( child );
-		const int addressId = changeDetector.RegisterAddress( move( finder ), addressTypeSizeDict[valueType] );
+		const int addressId = changeDetector.RegisterAddress( move( finder ), valueType );
 		addressNameToInfo.Add( addressName, addressId, valueType );
 	}
 }
@@ -193,6 +189,7 @@ const CUnicodeView startTriggerChildName = L"StartTrigger";
 const CUnicodeView endTriggerChildName = L"EndTrigger";
 const CUnicodeView pauseTriggerChildName = L"PauseTrigger";
 const CUnicodeView abortTriggerChildName = L"AbortTrigger";
+const CUnicodeView actionChildName = L"Action";
 const CUnicodeView unknownBossChild = L"Unknown boss child: %0.";
 void CBossMap::loadBoss( CXmlElement& bossElem, int bossId, const CBossAttackSaveFile& saveFile )
 {
@@ -323,6 +320,8 @@ void CBossMap::addBossAttack( CXmlElement& elem, CEntryInfo& parent, CBossInfo& 
 			addAttackPauseTrigger( child, bossInfo, newAttack );
 		} else if( name == abortTriggerChildName ) {
 			addAttackAbortTrigger( child, bossInfo, newAttack );
+		} else if( name == actionChildName ) {
+			addAttackAction( child, bossInfo, newAttack );
 		} else if( name == attackProgressName ) {
 			addAttackProgress( child, newAttack );
 		} else {
@@ -330,9 +329,10 @@ void CBossMap::addBossAttack( CXmlElement& elem, CEntryInfo& parent, CBossInfo& 
 		}
 	}
 
-	if( !startTriggerFound && endTriggerFound ) {
+	if( !startTriggerFound ) {
 		addDefaultStartTrigger( bossInfo, newAttack );
-	} else if( !endTriggerFound && startTriggerFound ) {
+	} 
+	if( !endTriggerFound ) {
 		addDefaultEndTrigger( bossInfo, attackId );
 	}
 
@@ -464,6 +464,11 @@ void CBossMap::addAttackPauseTrigger( const CXmlElement& elem, CBossInfo& bossIn
 void CBossMap::addAttackAbortTrigger( const CXmlElement& elem, CBossInfo& bossInfo, CBossAttackInfo& attackInfo )
 {
 	triggerCreater->AddAttackAbortTrigger( elem, bossInfo, attackInfo, bossInfo.BossEvents );
+}
+
+void CBossMap::addAttackAction( const CXmlElement& elem, CBossInfo& bossInfo, CBossAttackInfo& attackInfo )
+{
+	triggerCreater->AddAttackAction( elem, bossInfo, attackInfo, bossInfo.BossEvents );
 }
 
 void CBossMap::addBossArea( const CXmlElement& elem, CBossInfo& bossInfo )

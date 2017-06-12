@@ -42,14 +42,15 @@ public:
 	int GetBossId() const;
 	CBossInfo& GetBossInfo() const
 		{ return srcBossInfo; }
-	TVector2 GetTableScale() const
-		{ return TVector2{ tableVerticalScale, tableVerticalScale }; }
+	float GetTableScale() const
+		{ return tableVerticalScale; }
 
 	void ResizeTable( CPixelVector newSize );
 	int GetTableView() const
 		{ return currentTableView; }
 	void SetTableView( int newView );
 	void ResetTable( CPixelVector newSize, int newView );
+	void ResetAttack( int attackId );
 
 	void EmptySessionCounts();
 	void EmptyTotalCounts();
@@ -166,7 +167,6 @@ private:
 	CPtrOwner<CIcon> cycleIcon;
 	CPtrOwner<CIcon> prevTableIcon;
 	CPtrOwner<CIcon> nextTableIcon;
-	CArray<CIcon> footerIcons;
 
 	CArray<int> openSubsplits;
 	int maxRowCount = 0;
@@ -203,8 +203,6 @@ private:
 	void initializeCycleIcon();
 	void initializePrevTableIcon();
 	void initializeNextTableIcon();
-	void initializeSettingsIcon();
-	void initializeOpenIcon();
 	void doClearTableColors();
 	void clearBaseColors();
 
@@ -265,7 +263,6 @@ private:
 	void invalidateTable();
 
 	void clearHeaderHighlights();
-	void clearFooterHighlights();
 	void clearSubsplitIcon();
 	void clearAttackHighlight();
 	IMouseTarget* getHeaderMouseTarget( CPixelVector mousePos );

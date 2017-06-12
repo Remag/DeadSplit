@@ -3,6 +3,7 @@
 
 namespace Fangame {
 
+class CFangameConnector;
 //////////////////////////////////////////////////////////////////////////
 
 // Mechanism for scanning active processes for known fangames.
@@ -13,6 +14,9 @@ public:
 
 	// Disable the searching thread until it's needed again.
 	void SuspendSearch();
+
+	// Create a link between a given layout and a window.
+	void AddConnection( CUnicodePart layoutName, CUnicodePart titleMask, CUnicodePart exeName );
 
 	// Search for active fangames.
 	COptional<CFangameProcessInfo> FindFangame() const;
@@ -25,10 +29,14 @@ public:
 private:
 	CUnicodeString parentFolder;
 	CArray<CUnicodeString> bossFolderNames;
+	CPtrOwner<CFangameConnector> baseConnector;
+	CPtrOwner<CFangameConnector> userConnector;
 
 	mutable CReadWriteSection resultSecion;
 	mutable CArray<CFangameProcessInfo> searchResultBuffer;
 	mutable CThread searchThread;
+
+	CReadWriteSection connectorSection;
 
 	struct CFangameWindowInfo {
 		HWND Window;
@@ -39,6 +47,7 @@ private:
 	mutable CAtomic<bool> threadCloseFlag;
 	mutable CAtomic<bool> threadSuspendFlag;
 
+	void initializeConnectors( CUnicodeView bossesFolder );
 	void initSearthThread() const;
 	void checkThreadHealth() const;
 
@@ -50,6 +59,7 @@ private:
 	bool fangameWindowExists( HWND targetWindow ) const;
 
 	static BOOL CALLBACK findAllWindowsProcedure( HWND window, LPARAM detector );
+	CUnicodeView findConnectorName( HWND window ) const;
 	static CUnicodeView getFangameWindowName( const CFangameDetector* detector );
 	static bool hasDeathCount( CUnicodeView title );
 	CUnicodeString getFullFangameFolderPath( CUnicodeView folderName ) const;

@@ -9,6 +9,7 @@
 #include <AvoidanceTimeline.h>
 #include <BossInfo.h>
 #include <VisualizerActionController.h>
+#include <FooterIconPanel.h>
 
 namespace Fangame {
 
@@ -16,14 +17,7 @@ namespace Fangame {
 
 void CVisualizerMouseController::OnMouseMove()
 {
-	auto& visualizer = visualizerState.GetVisualizer();
-	if( !visualizer.HasActiveTable() ) {
-		return;
-	}
-
-	const auto pos = MousePixelPos();
-	auto& deathTable = visualizer.GetActiveTable();
-	const auto targetEntry = isTimelineRecording() ? deathTable.OnRecordingMouseAction( pos ) : deathTable.OnMouseAction( pos );
+	const auto targetEntry = findTargetEntry();
 	if( targetEntry != nullptr ) {
 		targetEntry->OnMouseMove();
 	}
@@ -32,24 +26,18 @@ void CVisualizerMouseController::OnMouseMove()
 void CVisualizerMouseController::OnMouseLeave()
 {
 	auto& visualizer = visualizerState.GetVisualizer();
-	if( !visualizer.HasActiveTable() ) {
-		return;
+	if( visualizer.HasActiveTable() ) {
+		auto& deathTable = visualizer.GetActiveTable();
+		deathTable.OnMouseLeave();
 	}
 
-	auto& deathTable = visualizer.GetActiveTable();
-	deathTable.OnMouseLeave();
+	auto& footerIcons = visualizer.GetFooterIcons();
+	footerIcons.ClearHighlight();
 }
 
 void CVisualizerMouseController::OnMouseClick()
 {
-	auto& visualizer = visualizerState.GetVisualizer();
-	if( !visualizer.HasActiveTable() ) {
-		return;
-	}
-
-	auto& deathTable = visualizer.GetActiveTable();
-	const auto pos = MousePixelPos();
-	const auto targetEntry = isTimelineRecording() ? deathTable.OnRecordingMouseAction( pos ) : deathTable.OnMouseAction( pos );
+	const auto targetEntry = findTargetEntry();
 	if( targetEntry != nullptr ) {
 		targetEntry->OnMouseClick( visualizerState.GetController() );
 	}
@@ -57,17 +45,25 @@ void CVisualizerMouseController::OnMouseClick()
 
 void CVisualizerMouseController::OnMouseDClick()
 {
-	auto& visualizer = visualizerState.GetVisualizer();
-	if( !visualizer.HasActiveTable() ) {
-		return;
-	}
-
-	auto& deathTable = visualizer.GetActiveTable();
-	const auto pos = MousePixelPos();
-	const auto targetEntry = isTimelineRecording() ? deathTable.OnRecordingMouseAction( pos ) : deathTable.OnMouseAction( pos );
+	const auto targetEntry = findTargetEntry();
 	if( targetEntry != nullptr ) {
 		targetEntry->OnMouseDClick( visualizerState.GetController() );
 	}
+}
+
+IMouseTarget* CVisualizerMouseController::findTargetEntry()
+{
+	auto& visualizer = visualizerState.GetVisualizer();
+	const auto pos = MousePixelPos();
+	auto& footerIcons = visualizer.GetFooterIcons();
+	auto targetEntry = footerIcons.OnMouseAction( pos );
+
+	if( targetEntry == nullptr && visualizer.HasActiveTable() ) {
+		auto& deathTable = visualizer.GetActiveTable();
+		targetEntry = isTimelineRecording() ? deathTable.OnRecordingMouseAction( pos ) : deathTable.OnMouseAction( pos );
+	}
+
+	return targetEntry;
 }
 
 bool CVisualizerMouseController::isTimelineRecording() const

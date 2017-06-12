@@ -8,17 +8,22 @@ class CBossMap;
 class CWindowSettings;
 class CTableLayout;
 class CAssetLoader;
+class CFooterIconPanel;
 struct CBossInfo;
 //////////////////////////////////////////////////////////////////////////
 
 // Mechanism for showing fangame death table and manipulating its contents.
 class CFangameVisualizer {
 public:
-	explicit CFangameVisualizer( const CWindowSettings& windowSettings, CBossMap& bossInfo, CAssetLoader& assets, IUserActionController& controller, bool drawAutoCycle );
+	explicit CFangameVisualizer( const CWindowSettings& windowSettings, CBossMap& bossInfo, CAssetLoader& assets, IUserActionController& controller, 
+		CFooterIconPanel& footerIcons, bool drawAutoCycle );
 	~CFangameVisualizer();
 
 	const CTableLayout& GetLayout() const
 		{ return *tableLayout; }
+		
+	CFooterIconPanel& GetFooterIcons()
+		{ return footerIcons; }
 
 	bool HasActiveTable() const
 		{ return currentTablePos < bossTables.Size(); }
@@ -54,6 +59,7 @@ private:
 	CPtrOwner<CTableLayout> tableLayout;
 	CBossMap& bossInfo;
 	CAssetLoader& assets;
+	CFooterIconPanel& footerIcons;
 	
 	// Visual representation of the death count on the currentBoss.
 	CStaticArray<CPtrOwner<CBossDeathTable>> bossTables;

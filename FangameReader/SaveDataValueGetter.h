@@ -10,6 +10,7 @@ class IExpression;
 class CSaveDataValueGetter {
 public:
 	explicit CSaveDataValueGetter( const CXmlElement& elem );
+	CSaveDataValueGetter( CSaveDataValueGetter&& other );
 	~CSaveDataValueGetter();
 
 	int GetValueData( CFile& saveFile ) const;

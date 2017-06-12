@@ -25,6 +25,7 @@ class CFangameDetector;
 class CMouseInputSwitcher;
 class CSessionMonitor;
 class CAutoUpdater;
+class CFooterIconPanel;
 struct CFangameProcessInfo;
 struct CBossInfo;
 struct CActionKeyInfo;
@@ -37,7 +38,7 @@ class CFangameVisualizerState : public IState {
 public:
 	explicit CFangameVisualizerState( CFangameProcessInfo _processInfo, CEventSystem& eventSystem, CWindowSettings& windowSettings,
 		CAssetLoader& assets, CFangameInputHandler& inputHandler, CFangameDetector& detector, CSessionMonitor& sessionMonitor,
-		CAutoUpdater& updater );
+		CAutoUpdater& updater, CFooterIconPanel& footerIcons );
 	~CFangameVisualizerState();
 
 	CVisualizerActionController& GetController()
@@ -113,8 +114,11 @@ private:
 	CEventSystem& eventSystem;
 	// Mechanism for font rendering.
 	CAssetLoader& assets;
+	// Footer icons.
+	CFooterIconPanel& footerIcons;
 
-	CPtrOwner<CChangingFile> saveFile;
+
+	CArray<CPtrOwner<CChangingFile>> saveFiles;
 
 	// Information about currently saved hero position.
 	CPtrOwner<CTextInfoPanel> heroPosPanel;
@@ -146,9 +150,10 @@ private:
 	CEventTarget createStatusChangeEvent( CEventSystem& events );
 	bool isFangameProcessActive() const;
 	void checkGameSave();
+	void checkGameSaveFile( int filePos );
 	void initBossTable();
-	int getSaveDataValue( CSaveDataValueGetter* getter, CFile& file, int defaultValue );
-	bool updateSaveDataValue( CSaveDataValueGetter* getter, CFile& file, int defaultValue, int& result );
+	int getSaveDataValue( CArrayView<CSaveDataValueGetter> getters, CFile& file, int defaultValue );
+	bool updateSaveDataValue( CArrayBuffer<CSaveDataValueGetter> getters, CFile& file, int defaultValue, int& result );
 	void initTextPanel();
 	void setTextPanelPosition( int roomId, int x, int y );
 

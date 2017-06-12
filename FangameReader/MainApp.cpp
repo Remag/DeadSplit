@@ -32,8 +32,6 @@ void CMainApp::OnMainWindowResize( CVector2<int> newSize, bool )
 	eventSystem.Notify( TWindowChangeEvent{} );
 }
 
-const CUnicodeView settingsPath = L"userSettings.ini";
-const CUnicodeView inputSettingsName = L"inputSettings.ini";
 CPtrOwner<IState> CMainApp::onInitialize( CUnicodeView commandLine )
 {
 	Relib::SetAppTitle( L"DeadSplit" );
@@ -43,7 +41,7 @@ CPtrOwner<IState> CMainApp::onInitialize( CUnicodeView commandLine )
 		return nullptr;
 	}
 
-	windowSettings = CreateOwner<CWindowSettings>( settingsPath );
+	windowSettings = CreateOwner<CWindowSettings>( Paths::UserSettingsFile );
 	const auto fps = windowSettings->GetFPS();
 	CPtrOwner<CEngine> newEngine = CreateOwner<CLazyFixedStepEngine>( fps );
 	SetEngine( move( newEngine ) );

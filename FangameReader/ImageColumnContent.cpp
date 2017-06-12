@@ -39,10 +39,10 @@ float CImageColumnData::GetMaxRowPixelWidth() const
 	return maxValue;
 }
 
-bool CImageColumnData::UpdateAttackData( const CBossInfo&, int )
+bool CImageColumnData::UpdateAttackData( const CBossInfo& bossInfo, int attackPos )
 {
-	//const auto& attack = FindAttackById( bossInfo, attackPos );
-	//images[attackPos] = attack.Icon;
+	const auto& attack = FindAttackById( bossInfo, attackPos );
+	images[attackPos] = attack.Icon;
 	return false;
 }
 
@@ -85,15 +85,19 @@ float CImageColumnData::getQuadPixelWidth( const ISpriteRenderData& quad ) const
 //////////////////////////////////////////////////////////////////////////
 
 const CExternalNameConstructor<CImageColumnContent> imageCreator{ L"ColumnContent.Image" };
-const CUnicodeView imageHMarginAttrib = L"hMargin";
-const CUnicodeView imageVMarginAttrib = L"vMargin";
+const CUnicodeView imageLMarginAttrib = L"lMargin";
+const CUnicodeView imageRMarginAttrib = L"rMargin";
+const CUnicodeView imageTMarginAttrib = L"tMargin";
+const CUnicodeView imageBMarginAttrib = L"bMargin";
 CImageColumnContent::CImageColumnContent( const CXmlElement& elem, CAssetLoader& _assets, const CWindowSettings& ) :
 	assets( _assets ),
 	imagePathTemplate( elem.GetText().TrimSpaces() ),
-	params( FindSubstituteVariables( imagePathTemplate ) ),
-	imageMargin( elem.GetAttributeValue( imageHMarginAttrib, 0.0f ), elem.GetAttributeValue( imageVMarginAttrib, 0.0f ) )
+	params( FindSubstituteVariables( imagePathTemplate ) )
 {
-
+	imageMargins.X() = elem.GetAttributeValue( imageLMarginAttrib, 0.0f );
+	imageMargins.Y() = elem.GetAttributeValue( imageTMarginAttrib, 0.0f );
+	imageMargins.Z() = elem.GetAttributeValue( imageRMarginAttrib, 0.0f );
+	imageMargins.W() = elem.GetAttributeValue( imageBMarginAttrib, 0.0f );
 }
 
 CImageColumnContent::~CImageColumnContent()
@@ -102,8 +106,8 @@ CImageColumnContent::~CImageColumnContent()
 
 CPtrOwner<IColumnContentData> CImageColumnContent::CreateFooterData( const CBossInfo& bossInfo, float linePixelHeight, TTableColumnZone zone ) const
 {
-	auto result = CreateOwner<CImageColumnData>( 1, imageMargin.X() );
-	const auto imageHeight = linePixelHeight - imageMargin.Y();
+	auto result = CreateOwner<CImageColumnData>( 1, imageMargins.X() + imageMargins.Z() );
+	const auto imageHeight = linePixelHeight - imageMargins.Y() - imageMargins.W();
 	const auto iconPath = SubstituteEntryParams( imagePathTemplate, params, bossInfo, zone );
 	const auto& image = createImage( iconPath );
 	result->AddImage( image );
@@ -114,9 +118,9 @@ CPtrOwner<IColumnContentData> CImageColumnContent::CreateFooterData( const CBoss
 
 CPtrOwner<IColumnContentData> CImageColumnContent::CreateAttackData( const CBossInfo& bossInfo, float linePixelHeight, TTableColumnZone zone ) const
 {
-	auto result = CreateOwner<CImageColumnData>( bossInfo.AttackCount, imageMargin.X() );
+	auto result = CreateOwner<CImageColumnData>( bossInfo.AttackCount, imageMargins.X() + imageMargins.Z() );
 	
-	const auto imageHeight = linePixelHeight - imageMargin.Y();
+	const auto imageHeight = linePixelHeight - imageMargins.Y() - imageMargins.W();
 	addEntryImages( bossInfo, imageHeight, zone, *result );
 
 	return move( result );
@@ -151,42 +155,12 @@ const IImageRenderData& CImageColumnContent::createImage( CUnicodePart imagePath
 CPixelRect CImageColumnContent::getQuadRect( float imageHeight, TIntVector2 imageTextureSize ) const
 {
 	const auto widthToHeight = imageTextureSize.X() * 1.0f / imageTextureSize.Y();
-	TVector2 imageSize{ widthToHeight * imageHeight, imageHeight };
-	return CPixelRect( CreateCenterRect( imageSize ) );
-}
-
-void CImageColumnContent::DrawImage( const IRenderParameters& renderParams, const IColumnContentData& data, const TMatrix3& parentTransform, CClipVector cellSize ) const
-{
-	const auto& imageData = getImageData( data );
-	const auto images = imageData.GetImages();
-	const auto quads = imageData.GetQuads();
-	assert( images.Size() == quads.Size() );
-	TMatrix3 modelToClip = parentTransform;
-	const auto baseScaleX = modelToClip( 0, 0 );
-	const auto baseScaleY = modelToClip( 1, 1 );
-	const auto cellCenterOffset = 0.5f * cellSize;
-	const auto& pixelToClip = Coordinates::PixelToClip();
-	const CClipVector pixelSize{ pixelToClip( 0, 0 ), pixelToClip( 1, 1 ) };
-	modelToClip( 2, 0 ) += RoundFloatTo( cellCenterOffset.X(), pixelSize.X() );
-	modelToClip( 2, 1 ) += RoundFloatTo( cellCenterOffset.Y(), pixelSize.Y() );
-	for( int i = images.Size() - 1; i >= 0; i-- ) {
-		const auto cellWidth = imageData.GetRowPixelWidth( i ) * baseScaleX;
-		if( cellWidth > cellSize.X() ) {
-			const auto scaleFactor = cellSize.X() / cellWidth;
-			modelToClip( 0, 0 ) = baseScaleX * scaleFactor;
-			modelToClip( 1, 1 ) = baseScaleY * scaleFactor;
-			drawImage( renderParams, *quads[i], *images[i], modelToClip );
-			modelToClip( 0, 0 ) = baseScaleX;
-			modelToClip( 1, 1 ) = baseScaleY;
-		} else {
-			drawImage( renderParams, *quads[i], *images[i], modelToClip );
-		}
-		modelToClip( 2, 1 ) += cellSize.Y();
-	}
-}
-
-void CImageColumnContent::DrawText( const IRenderParameters&, const IColumnContentData&, CArrayView<CColor>, const TMatrix3&, CPixelVector, float ) const
-{
+	const TVector2 imageSize{ widthToHeight * imageHeight, imageHeight };
+	auto centerRect = CreateCenterRect( imageSize );
+	const auto widthOffset = 0.5f * ( imageMargins.X() - imageMargins.Z() );
+	const auto heightOffset = 0.5f * ( imageMargins.W() - imageMargins.Y() );
+	centerRect.OffsetRect( TVector2( widthOffset, heightOffset ) );
+	return CPixelRect{ centerRect };
 }
 
 const CImageColumnData& CImageColumnContent::getImageData( const IColumnContentData& data ) const

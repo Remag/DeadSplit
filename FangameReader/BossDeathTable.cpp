@@ -389,8 +389,6 @@ void CBossDeathTable::initializeIcons()
 	initializeCycleIcon();
 	initializePrevTableIcon();
 	initializeNextTableIcon();
-	initializeSettingsIcon();
-	initializeOpenIcon();
 }
 
 void CBossDeathTable::initializeCycleIcon()
@@ -429,28 +427,6 @@ void CBossDeathTable::initializeNextTableIcon()
 	const auto nextTableAction = []( IUserActionController& controller ){ controller.SetNextTable(); };
 	auto mouseTarget = CreateOwner<CIconMouseTarget>( nextTableAction );
 	nextTableIcon->SetMouseTarget( move( mouseTarget ) );
-}
-
-void CBossDeathTable::initializeSettingsIcon()
-{
-	auto& settingsIcon = footerIcons.Add( CPixelRect{ 4, 28, 24, 8 } );
-	settingsIcon.SetHitboxMargins( TVector4{ 4.0f, 8.0f, 4.0f, 8.0f } );
-	settingsIcon.SetImageData( assets.GetOrCreateIcon( L"Counter\\Gear.png" ), 0 );
-	settingsIcon.SetImageData( assets.GetOrCreateIcon( L"Counter\\GearHL.png" ), 1 );
-	const auto settingsAction = []( IUserActionController& controller ){ controller.ShowSettings(); };
-	auto mouseTarget = CreateOwner<CIconMouseTarget>( settingsAction );
-	settingsIcon.SetMouseTarget( move( mouseTarget ) );
-}
-
-void CBossDeathTable::initializeOpenIcon()
-{
-	auto& openIcon = footerIcons.Add( CPixelRect{ 32, 28, 52, 8 } );
-	openIcon.SetHitboxMargins( TVector4{ 4.0f, 8.0f, 4.0f, 8.0f } );
-	openIcon.SetImageData( assets.GetOrCreateIcon( L"Counter\\OpenFile.png" ), 0 );
-	openIcon.SetImageData( assets.GetOrCreateIcon( L"Counter\\OpenFileHL.png" ), 1 );
-	const auto openAction = []( IUserActionController& controller ){ controller.OpenFangame(); };
-	auto mouseTarget = CreateOwner<CIconMouseTarget>( openAction );
-	openIcon.SetMouseTarget( move( mouseTarget ) );
 }
 
 void CBossDeathTable::clearBaseColors()
@@ -575,10 +551,6 @@ void CBossDeathTable::resizeIcons()
 {
 	TMatrix3 modelToWorld( 1.0f );
 	modelToWorld( 0, 0 ) = modelToWorld( 1, 1 ) = tableVerticalScale;
-	for( auto& icon : footerIcons ) {
-		icon.SetModelToWorld( modelToWorld );
-	}
-
 	modelToWorld( 2, 0 ) = tableWindowSize.X();
 	modelToWorld( 2, 1 ) = tableWindowSize.Y();
 	cycleIcon->SetModelToWorld( modelToWorld );
@@ -616,9 +588,16 @@ void CBossDeathTable::ResetTable( CPixelVector newSize, int newView )
 	initializeTableView( newView );
 	resizeIcons();
 	clearHeaderHighlights();
-	clearFooterHighlights();
 	highlightedSubsplitIconPos = NotFound;
 	invalidateTable();
+}
+
+void CBossDeathTable::ResetAttack( int attackId )
+{
+	for( auto& column : columnList ) {
+		column.ContentData->UpdateAttackData( srcBossInfo, attackId );
+	}
+	invalidateRow( attackId );
 }
 
 void CBossDeathTable::EmptySessionCounts()
@@ -1098,7 +1077,7 @@ void CBossDeathTable::drawAttackIcons( const IRenderParameters& renderParams ) c
 		for( const auto& column : footer.Columns ) {
 			CClipVector cellSize( column.PixelWidth * modelToClip( 0 , 0 ), lineClipHeight );
 			modelToClip( 2, 0 ) = baseModelToClip( 2, 0 ) + modelToClip( 0, 0 ) * column.PixelOffset;
-			column.ColumnData.Content->DrawImage( renderParams, *column.ContentData, modelToClip, cellSize );
+			column.ContentData->DrawCellImage( renderParams, 0, modelToClip, cellSize );
 		}
 		modelToClip( 2, 1 ) -= lineClipHeight;
 	}
@@ -1108,12 +1087,6 @@ void CBossDeathTable::drawAttackIcons( const IRenderParameters& renderParams ) c
 		nextTableIcon->Draw( renderParams, 0 );
 		const auto cycleStatus = windowSettings.GetViewCyclePeriod() <= 0 ? 0 : cycleIconStatus;
 		cycleIcon->Draw( renderParams, cycleStatus );
-	}
-
-	if( windowSettings.ShowFooterIcons() ) {
-		for( const auto& icon : footerIcons ) {
-			icon.Draw( renderParams, 0 );
-		}
 	}
 
 	renderer.FinalizeImageDrawing();
@@ -1202,7 +1175,7 @@ void CBossDeathTable::drawAttackText( const IRenderParameters& renderParams ) co
 			CPixelVector cellSize( column.PixelWidth, linePixelHeight );
 			const auto currentColor = column.Zone == TCZ_Prefix ? emptyColor : footerColor;
 			modelToClip( 2, 0 ) = baseModelToClip( 2, 0 ) + modelToClip( 0, 0 ) * column.PixelOffset;
-			column.ColumnData.Content->DrawText( renderParams, *column.ContentData, CArrayView<CColor>( currentColor ), modelToClip, cellSize, lineClipHeight );
+			column.ContentData->DrawCellText( renderParams, 0, currentColor, modelToClip, cellSize );
 		}
 		modelToClip( 2, 1 ) -= lineClipHeight;
 	}
@@ -1382,7 +1355,6 @@ IMouseTarget* CBossDeathTable::OnMouseAction( CPixelVector pos )
 	const auto attackPos = findAttackPos( attackIndex );
 	if( attackPos != NotFound ) {
 		clearHeaderHighlights();
-		clearFooterHighlights();
 		return getAttackMouseTarget( attackPos, pos );
 	} else {
 		return getFooterMouseTarget( pos );
@@ -1391,23 +1363,11 @@ IMouseTarget* CBossDeathTable::OnMouseAction( CPixelVector pos )
 
 IMouseTarget* CBossDeathTable::OnRecordingMouseAction( CPixelVector mousePos )
 {
-	clearFooterHighlights();
 	clearHeaderHighlights();
 	invalidateHeader();
 	invalidateFooters();
 	if( windowSettings.ShowHeaderIcons() && checkIconHighlight( *cycleIcon, mousePos ) ) {
 		return cycleIcon->GetMouseTarget();
-	}
-
-	if( !windowSettings.ShowFooterIcons() ) {
-		return nullptr;
-	}
-
-	for( auto& icon : footerIcons ) {
-		if( icon.Has( mousePos ) ) {
-			icon.SetHighlight( true );
-			return icon.GetMouseTarget();
-		}
 	}
 
 	return nullptr;
@@ -1418,13 +1378,6 @@ void CBossDeathTable::clearHeaderHighlights()
 	cycleIcon->SetHighlight( false );
 	prevTableIcon->SetHighlight( false );
 	nextTableIcon->SetHighlight( false );
-}
-
-void CBossDeathTable::clearFooterHighlights()
-{
-	for( auto& icon : footerIcons ) {
-		icon.SetHighlight( false );
-	}
 }
 
 void CBossDeathTable::clearSubsplitIcon()
@@ -1447,7 +1400,6 @@ void CBossDeathTable::OnMouseLeave()
 {
 	clearBaseColors();
 	clearHeaderHighlights();
-	clearFooterHighlights();
 	invalidateFooters();
 	invalidateHeader();
 	clearSubsplitIcon();
@@ -1456,7 +1408,6 @@ void CBossDeathTable::OnMouseLeave()
 
 IMouseTarget* CBossDeathTable::getHeaderMouseTarget( CPixelVector mousePos ) 
 {
-	clearFooterHighlights();
 	if( !windowSettings.ShowHeaderIcons() ) {
 		return bossMouseTarget;
 	}
@@ -1487,16 +1438,6 @@ IMouseTarget* CBossDeathTable::getHeaderMouseTarget( CPixelVector mousePos )
 IMouseTarget* CBossDeathTable::getFooterMouseTarget( CPixelVector mousePos ) 
 {
 	clearHeaderHighlights();
-	clearFooterHighlights();
-
-	if( windowSettings.ShowFooterIcons() ) {
-		for( auto& icon : footerIcons ) {
-			if( icon.Has( mousePos ) ) {
-				icon.SetHighlight( true );
-				return icon.GetMouseTarget();
-			}
-		}
-	}
 
 	const auto footerOffset = tableWindowSize.Y() - tableVerticalScale * ( getHeaderHeight() + linePixelHeight * currentRowCount );
 	const auto footerHeight = getFooterHeight() * tableVerticalScale;

@@ -3,6 +3,7 @@
 
 namespace Fangame {
 
+class IMouseTarget;
 class CFangameVisualizerState;
 //////////////////////////////////////////////////////////////////////////
 
@@ -18,6 +19,7 @@ public:
 private:
 	CFangameVisualizerState& visualizerState;	
 
+	IMouseTarget* findTargetEntry();
 	bool isTimelineRecording() const;
 };
 

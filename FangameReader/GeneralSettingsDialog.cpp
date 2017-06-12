@@ -14,7 +14,7 @@ CGeneralSettingsDialog::CGeneralSettingsDialog( HWND owner, CWindowSettings& _wi
 	windowSettings( _windowSettings )
 {
 	CreateDialog( ::GetModuleHandle( nullptr ), MAKEINTRESOURCE( IDD_GeneralSettings ), owner, dialogProcedure );
-	::SetWindowPos( dialogWnd, owner, 13, 33, 275, 321, SWP_NOZORDER );
+	::SetWindowPos( dialogWnd, owner, 13, 33, 275, 324, SWP_NOZORDER );
 	::ShowWindow( dialogWnd, 0 );
 }
 

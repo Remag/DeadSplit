@@ -5,6 +5,8 @@
 #include <BossInfo.h>
 
 #include <FangameVisualizerState.h>
+#include <FangameVisualizer.h>
+#include <BossDeathTable.h>
 #include <AvoidanceTimeline.h>
 
 #include <DelayedTimerAction.h>
@@ -13,6 +15,8 @@
 #include <AddressInfo.h>
 #include <FangameChangeDetector.h>
 #include <WindowSettings.h>
+#include <AssetLoader.h>
+#include <UserAliasFile.h>
 
 namespace Fangame {
 
@@ -245,48 +249,16 @@ static void startAttackReaction( CFangameVisualizerState& visualizer, int attack
 	doStartBossAttack( visualizer, attackId );
 }
 
-static double getTimeDelta( DWORD start, DWORD end )
-{
-	return ( end - start ) / 1000.0;
-}
-
 void CBossTriggerCreater::AddTimeStartTrigger( double startTime, int attackId, CArray<CBossEventData>& result ) const
 {
-	const auto startCondition = [startTime]( const CFangameEvent<Events::CTimePassedEvent>& e ) {
-		const auto& timeEvent = static_cast<const CUpdateEvent&>( e );
-		const auto& visualizer = e.GetVisualizer();
-		const auto& timeline = visualizer.GetTimeline();
-		if( timeline.GetStatus() != BTS_Recording ) {
-			return false;
-		}
-		const auto bossStart = timeline.GetBossStartTime();
-		return getTimeDelta( bossStart, timeEvent.GetTime() ) > startTime;
-	};
-
 	const auto startReaction = [attackId]( CFangameVisualizerState& visualizer ) { startAttackReaction( visualizer, attackId ); };
-	CAttackEventAction<Events::CTimePassedEvent> startAction( startCondition, startReaction );
-	CActionOwner<void( const CEvent<Events::CTimePassedEvent>& )> startEvent( move( startAction ) );
-
-	result.Add( CEvent<Events::CTimePassedEvent>::GetEventClassId(), move( startEvent ) );
+	addTimeEndTrigger( startTime, startReaction, result );
 }
 
 void CBossTriggerCreater::AddTimeEndTrigger( double endTime, int attackId, CArray<CBossEventData>& result ) const
 {
-	const auto endCondition = [endTime]( const CFangameEvent<Events::CTimePassedEvent>& e ) {
-		const auto& timeEvent = static_cast<const CUpdateEvent&>( e );
-		const auto& visualizer = e.GetVisualizer();
-		const auto& timeline = visualizer.GetTimeline();
-		if( timeline.GetStatus() != BTS_Recording ) {
-			return false;
-		}
-		const auto startTime = timeline.GetBossStartTime();
-		return getTimeDelta( startTime, timeEvent.GetTime() ) > endTime;
-	};
-
 	const auto endReaction = [attackId]( CFangameVisualizerState& visualizer ) { doEndAttackReaction( visualizer, attackId ); };
-	CAttackEventAction<Events::CTimePassedEvent> endAction( endCondition, endReaction );
-	CActionOwner<void( const CEvent<Events::CTimePassedEvent>& )> endEvent( move( endAction ) );
-	result.Add( CEvent<Events::CTimePassedEvent>::GetEventClassId(), move( endEvent ) );
+	addTimeEndTrigger( endTime, endReaction, result );
 }
 
 void CBossTriggerCreater::AddTimeDurationTrigger( double duration, int attackId, CArray<CBossEventData>& result ) const
@@ -317,8 +289,98 @@ void CBossTriggerCreater::AddDefaultAttackEndTrigger( int attackId, CArray<CBoss
 	addGameSaveTrigger( roomId, bounds, reaction, result );
 }
 
+const CUnicodeView actionTypeAttrib = L"type";
+const CUnicodeView changeAttackName = L"ChangeAttack";
+const CUnicodeView changeAttackPermanentName = L"ChangeAttackPermanent";
+const CUnicodeView unknownActionNameStr = L"Invalid action: %0.";
+const CUnicodeView actionTriggerName = L"Trigger";
+const CUnicodeView triggerNotFoundStr = L"Action trigger could not be found for attack: %0";
+void CBossTriggerCreater::AddAttackAction( const CXmlElement& elem, CBossInfo& bossInfo, CBossAttackInfo& attack, CArray<CBossEventData>& result ) const
+{
+	const auto typeName = elem.GetAttributeValue( actionTypeAttrib, changeAttackName );
+	TTriggerReaction reaction;
+	if( typeName == changeAttackName ) {
+		reaction = createChangeAttackAction( elem, attack );
+	} else if( typeName == changeAttackPermanentName ) {
+		reaction = createChangeAttackPermanentAction( elem, attack );
+	} 
+
+	if( reaction.GetAction() == nullptr ) {
+		Log::Warning( unknownActionNameStr.SubstParam( typeName ), this );
+		return;
+	}
+
+	for( const auto& child : elem.Children() ) {
+		if( child.Name() == actionTriggerName ) {
+			addTrigger( child, bossInfo, move( reaction ), attack.EntryId, attack.EndTriggerAddressMask, result );
+			return;
+		}
+	}
+
+	Log::Warning( triggerNotFoundStr.SubstParam( attack.KeyName ), this );
+}
+
+const CUnicodeView nameAttrib = L"name";
+const CUnicodeView iconPathAttrib = L"icon";
+CBossTriggerCreater::TTriggerReaction CBossTriggerCreater::createChangeAttackAction( const CXmlElement& elem, CBossAttackInfo& srcAttack ) const
+{
+	const auto newName = elem.GetAttributeValue( nameAttrib, srcAttack.KeyName );
+	
+	const auto newPath = elem.GetAttributeValue( iconPathAttrib, srcAttack.IconPath );
+	auto iconAliasPath = aliases.GetUserIconPath( srcAttack.Root.KeyName, newName, newPath );
+	assets.GetOrCreateIcon( iconAliasPath );
+
+	auto reaction = [this, &srcAttack, name = UnicodeStr( newName ), icon = UnicodeStr( newPath )]( CFangameVisualizerState& visualizerState ) {
+		const auto& timeline = visualizer.GetTimeline();
+		if( timeline.GetStatus() != BTS_Recording || !timeline.IsAttackCurrent( srcAttack.EntryId ) ) {
+			return;
+		}	
+
+		auto newVisualName = aliases.GetUserAttackName( srcAttack.Root.KeyName, name, name );
+		auto iconAliasPath = aliases.GetUserIconPath( srcAttack.Root.KeyName, name, icon );
+
+		srcAttack.UserVisualName = UnicodeStr( newVisualName );
+		srcAttack.IconPath = UnicodeStr( iconAliasPath );
+		srcAttack.Icon = &assets.GetOrCreateIcon( iconAliasPath );
+		visualizerState.GetVisualizer().GetActiveTable().ResetAttack( srcAttack.EntryId );
+	};
+
+	return TTriggerReaction( move( reaction ) );
+}
+
+CBossTriggerCreater::TTriggerReaction CBossTriggerCreater::createChangeAttackPermanentAction( const CXmlElement& elem, CBossAttackInfo& srcAttack ) const
+{
+	const auto newName = elem.GetAttributeValue( nameAttrib, srcAttack.KeyName );
+	
+	const auto newPath = elem.GetAttributeValue( iconPathAttrib, srcAttack.IconPath );
+	auto iconAliasPath = aliases.GetUserIconPath( srcAttack.Root.KeyName, newName, newPath );
+	assets.GetOrCreateIcon( iconAliasPath );
+
+	auto reaction = [this, &srcAttack, name = UnicodeStr( newName ), icon = UnicodeStr( newPath )]( CFangameVisualizerState& visualizerState ) {
+		const auto& timeline = visualizer.GetTimeline();
+		if( timeline.GetStatus() != BTS_Recording || !timeline.IsAttackCurrent( srcAttack.EntryId ) ) {
+			return;
+		}	
+
+		auto newVisualName = aliases.GetUserAttackName( srcAttack.Root.KeyName, name, name );
+		auto iconAliasPath = aliases.GetUserIconPath( srcAttack.Root.KeyName, name, icon );
+
+		srcAttack.UserVisualName = UnicodeStr( newVisualName );
+		srcAttack.IconPath = UnicodeStr( iconAliasPath );
+		srcAttack.Icon = &assets.GetOrCreateIcon( iconAliasPath );
+		visualizerState.GetVisualizer().GetActiveTable().ResetAttack( srcAttack.EntryId );
+
+		aliases.SetUserAttackName( srcAttack.Root.KeyName, srcAttack.KeyName, name );
+		aliases.SetUserIconPath( srcAttack.Root.KeyName, srcAttack.KeyName, icon );
+		aliases.SaveChanges();
+	};
+
+	return TTriggerReaction( move( reaction ) );
+}
+
 const CUnicodeView unknownTriggerNameStr = L"Unknown trigger type name: %0.";
 const CUnicodeView triggerTypeAttrib = L"type";
+const CUnicodePart nullTriggerName = L"Null";
 const CUnicodePart gameRestartName = L"GameRestart";
 const CUnicodePart gameSaveName = L"GameSave";
 const CUnicodePart initializeName = L"CounterInitialize";
@@ -334,6 +396,7 @@ const CUnicodePart prevBossClearName = L"PrevBossClear";
 const CUnicodeView allAttackClearName = L"AllAttacksClear";
 const CUnicodeView timePassedName = L"TimePassed";
 const CUnicodeView bossShowName = L"BossShow";
+const CUnicodeView deathName = L"Death";
 const CUnicodeView bothTriggersName = L"Both";
 const CUnicodeView conditionTriggersName = L"Conditional";
 void CBossTriggerCreater::addTrigger( const CXmlElement& elem, const CBossInfo& bossInfo, TTriggerReaction reaction, 
@@ -371,10 +434,14 @@ void CBossTriggerCreater::addTrigger( const CXmlElement& elem, const CBossInfo& 
 		addParentStartTrigger( move( reaction ), bossInfo, entityId, result );
 	} else if( triggerTypeName == parentEndName ) {
 		addParentEndTrigger( move( reaction ), bossInfo, entityId, result );
+	} else if( triggerTypeName == deathName ) {
+		addDeathTrigger( move( reaction ), result );
 	} else if( triggerTypeName == bothTriggersName ) {
 		addDoubleTrigger( elem, bossInfo, move( reaction ), entityId, targetAddressMask, result );
 	} else if( triggerTypeName == conditionTriggersName ) {
 		addConditionTrigger( elem, bossInfo, move( reaction ), entityId, targetAddressMask, result );
+	} else if( triggerTypeName == nullTriggerName ) {
+		addNullTrigger( result );
 	} else {
 		Log::Warning( unknownTriggerNameStr.SubstParam( triggerTypeName ), this );
 		return;
@@ -450,27 +517,64 @@ void CBossTriggerCreater::addPrevBossClearTrigger( TTriggerReaction reaction, in
 	result.Add( CEvent<Events::CBossEnd>::GetEventClassId(), move( endEvent ) );
 }
 
-const CUnicodeView timePassedAttrib = L"time";
+const CUnicodeView timeStartAttrib = L"start";
+const CUnicodeView timeEndAttrib = L"end";
+const CUnicodeView timeDurationAttrib = L"duration";
 void CBossTriggerCreater::addTimePassedTrigger( const CXmlElement& elem, TTriggerReaction reaction, int attackId, CArray<CBossEventData>& result ) const
 {
-	const auto duration = elem.GetAttributeValue( timePassedAttrib, 0.0 );
-	addTimePassedTrigger( duration, move( reaction ), attackId, result );
+	const auto duration = elem.GetAttributeValue( timeDurationAttrib, -1.0f );
+	if( duration >= 0 ) {
+		addTimePassedTrigger( duration, move( reaction ), attackId, result );
+		return;
+	}
+	const auto end = elem.GetAttributeValue( timeEndAttrib, -1.0f );
+	if( end >= 0 ) {
+		addTimeEndTrigger( end, move( reaction ), result );
+		return;
+	}
+	const auto start = elem.GetAttributeValue( timeStartAttrib, 0.0f );
+	addTimeEndTrigger( start, move( reaction ), result );
 }
 
 void CBossTriggerCreater::addTimePassedTrigger( double duration, TTriggerReaction reaction, int attackId, CArray<CBossEventData>& result ) const
 {
-	const auto durationCondition = [duration, attackId]( const CFangameEvent<Events::CTimePassedEvent>& e ) {
+	const auto msDuration = duration * 1000.0;
+	const auto durationCondition = [msDuration, attackId]( const CFangameEvent<Events::CTimePassedEvent>& e ) {
+		const auto& timeEvent = static_cast<const CUpdateEvent&>( e );
+		const auto& visualizer = e.GetVisualizer();
+		const auto& timeline = visualizer.GetTimeline();
+		if( timeline.GetStatus() != BTS_Recording || !timeline.IsAttackCurrent( attackId ) ) {
+			return false;
+		}
+		const auto startTime = timeline.GetAttackStartTime( attackId );
+		const auto currentDelta = timeEvent.GetTime() - startTime;
+		const auto prevTime = timeEvent.GetPrevTime();
+		const auto prevDelta = prevTime <= startTime ? 0 : prevTime - startTime;
+		return currentDelta > msDuration && prevDelta <= msDuration;
+	};
+
+	CAttackEventAction<Events::CTimePassedEvent> endAction( durationCondition, move( reaction ) );
+	CActionOwner<void( const CEvent<Events::CTimePassedEvent>& )> endEvent( move( endAction ) );
+	result.Add( CEvent<Events::CTimePassedEvent>::GetEventClassId(), move( endEvent ) );
+}
+
+void CBossTriggerCreater::addTimeEndTrigger( double endTime, TTriggerReaction endReaction, CArray<CBossEventData>& result ) const
+{
+	const auto msEndTime = endTime * 1000.0;
+	const auto endCondition = [msEndTime]( const CFangameEvent<Events::CTimePassedEvent>& e ) {
 		const auto& timeEvent = static_cast<const CUpdateEvent&>( e );
 		const auto& visualizer = e.GetVisualizer();
 		const auto& timeline = visualizer.GetTimeline();
 		if( timeline.GetStatus() != BTS_Recording ) {
 			return false;
 		}
-		const auto startTime = timeline.GetAttackStartTime( attackId );
-		return getTimeDelta( startTime, timeEvent.GetTime() ) > duration;
+		const auto startTime = timeline.GetBossStartTime();
+		const auto currentDelta = timeEvent.GetTime() - startTime;
+		const auto prevDelta = timeEvent.GetPrevTime() - startTime;
+		return currentDelta > msEndTime && prevDelta <= msEndTime;
 	};
 
-	CAttackEventAction<Events::CTimePassedEvent> endAction( durationCondition, move( reaction ) );
+	CAttackEventAction<Events::CTimePassedEvent> endAction( endCondition, move( endReaction ) );
 	CActionOwner<void( const CEvent<Events::CTimePassedEvent>& )> endEvent( move( endAction ) );
 	result.Add( CEvent<Events::CTimePassedEvent>::GetEventClassId(), move( endEvent ) );
 }
@@ -600,6 +704,23 @@ void CBossTriggerCreater::addConditionTrigger( const CXmlElement& elem, const CB
 			addTrigger( child, bossInfo, move( delayedReaction ), entityId, targetAddressMask, result );
 		}
 	}
+}
+
+void CBossTriggerCreater::addDeathTrigger( TTriggerReaction reaction, CArray<CBossEventData>& result ) const
+{
+	auto deathAction = [action = move( reaction )]( const CEvent<Events::CDeath>& e ) {
+		const auto& fangameEvent = static_cast<const CFangameEvent<Events::CDeath>&>( e );
+		action( fangameEvent.GetVisualizer() );
+	};
+	CActionOwner<void( const CEvent<Events::CDeath>& )> deathEvent( move( deathAction ) );
+	result.Add( CEvent<Events::CDeath>::GetEventClassId(), move( deathEvent ) );
+}
+
+void CBossTriggerCreater::addNullTrigger( CArray<CBossEventData>& result ) const
+{
+	auto emptyAction = []( const CEvent<Events::CAllAttacksClear>& ) {};
+	CActionOwner<void( const CEvent<Events::CAllAttacksClear>& )> emptyEvent( emptyAction );
+	result.Add( CEvent<Events::CAllAttacksClear>::GetEventClassId(), move( emptyEvent ) );
 }
 
 void CBossTriggerCreater::addGameSaveTrigger( const CXmlElement& elem, TTriggerReaction reaction, CArray<CBossEventData>& result ) const

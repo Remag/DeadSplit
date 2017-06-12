@@ -12,7 +12,6 @@ const CExternalNameConstructor<CMemoryValueGetter> memoryCreator( L"ValueGetter.
 //////////////////////////////////////////////////////////////////////////
 
 const CUnicodeView addressNameAttrib = L"addressName";
-const CUnicodeView valueTypeAttrib = L"valueType";
 const CError Err_BadAddressName( L"Invalid address name: %0" );
 const CError Err_BadAddressType( L"Memory address size mismatch: %0" );
 CMemoryValueGetter::CMemoryValueGetter( const CXmlElement& elem, CBossMap& bossMap ) :
@@ -24,8 +23,8 @@ CMemoryValueGetter::CMemoryValueGetter( const CXmlElement& elem, CBossMap& bossM
 	addressBitset |= addressId;
 	addressExpansion = fangameChangeDetector.ExpandAddressSearch( addressBitset, false );
 
-	const auto valueTypeStr = elem.GetAttributeValue( valueTypeAttrib, DefaultValueTypeName );
-	valueType = FangameValueTypeDict.FindEnum( valueTypeStr, FVT_Int32 );
+	const auto addressType = fangameChangeDetector.GetAddressType( addressId );
+	valueType = FangameValueAddressTypeDict[addressType];
 	check( fangameChangeDetector.GetAddressValueSize( addressId ) == FangameValueSizeDict[valueType], Err_BadAddressType, addressName );
 }
 

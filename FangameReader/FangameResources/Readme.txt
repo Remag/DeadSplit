@@ -1,4 +1,4 @@
-DeadSplit v0.999
+DeadSplit v1.0
 
 This is a program for tracking your death count and other stats in fangames.
 =============================================================
@@ -18,6 +18,9 @@ List of supported fangames:
 - I Wanna Call Me It ( extra boss )
 - I Wanna Touch the Entrance
 - I Wanna Grand Of The Perfect Bear
+- I Wanna Be The C/O/S/M/O
+- I Wanna Be The Contrary
+- I Wanna KiraKira
 
 =============================================================
 
@@ -30,6 +33,7 @@ Special Thanks to:
 - IWBTB_Hype for layouts and testing.
 - Kamilia for help with 1.50 integration.
 - PrincessKennyTheBest, you know for what.
+- Rasty for layouts and testing.
 - SUDALV for layouts and testing.
 
 Thanks to:
@@ -42,10 +46,13 @@ Thanks to:
 F.A.Q.
 
 Q: How does it work?
-A: The fangame is detected by looking for opened windows with a specific title. Most of the necessary data for detecting attacks is read directly from the game memory. If you'd like to dwell into specifics, check out the layout.xml file for any game in the FangameInfo folder.
+A: The fangame is detected by looking for opened windows with a specific title. Most of the necessary data for detecting attacks is read directly from the game memory. If you'd like to dwell into specifics, check out the layout.xml files for any game in the FangameInfo folder.
 	
 Q: How do I add new fangames or change existing bosses?
 A: Check out BossEditIntructions.txt for the information on how to add fangames and edit boss attacks.
+
+Q: I'm running into performance issues. Can I make DeadSplit run faster?
+A: There are three things you can try: changing the renderer type, turning off real time stat updates and lowering the FPS. All of these things can be changed in the settings.
 
 Q: Why is the counter not reacting to an opened fangame?
 A: The fangame is captured as soon as your death count appears in the window title. You will need to actually start playing for the counter to find your game. Also, if you open the game as Administrator, make sure DeadSplit is opened as Administrator as well.

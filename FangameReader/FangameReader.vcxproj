@@ -43,9 +43,11 @@
     <ClCompile Include="DetectorActionController.cpp" />
     <ClCompile Include="DetectorMouseController.cpp" />
     <ClCompile Include="DialogControls.cpp" />
+    <ClCompile Include="FangameConnector.cpp" />
     <ClCompile Include="FangameInputHandler.cpp" />
     <ClCompile Include="FangamePeekerState.cpp" />
     <ClCompile Include="FangameVisualizer.cpp" />
+    <ClCompile Include="FooterIconPanel.cpp" />
     <ClCompile Include="GdiFont.cpp" />
     <ClCompile Include="GdiGradientRect.cpp" />
     <ClCompile Include="GdiImage.cpp" />
@@ -81,6 +83,7 @@
     <ClCompile Include="PeekerActionController.cpp" />
     <ClCompile Include="PeekerMouseController.cpp" />
     <ClCompile Include="SaveDataValueGetter.cpp" />
+    <ClCompile Include="SaveReaderData.cpp" />
     <ClCompile Include="SaveReaderVer1.cpp" />
     <ClCompile Include="SaveReaderVer2.cpp" />
     <ClCompile Include="SaveReaderVer3.cpp" />
@@ -131,9 +134,11 @@
     <ClInclude Include="DetectorActionController.h" />
     <ClInclude Include="DetectorMouseController.h" />
     <ClInclude Include="DialogControls.h" />
+    <ClInclude Include="FangameConnector.h" />
     <ClInclude Include="FangameInputHandler.h" />
     <ClInclude Include="FangamePeekerState.h" />
     <ClInclude Include="FangameVisualizer.h" />
+    <ClInclude Include="FooterIconPanel.h" />
     <ClInclude Include="GeneralSettingsDialog.h" />
     <ClInclude Include="HotkeySettingsDialog.h" />
     <ClInclude Include="Icon.h" />
@@ -142,6 +147,7 @@
     <ClInclude Include="GlobalStrings.h" />
     <ClInclude Include="PeekerActionController.h" />
     <ClInclude Include="PeekerMouseController.h" />
+    <ClInclude Include="SaveReaderData.h" />
     <ClInclude Include="SaveReaderVer4.h" />
     <ClInclude Include="SessionMonitor.h" />
     <ClInclude Include="SettingsDialogFrame.h" />
@@ -242,7 +248,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\ManifestSite\index.html" />
-    <None Include="FangameResources\FangameInfo\I Wanna Kill The Kamilia 3\attackAliases.ini" />
     <None Include="FangameResources\Shaders\imageDrawing.frag" />
     <None Include="FangameResources\Shaders\imageDrawing.vert" />
     <None Include="FangameResources\Shaders\primitiveDrawing.frag" />
@@ -250,6 +255,10 @@
     <None Include="FangameResources\userSettings.ini" />
   </ItemGroup>
   <ItemGroup>
+    <Xml Include="FangameResources\FangameInfo\baseConnections.xml" />
+    <Xml Include="FangameResources\FangameInfo\Cosmo\layout.xml" />
+    <Xml Include="FangameResources\FangameInfo\i wanna be the contrary\layout.xml" />
+    <Xml Include="FangameResources\FangameInfo\I Wanna Break The Series Z\layout.xml" />
     <Xml Include="FangameResources\FangameInfo\I wanna buy the crayon\layout.xml" />
     <Xml Include="FangameResources\FangameInfo\I wanna bye the bye\layout.xml" />
     <Xml Include="FangameResources\FangameInfo\I wanna call me it\layout.xml" />
@@ -262,7 +271,9 @@
     <Xml Include="FangameResources\FangameInfo\I wanna Touch the Entrance\layout.xml">
       <SubType>Designer</SubType>
     </Xml>
+    <Xml Include="FangameResources\FangameInfo\KiraKira\layout.xml" />
     <Xml Include="FangameResources\FangameInfo\perfect bear\layout.xml" />
+    <Xml Include="FangameResources\FangameInfo\userConnections.xml" />
     <Xml Include="FangameResources\TableView.xml">
       <SubType>Designer</SubType>
     </Xml>

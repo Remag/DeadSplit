@@ -19,6 +19,7 @@
 #include <SessionMonitor.h>
 #include <SettingsDialogFrame.h>
 #include <AutoUpdater.h>
+#include <FooterIconPanel.h>
 
 namespace Fangame {
 
@@ -26,7 +27,7 @@ namespace Fangame {
 
 CFangamePeekerState::CFangamePeekerState( CUnicodeView _fangameFolder, CEventSystem& _eventSystem, CWindowSettings& _windowSettings, 
 		CAssetLoader& _assets, CFangameInputHandler& _inputHandler, CFangameDetector& _detector, CSessionMonitor& _sessionMonitor,
-		CAutoUpdater& _updater ) :
+		CAutoUpdater& _updater, CFooterIconPanel& _footerIcons ) :
 	fangameFolder( _fangameFolder ),
 	sessionMonitor( _sessionMonitor ),
 	detector( _detector ),
@@ -35,13 +36,14 @@ CFangamePeekerState::CFangamePeekerState( CUnicodeView _fangameFolder, CEventSys
 	assets( _assets ),
 	inputHandler( _inputHandler ),
 	updater( _updater ),
+	footerIcons( _footerIcons ),
 	windowEventTarget( createWindowChangeEvent( _eventSystem ) )
 {
 	actionController = CreateOwner<CPeekerActionController>( *this );
 	const auto saveName = FileSystem::MergePath( fangameFolder, Paths::FanagameSaveFile );
 	attackSaveFile = CreateOwner<CBossAttackSaveFile>( saveName );
 	bossInfo = CreateOwner<CBossMap>( fangameFolder, _windowSettings, *attackSaveFile, assets );
-	visualizer = CreateOwner<CFangameVisualizer>( _windowSettings, *bossInfo, _assets, *actionController, false );
+	visualizer = CreateOwner<CFangameVisualizer>( _windowSettings, *bossInfo, _assets, *actionController, footerIcons, false );
 	recordStatus = CreateOwner<CRecordStatusIcon>();
 	recordStatus->SetStatus( RS_Stop );
 
@@ -60,14 +62,19 @@ void CFangamePeekerState::onWindowSizeChange()
 {
 	const CPixelVector windowSize{ GetMainWindow().WindowSize() };
 	if( visualizer->HasActiveTable() ) {
-		visualizer->GetActiveTable().ResizeTable( windowSize );
+		auto& activeTable =	visualizer->GetActiveTable();
+		activeTable.ResizeTable( windowSize );
+		footerIcons.ResizePanel( activeTable.GetTableScale() );
 	}
 }
 
 void CFangamePeekerState::initBossTable()
 {
 	visualizer->SetNextTable();
-	recordStatus->SetDeathTable( visualizer->GetActiveTable() );
+	const auto bossCount = visualizer->GetAllTables().Size();
+	if( bossCount > 0 ) {
+		recordStatus->SetDeathTable( visualizer->GetActiveTable() );
+	}
 }
 
 void CFangamePeekerState::initMouseInput()
@@ -85,12 +92,14 @@ CFangamePeekerState::~CFangamePeekerState()
 void CFangamePeekerState::SetNextTable()
 {
 	visualizer->SetNextTable();
+	recordStatus->SetDeathTable( visualizer->GetActiveTable() );
 	mouseController->OnMouseMove();
 }
 
 void CFangamePeekerState::SetPreviousTable()
 {
 	visualizer->SetPreviousTable();
+	recordStatus->SetDeathTable( visualizer->GetActiveTable() );
 	mouseController->OnMouseMove();
 }
 
@@ -129,7 +138,7 @@ void CFangamePeekerState::ShowSettings()
 	
 	GetStateManager().PopState();
 	GetStateManager().PushState<CFangamePeekerState>( fangameFolder, eventSystem, windowSettings, assets, inputHandler,
-		detector, sessionMonitor, updater );
+		detector, sessionMonitor, updater, footerIcons );
 }
 
 void CFangamePeekerState::OpenFangame()
@@ -142,7 +151,7 @@ void CFangamePeekerState::OpenFangame()
 
 	GetStateManager().PopState();
 	GetStateManager().PushState<CFangamePeekerState>( fangameName, eventSystem, windowSettings, assets, inputHandler,
-		detector, sessionMonitor, updater );
+		detector, sessionMonitor, updater, footerIcons );
 }
 
 void CFangamePeekerState::SaveData()
@@ -192,7 +201,7 @@ void CFangamePeekerState::initializeVisualizer( CFangameProcessInfo processInfo 
 	GetStateManager().PopState();
 	detector.SuspendSearch();
 	GetStateManager().PushState<CFangameVisualizerState>( move( processInfo ), eventSystem, windowSettings, assets, inputHandler,
-		detector, sessionMonitor, updater );
+		detector, sessionMonitor, updater, footerIcons );
 }
 
 void CFangamePeekerState::Draw( const IRenderParameters& renderParams ) const
@@ -210,13 +219,16 @@ void CFangamePeekerState::doDraw( const IRenderParameters& renderParams ) const
 {
 	GetRenderer().InitializeFrame();
 
-	recordStatus->Draw( renderParams );
 	if( visualizer->HasActiveTable() ) {
+		recordStatus->Draw( renderParams );
 		visualizer->Draw( renderParams );
 	}
 
+	footerIcons.Draw( renderParams );
+
 	GetRenderer().FinalizeFrame();
 }
+
 void CFangamePeekerState::OnSleep()
 {
 

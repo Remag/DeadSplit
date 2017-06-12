@@ -336,9 +336,9 @@ void CAvoidanceTimeline::TogglePauseRecording()
 }
 
 const auto babyRageFadeTime = 3.0f;
-void CAvoidanceTimeline::UpdateStatus( DWORD currentTicks )
+void CAvoidanceTimeline::UpdateStatus( DWORD prevTicks, DWORD currentTicks )
 {
-	events.Notify( CUpdateEvent( visualizer, currentTicks ) );
+	events.Notify( CUpdateEvent( visualizer, prevTicks, currentTicks ) );
 
 	const auto timePasseed = getTimeDelta( currentTicks, lastRestartTime );
 	if( timePasseed > babyRageFadeTime ) {
@@ -391,12 +391,14 @@ void CAvoidanceTimeline::signalHeroDeath( float secondDelta )
 {
 	assert( status == BTS_Recording );
 	assert( deathTable != nullptr );
+
+	shrinkCurrentAttacks();
+
 	if( secondDelta < babyRagePeriod ) {
 		return;
 	}
 
-	shrinkCurrentAttacks();
-
+	events.Notify( CFangameEvent<Events::CDeath>( visualizer ) );
 	bool activeAttackFound = false;
 	for( int i = 0; i < attacksTimeline.Size(); i++ ) {
 		const auto attack = attacksTimeline[i];

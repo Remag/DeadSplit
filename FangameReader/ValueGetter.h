@@ -1,4 +1,5 @@
 #pragma once
+#include <AddressInfo.h>
 
 namespace Fangame {
 
@@ -23,6 +24,7 @@ struct CFangameValue {
 extern const CUnicodePart DefaultValueTypeName;
 extern const CEnumDictionary<TFangameValueType, FVT_EnumCount> FangameValueTypeDict;
 extern const CEnumDictionary<TFangameValueType, FVT_EnumCount, int> FangameValueSizeDict;
+extern const CEnumDictionary<TAddressValueType, AVT_EnumCount, TFangameValueType> FangameValueAddressTypeDict;
 //////////////////////////////////////////////////////////////////////////
 
 // Mechanism for retrieving data values from an arbitrary source.

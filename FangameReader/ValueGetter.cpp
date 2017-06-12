@@ -26,6 +26,11 @@ extern const CEnumDictionary<TFangameValueType, FVT_EnumCount, int> FangameValue
 	{ FVT_Float64, 8 },
 };
 
+extern const CEnumDictionary<TAddressValueType, AVT_EnumCount, TFangameValueType> FangameValueAddressTypeDict {
+	{ AVT_Int32, FVT_Int32 },
+	{ AVT_Double, FVT_Float64 }
+};
+
 //////////////////////////////////////////////////////////////////////////
 
 }	// namespace Fangame.

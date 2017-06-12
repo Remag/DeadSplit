@@ -148,43 +148,6 @@ void CTextColumnContent::addAttacksText( const CEntryInfo& entry, TTableColumnZo
 	}
 }
 
-void CTextColumnContent::DrawImage( const IRenderParameters&, const IColumnContentData&, const TMatrix3&, CClipVector ) const
-{
-}
-
-void CTextColumnContent::DrawText( const IRenderParameters& renderParams, const IColumnContentData& data, CArrayView<CColor> colors,
-		const TMatrix3& parentTransform, CPixelVector cellSize, float cellYAdvance ) const
-{
-	const auto& textData = getTextData( data );
-	const auto meshes = textData.GetMeshes();
-
-	const auto& pixelToClip = Coordinates::PixelToClip();
-	const CClipVector pixelSize{ pixelToClip( 0, 0 ), pixelToClip( 1, 1 ) };
-
-	auto modelToClip = parentTransform;
-	const auto lineBottomMargin = RoundFloatTo( margins.W() * modelToClip( 1, 1 ), pixelSize.Y() );
-	modelToClip( 2, 1 ) += lineBottomMargin;
-	const auto lineLeftMargin = RoundFloatTo( margins.X() * modelToClip( 0, 0 ), pixelSize.X() );
-	modelToClip( 2, 0 ) += lineLeftMargin;
-	const auto shadowColor = windowSettings.GetTextShadowColor();
-
-	for( int i = meshes.Size() - 1; i >= 0; i-- ) {
-		const auto contentWidth = textData.GetRowPixelWidth( i );
-		const auto color = colors[i] == CColor( 0, 0, 0, 0 ) ? baseColor : colors[i];
-		if( contentWidth > cellSize.X() ) {
-			const auto scaleFactor = cellSize.X() / contentWidth;
-			TMatrix3 scaledModelToClip = modelToClip;
-			scaledModelToClip( 0, 0 ) *= scaleFactor;
-			scaledModelToClip( 1, 1 ) *= scaleFactor;
-			GetRenderer().DrawText( renderParams, *meshes[i], scaledModelToClip, color, shadowColor );
-		} else {
-			GetRenderer().DrawText( renderParams, *meshes[i], modelToClip, color, shadowColor );
-		}
-
-		modelToClip( 2, 1 )	+= cellYAdvance;
-	}
-}
-
 const CTextColumnData& CTextColumnContent::getTextData( const IColumnContentData& data ) const
 {
 	return static_cast<const CTextColumnData&>( data );

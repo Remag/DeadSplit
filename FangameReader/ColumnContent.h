@@ -34,11 +34,6 @@ public:
 	// Create the modifiable data for the given boss.
 	virtual CPtrOwner<IColumnContentData> CreateFooterData( const CBossInfo& bossInfo, float linePixelHeight, TTableColumnZone zone ) const = 0;
 	virtual CPtrOwner<IColumnContentData> CreateAttackData( const CBossInfo& bossInfo, float linePixelHeight, TTableColumnZone zone ) const = 0;
-
-	// Draw methods that use the previously created column data. Parent transform is assumed to point at the bottom left corner of the table.
-	virtual void DrawImage( const IRenderParameters& renderParams, const IColumnContentData& data, const TMatrix3& parentTransform, CClipVector cellSize ) const = 0;	
-	virtual void DrawText( const IRenderParameters& renderParams, const IColumnContentData& data, CArrayView<CColor> rowData, 
-		const TMatrix3& parentTransform, CPixelVector cellSize, float cellYAdvance ) const = 0;	
 };
 
 //////////////////////////////////////////////////////////////////////////

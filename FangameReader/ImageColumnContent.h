@@ -50,15 +50,12 @@ public:
 
 	virtual CPtrOwner<IColumnContentData> CreateFooterData( const CBossInfo& bossInfo, float linePixelHeight, TTableColumnZone zone ) const override final;
 	virtual CPtrOwner<IColumnContentData> CreateAttackData( const CBossInfo& bossInfo, float linePixelHeight, TTableColumnZone zone ) const override final;
-	virtual void DrawImage( const IRenderParameters& renderParams, const IColumnContentData& data, const TMatrix3& parentTransform, CClipVector cellSize ) const override final;
-	virtual void DrawText( const IRenderParameters& renderParams, const IColumnContentData& data, CArrayView<CColor> rowData, 
-		const TMatrix3& parentTransform, CPixelVector cellSize, float cellYAdvance ) const override final;
 
 private:
 	CAssetLoader& assets;
 	CUnicodeString imagePathTemplate;
 	CBitSet<CCV_EnumCount> params;
-	CPixelVector imageMargin;
+	TVector4 imageMargins;
 
 	void addEntryImages( const CEntryInfo& entry, float imageHeight, TTableColumnZone zone, CImageColumnData& result ) const;
 	const CImageColumnData& getImageData( const IColumnContentData& data ) const;

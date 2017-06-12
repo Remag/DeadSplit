@@ -74,7 +74,7 @@ void CAutoUpdater::filterUserFiles( CFileCollection& collection )
 	for( int i = fileCount - 1; i >= 0; i-- ) {
 		const auto filePath = collection.GetFileName( i );
 		const auto fileName = FileSystem::GetNameExt( filePath );
-		if( fileName == Paths::FanagameSaveFile || fileName == Paths::FangameAliasesFile ) {
+		if( fileName == Paths::FanagameSaveFile || fileName == Paths::FangameAliasesFile || fileName == Paths::UserSettingsFile ) {
 			collection.DeleteFile( i );
 		}
 	}

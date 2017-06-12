@@ -1,3 +1,2 @@
-Deadsplit v0.999 - Release Notes.
-Minor bugfixes in layout error detection. Readme.txt updates.
-This is the first and only minor update, its main purpose is to test the auto update system.
+Deadsplit v1.0 - Release Notes.
+Boss edit instructions, triggers that change attack names/icons, 3 new fangames.

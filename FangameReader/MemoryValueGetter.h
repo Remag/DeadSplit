@@ -1,5 +1,6 @@
 #pragma once
 #include <ValueGetter.h>
+#include <AddressInfo.h>
 #include <AddressSearchExpansion.h>
 
 namespace Fangame {

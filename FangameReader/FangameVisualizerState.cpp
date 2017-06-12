@@ -26,6 +26,8 @@
 #include <SessionMonitor.h>
 #include <SettingsDialogFrame.h>
 #include <AutoUpdater.h>
+#include <SaveReaderData.h>
+#include <FooterIconPanel.h>
 
 namespace Fangame {
 
@@ -34,7 +36,7 @@ namespace Fangame {
 const CUnicodeView visualizerInputSection = L"Visualizer";
 CFangameVisualizerState::CFangameVisualizerState( CFangameProcessInfo _processInfo, CEventSystem& _eventSystem, CWindowSettings& _windowSettings, 
 		CAssetLoader& _assets, CFangameInputHandler& _inputHandler, CFangameDetector& _detector, CSessionMonitor& _sessionMonitor,
-		CAutoUpdater& _updater ) :
+		CAutoUpdater& _updater, CFooterIconPanel& _footerIcons ) :
 	detector( _detector ),
 	sessionMonitor( _sessionMonitor ),
 	processInfo( move( _processInfo ) ),
@@ -43,6 +45,7 @@ CFangameVisualizerState::CFangameVisualizerState( CFangameProcessInfo _processIn
 	windowSettings( _windowSettings ),
 	inputHandler( _inputHandler ),
 	updater( _updater ),
+	footerIcons( _footerIcons ),
 	windowEventTarget( createWindowChangeEvent( _eventSystem ) ),
 	statusChangeTarget( createStatusChangeEvent( _eventSystem ) ),
 	currentFrameTime( ::GetTickCount() ),
@@ -94,17 +97,18 @@ void CFangameVisualizerState::initBossTable()
 		addBossShowEvents();
 	}
 
-	if( saveFile == nullptr ) {
+	if( saveFiles.IsEmpty() ) {
 		setTextPanelPosition( NotFound, 0, 0 );
 	} else {
-		auto saveFileObj = saveFile->GetFile();
+		auto saveFileObj = saveFiles[0]->GetFile();
 
 		if( !saveFileObj.IsValid() ) {
 			setTextPanelPosition( NotFound, 0, 0 );
 		} else {
-			const auto roomId = getSaveDataValue( bossInfo->GetRoomIdDetector(), *saveFileObj, NotFound );
-			const auto x = getSaveDataValue( bossInfo->GetHeroXDetector(), *saveFileObj, 0 );
-			const auto y = getSaveDataValue( bossInfo->GetHeroYDetector(), *saveFileObj, 0 );
+			const auto& saveData = bossInfo->GetSaveReaders()[0];
+			const auto roomId = getSaveDataValue( saveData.RoomIdGetters, *saveFileObj, NotFound );
+			const auto x = getSaveDataValue( saveData.HeroXGetters, *saveFileObj, 0 );
+			const auto y = getSaveDataValue( saveData.HeroYGetters, *saveFileObj, 0 );
 			setTextPanelPosition( roomId, x, y );
 			eventSystem.Notify( CCounterInitializeEvent( *this, roomId, TIntVector2{ x, y } ) );
 		}
@@ -116,13 +120,13 @@ void CFangameVisualizerState::initBossTable()
 	}
 }
 
-int CFangameVisualizerState::getSaveDataValue( CSaveDataValueGetter* getter, CFile& file, int defaultValue )
+int CFangameVisualizerState::getSaveDataValue( CArrayView<CSaveDataValueGetter> getters, CFile& file, int defaultValue )
 {
-	if( getter == nullptr ) {
+	if( getters.IsEmpty() ) {
 		return defaultValue;
 	}
 
-	return getter->GetValueData( file );
+	return getters[0].GetValueData( file );
 }
 
 void CFangameVisualizerState::addBossShowEvents()
@@ -268,12 +272,12 @@ void CFangameVisualizerState::OnStart()
 	attackSaveFile = CreateOwner<CBossAttackSaveFile>( saveName );
 	changeDetector = CreateOwner<CFangameChangeDetector>( *this, processInfo.ProcessHandle.Handle(), eventSystem );
 	bossInfo = CreateOwner<CBossMap>( processInfo.BossInfoPath, *this, *attackSaveFile, assets );
-	visualizer = CreateOwner<CFangameVisualizer>( windowSettings, *bossInfo, assets, *actionController, true );
+	visualizer = CreateOwner<CFangameVisualizer>( windowSettings, *bossInfo, assets, *actionController, footerIcons, true );
 	mouseController = CreateOwner<CVisualizerMouseController>( *this );
 
-	const auto saveFileName = bossInfo->GetSaveName();
-	if( !saveFileName.IsEmpty() ) {
-		saveFile = CreateOwner<CChangingFile>( saveFileName, processInfo.ProcessHandle );
+	const auto saveReaders = bossInfo->GetSaveReaders();
+	for( const auto& reader : saveReaders ) {
+		saveFiles.Add( CreateOwner<CChangingFile>( reader.SaveFileName, processInfo.ProcessHandle ) );
 	}
 
 	const auto& deathDetector = bossInfo->GetDeathDetector();
@@ -309,7 +313,7 @@ void CFangameVisualizerState::Update( TTime )
 	inputHandler.UpdateUserInput( *actionController );
 	if( visualizer->HasActiveTable() ) {
 		visualizer->Update( currentFrameTime, secondsPassed );
-		currentTimeline->UpdateStatus( currentFrameTime );
+		currentTimeline->UpdateStatus( prevUpdateTime, currentFrameTime );
 		currentTimeline->CheckBossAttacksFinish();
 	}
 	updateViewCycle( secondsPassed );
@@ -318,10 +322,18 @@ void CFangameVisualizerState::Update( TTime )
 
 void CFangameVisualizerState::checkGameSave()
 {
-	if( saveFile == nullptr ) {
+	if( saveFiles.IsEmpty() ) {
 		return;	
 	}
 
+	for( int i = 0; i < saveFiles.Size(); i++ ) {
+		checkGameSaveFile( i );
+	}
+}
+
+void CFangameVisualizerState::checkGameSaveFile( int filePos )
+{
+	auto& saveFile = saveFiles[filePos];
 	auto saveFileObj = saveFile->ScanForChanges();
 	if( !saveFileObj.IsValid() ) {
 		return;
@@ -331,9 +343,10 @@ void CFangameVisualizerState::checkGameSave()
 	int newX;
 	int newY;
 
-	const auto isRoomIdNew = updateSaveDataValue( bossInfo->GetRoomIdDetector(), *saveFileObj, NotFound, newRoomId );
-	const auto isXNew = updateSaveDataValue( bossInfo->GetHeroXDetector(), *saveFileObj, 0, newX );
-	const auto isYNew = updateSaveDataValue( bossInfo->GetHeroYDetector(), *saveFileObj, 0, newY );
+	auto& readerData = bossInfo->GetSaveReaders()[filePos];
+	const auto isRoomIdNew = updateSaveDataValue( readerData.RoomIdGetters, *saveFileObj, NotFound, newRoomId );
+	const auto isXNew = updateSaveDataValue( readerData.HeroXGetters, *saveFileObj, 0, newX );
+	const auto isYNew = updateSaveDataValue( readerData.HeroYGetters, *saveFileObj, 0, newY );
 
 	if( isRoomIdNew || isXNew || isYNew ) {
 		setTextPanelPosition( newRoomId, newX, newY );
@@ -341,14 +354,21 @@ void CFangameVisualizerState::checkGameSave()
 	}
 }
 
-bool CFangameVisualizerState::updateSaveDataValue( CSaveDataValueGetter* getter, CFile& file, int defaultValue, int& result )
+bool CFangameVisualizerState::updateSaveDataValue( CArrayBuffer<CSaveDataValueGetter> getters, CFile& file, int defaultValue, int& result )
 {
-	if( getter == nullptr ) {
+	if( getters.IsEmpty() ) {
 		result = defaultValue;
 		return false;
 	}
 
-	return getter->RequestUpdatedValue( file, result );
+	for( auto& getter : getters ) {
+		const auto isChanged = getter.RequestUpdatedValue( file, result );
+		if( isChanged ) {
+			return true;
+		}
+	}
+
+	return false;
 }
 
 void CFangameVisualizerState::Draw( const IRenderParameters& renderParams ) const
@@ -377,6 +397,7 @@ void CFangameVisualizerState::doDraw( const IRenderParameters& renderParams ) co
 		heroPosPanel->Draw( renderParams );
 	}
 
+	footerIcons.Draw( renderParams );
 	GetRenderer().FinalizeFrame();
 }
 
@@ -399,7 +420,9 @@ void CFangameVisualizerState::onWindowSizeChange()
 {
 	const CPixelVector windowSize = getCurrentWindowSize();
 	if( visualizer->HasActiveTable() ) {
-		visualizer->GetActiveTable().ResizeTable( windowSize );
+		auto& activeTable =	visualizer->GetActiveTable();
+		activeTable.ResizeTable( windowSize );
+		footerIcons.ResizePanel( activeTable.GetTableScale() );
 	}
 
 	heroPosPanel->SetPanelSize( windowSize );
@@ -539,7 +562,7 @@ void CFangameVisualizerState::onShowSettings()
 
 	const auto resetStateAction = [this]() {
 		auto newState = CreateOwner<CFangameVisualizerState>( move( processInfo ), eventSystem, windowSettings,
-			assets, inputHandler, detector, sessionMonitor, updater );
+			assets, inputHandler, detector, sessionMonitor, updater, footerIcons );
 		GetStateManager().ImmediatePopState();
 		GetStateManager().ImmediatePushState( move( newState ) );
 	};
@@ -556,7 +579,7 @@ void CFangameVisualizerState::onOpenFangame()
 
 	GetStateManager().PopState();
 	GetStateManager().PushState<CFangamePeekerState>( fangameName, eventSystem, windowSettings, assets, inputHandler, 
-		detector, sessionMonitor, updater );
+		detector, sessionMonitor, updater, footerIcons );
 }
 
 void CFangameVisualizerState::updateViewCycle( float secondsPassed )

@@ -15,7 +15,7 @@ CColorSettingsDialog::CColorSettingsDialog( HWND owner, CWindowSettings& _window
 	fillChosenColors();
 
 	CreateDialog( ::GetModuleHandle( nullptr ), MAKEINTRESOURCE( IDD_ColorSettings ), owner, dialogProcedure );
-	::SetWindowPos( dialogWnd, owner, 13, 33, 275, 321, SWP_NOZORDER );
+	::SetWindowPos( dialogWnd, owner, 13, 33, 275, 324, SWP_NOZORDER );
 	::ShowWindow( dialogWnd, 0 );
 }
 

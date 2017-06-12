@@ -23,10 +23,14 @@ CFangameChangeDetector::~CFangameChangeDetector()
 
 }
 
-int CFangameChangeDetector::RegisterAddress( CPtrOwner<IAddressFinder> addressFinder, int addressSize )
+static const CEnumDictionary<TAddressValueType, AVT_EnumCount, int> addressSizesDict {
+	{ AVT_Int32, 4 },
+	{ AVT_Double, 8 },
+};
+int CFangameChangeDetector::RegisterAddress( CPtrOwner<IAddressFinder> addressFinder, TAddressValueType addressInfo )
 {
 	const int result = addressList.Size();
-	addressList.Add( move( addressFinder ), addressSize );
+	addressList.Add( move( addressFinder ), addressSizesDict[addressInfo], addressInfo );
 	return result;
 }
 
@@ -76,6 +80,11 @@ CArrayView<BYTE> CFangameChangeDetector::GetCurrentAddressValue( int addressId )
 int CFangameChangeDetector::GetAddressValueSize( int addressId ) const
 {
 	return addressList[addressId].ValueSize;
+}
+
+TAddressValueType CFangameChangeDetector::GetAddressType( int addressId ) const
+{
+	return addressList[addressId].AddressType;
 }
 
 void CFangameChangeDetector::ResendCurrentAddressChanges()

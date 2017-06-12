@@ -1,6 +1,7 @@
 #pragma once
 #include <FangameEvents.h>
 #include <AddressFinder.h>
+#include <AddressInfo.h>
 
 namespace Fangame {
 
@@ -32,13 +33,14 @@ public:
 	~CFangameChangeDetector();
 
 	// Add a new address and return its id.
-	int RegisterAddress( CPtrOwner<IAddressFinder> addressFinder, int addressSize );
+	int RegisterAddress( CPtrOwner<IAddressFinder> addressFinder, TAddressValueType addressInfo );
 
 	// Marker the given set of address pointers as scannable.
 	CAddressSearchExpansion ExpandAddressSearch( const CDynamicBitSet<>& addressMask, bool sendEvents );
 
 	CArrayView<BYTE> GetCurrentAddressValue( int addressId ) const;
 	int GetAddressValueSize( int addressId ) const;
+	TAddressValueType GetAddressType( int addressId ) const;
 
 	// Notify of the current address values.
 	void ResendCurrentAddressChanges();
@@ -58,12 +60,13 @@ private:
 
 	struct CAddressData {
 		const void* Address = nullptr;
-		int ValueSize = 0;
+		TAddressValueType AddressType;
+		int ValueSize;
 		CStackArray<BYTE, 8> ValueData;
 		CPtrOwner<IAddressFinder> Finder;
 		int ScanRequestCount = 0;
 
-		CAddressData( CPtrOwner<IAddressFinder> finder, int valueSize ) : Finder( move( finder ) ), ValueSize( valueSize ) {}
+		CAddressData( CPtrOwner<IAddressFinder> finder, int addressSize, TAddressValueType addressType ) : Finder( move( finder ) ), AddressType( addressType ), ValueSize( addressSize ) {}
 	};
 
 	CArray<CAddressData> addressList;

@@ -15,6 +15,7 @@ class CFangameInputHandler;
 class CMouseInputSwitcher;
 class CSessionMonitor;
 class CAutoUpdater;
+class CFooterIconPanel;
 struct CFangameProcessInfo;
 //////////////////////////////////////////////////////////////////////////
 
@@ -22,7 +23,7 @@ class CFangamePeekerState : public IState {
 public:
 	explicit CFangamePeekerState( CUnicodeView fangameName, CEventSystem& eventSystem, CWindowSettings& windowSettings,
 		CAssetLoader& assets, CFangameInputHandler& inputHandler, CFangameDetector& detector, CSessionMonitor& sessionMonitor,
-		CAutoUpdater& updater );
+		CAutoUpdater& updater, CFooterIconPanel& footerIcons );
 	~CFangamePeekerState();
 
 	CFangameInputHandler& GetInputHandler()
@@ -68,6 +69,7 @@ private:
 
 	CEventSystem& eventSystem;
 	CAssetLoader& assets;
+	CFooterIconPanel& footerIcons;
 
 	CFangameInputHandler& inputHandler;
 

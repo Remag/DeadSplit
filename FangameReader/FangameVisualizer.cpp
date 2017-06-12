@@ -6,17 +6,20 @@
 #include <BossMap.h>
 #include <BossDeathTable.h>
 #include <TableLayout.h>
+#include <FooterIconPanel.h>
 
 namespace Fangame {
 
 //////////////////////////////////////////////////////////////////////////
 
 const CUnicodeView tableLayoutName = L"TableView.xml";
-CFangameVisualizer::CFangameVisualizer( const CWindowSettings& _windowSettings, CBossMap& _bossInfo, CAssetLoader& _assets, IUserActionController& _controller, bool _drawAutoCycle ) :
+CFangameVisualizer::CFangameVisualizer( const CWindowSettings& _windowSettings, CBossMap& _bossInfo, CAssetLoader& _assets, IUserActionController& _controller,
+		CFooterIconPanel& _footerIcons, bool _drawAutoCycle ) :
 	windowSettings( _windowSettings ),
 	controller( _controller ),
 	bossInfo( _bossInfo ),
 	assets( _assets ),
+	footerIcons( _footerIcons ),
 	drawAutoCycle( _drawAutoCycle )
 {
 	tableLayout = CreateOwner<CTableLayout>( tableLayoutName, assets, windowSettings );
@@ -60,6 +63,8 @@ void CFangameVisualizer::SetBossTable( CBossInfo& bossTable )
 	} else {
 		bossTables[currentTablePos]->ResetTable( CPixelVector( GetMainWindow().WindowSize() ), currentTableView );
 	}
+
+	footerIcons.ResizePanel( bossTables[currentTablePos]->GetTableScale() );
 }
 
 void CFangameVisualizer::SetNextTable()

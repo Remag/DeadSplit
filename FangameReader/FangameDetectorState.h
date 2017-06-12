@@ -11,7 +11,7 @@ class CTextInfoPanel;
 class CAssetLoader;
 class CFangameInputHandler;
 class CMouseInputHandler;
-class CIcon;
+class CFooterIconPanel;
 class CDetectorMouseController;
 class CDetectorActionController;
 class CMouseInputSwitcher;
@@ -55,8 +55,7 @@ private:
 	CWindowSettings& windowSettings;
 	CPtrOwner<CFangameInputHandler> inputHandler;
 
-	CPtrOwner<CIcon> settingsIcon;
-	CPtrOwner<CIcon> openIcon;
+	CPtrOwner<CFooterIconPanel> footerPanel;
 
 	CPtrOwner<CDetectorActionController> actionController;
 	CPtrOwner<CDetectorMouseController> mouseController;
@@ -68,9 +67,6 @@ private:
 	void initTextPanel();
 	void onWindowSizeChange();
 	void invalidateRect();
-
-	void initializeSettingsIcon();
-	void initializeOpenIcon();
 
 	void seekUpdateChanges();
 	void detectFangame();

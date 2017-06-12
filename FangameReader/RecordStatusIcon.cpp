@@ -67,10 +67,10 @@ TMatrix3 CRecordStatusIcon::findModelToClip() const
 	const auto tableScale = deathTable->GetTableScale();
 	TMatrix3 modelToClip = Coordinates::PixelToClip();
 	const auto windowSize = GetMainWindow().WindowSize();
-	const TVector2 blOffset{ tlOffset.X() * tableScale.X(), windowSize.Y() - tableScale.Y() * tlOffset.Y() };
+	const TVector2 blOffset{ tlOffset.X() * tableScale, windowSize.Y() - tableScale * tlOffset.Y() };
 	const TVector2 clipBlOffset{ modelToClip( 2, 0 ) + modelToClip( 0, 0 ) * blOffset.X(), modelToClip( 2, 1 ) + modelToClip( 1, 1 ) * blOffset.Y() };
-	modelToClip( 0, 0 ) *= tableScale.X();
-	modelToClip( 1, 1 ) *= tableScale.Y(); 
+	modelToClip( 0, 0 ) *= tableScale;
+	modelToClip( 1, 1 ) *= tableScale; 
 	SetOffset( modelToClip, clipBlOffset );
 
 	return modelToClip;

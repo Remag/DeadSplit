@@ -9,6 +9,7 @@
 #include <BossInfo.h>
 #include <VisualizerActionController.h>
 #include <PeekerActionController.h>
+#include <FooterIconPanel.h>
 
 namespace Fangame {
 
@@ -16,14 +17,9 @@ namespace Fangame {
 
 void CPeekerMouseController::OnMouseMove()
 {
-	auto& visualizer = peeker.GetVisualizer();
-	if( visualizer.HasActiveTable() ) {
-		auto& deathTable = visualizer.GetActiveTable();
-		const auto pos = MousePixelPos();
-		const auto targetEntry = deathTable.OnMouseAction( pos );
-		if( targetEntry != nullptr ) {
-			targetEntry->OnMouseMove();
-		}
+	const auto targetEntry = findTargetEntry();
+	if( targetEntry != nullptr ) {
+		targetEntry->OnMouseMove();
 	}
 }
 
@@ -35,32 +31,40 @@ void CPeekerMouseController::OnMouseLeave()
 		deathTable.ClearTableColors();
 		deathTable.OnMouseLeave();
 	}
+
+	auto& footerIcons = visualizer.GetFooterIcons();
+	footerIcons.ClearHighlight();
 }
 
 void CPeekerMouseController::OnMouseClick()
 {
-	auto& visualizer = peeker.GetVisualizer();
-	if( visualizer.HasActiveTable() ) {
-		auto& deathTable = visualizer.GetActiveTable();
-		const auto pos = MousePixelPos();
-		const auto targetEntry = deathTable.OnMouseAction( pos );
-		if( targetEntry != nullptr ) {
-			targetEntry->OnMouseClick( peeker.GetActionController() );
-		}
+	const auto targetEntry = findTargetEntry();
+	if( targetEntry != nullptr ) {
+		targetEntry->OnMouseClick( peeker.GetActionController() );
 	}
 }
 
 void CPeekerMouseController::OnMouseDClick()
 {
-	auto& visualizer = peeker.GetVisualizer();
-	if( visualizer.HasActiveTable() ) {
-		auto& deathTable = visualizer.GetActiveTable();
-		const auto pos = MousePixelPos();
-		const auto targetEntry = deathTable.OnMouseAction( pos );
-		if( targetEntry != nullptr ) {
-			targetEntry->OnMouseDClick( peeker.GetActionController() );
-		}
+	const auto targetEntry = findTargetEntry();
+	if( targetEntry != nullptr ) {
+		targetEntry->OnMouseDClick( peeker.GetActionController() );
 	}
+}
+
+IMouseTarget* CPeekerMouseController::findTargetEntry()
+{
+	auto& visualizer = peeker.GetVisualizer();
+	const auto pos = MousePixelPos();
+	auto& footerIcons = visualizer.GetFooterIcons();
+	auto targetEntry = footerIcons.OnMouseAction( pos );
+
+	if( targetEntry == nullptr && visualizer.HasActiveTable() ) {
+		auto& deathTable = visualizer.GetActiveTable();
+		targetEntry = deathTable.OnMouseAction( pos );
+	}
+
+	return targetEntry;
 }
 
 //////////////////////////////////////////////////////////////////////////

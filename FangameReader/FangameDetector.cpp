@@ -2,7 +2,9 @@
 #pragma hdrstop
 
 #include <FangameDetector.h>
+#include <FangameConnector.h>
 #include <WindowUtils.h>
+#include <GlobalStrings.h>
 
 namespace Fangame {
 
@@ -13,16 +15,28 @@ CFangameDetector::CFangameDetector( CUnicodeView bossesFolder ) :
 	threadCloseFlag( false ),
 	threadSuspendFlag( false )
 {
+	initializeConnectors( bossesFolder );
 	CArray<CFileStatus> folders;
 	FileSystem::GetFilesInDir( bossesFolder, folders, FileSystem::FIF_Directories );
 
 	bossFolderNames.ReserveBuffer( folders.Size() );
 	for( const auto& folder : folders ) {
 		auto folderName = FileSystem::GetName( folder.FullName );
-		bossFolderNames.AddWithinCapacity( move( folderName ) );
+		if( !baseConnector->HasLayout( folderName ) && !userConnector->HasLayout( folderName ) ) {
+			bossFolderNames.AddWithinCapacity( move( folderName ) );
+		}
 	}
 
 	initSearthThread();
+}
+
+void CFangameDetector::initializeConnectors( CUnicodeView bossesFolder )
+{
+	const auto baseConnectionFile = FileSystem::MergePath( bossesFolder, Paths::BaseConnectionFile );
+	baseConnector = CreateOwner<CFangameConnector>( baseConnectionFile );
+
+	const auto userConnectionFile = FileSystem::MergePath( bossesFolder, Paths::UserConnectionFile );
+	userConnector = CreateOwner<CFangameConnector>( userConnectionFile );
 }
 
 CFangameDetector::~CFangameDetector()
@@ -36,6 +50,12 @@ CFangameDetector::~CFangameDetector()
 void CFangameDetector::SuspendSearch()
 {
 	threadSuspendFlag.Store( true );
+}
+
+void CFangameDetector::AddConnection( CUnicodePart layoutName, CUnicodePart titleMask, CUnicodePart exeName )
+{
+	CWriteLock lock( connectorSection );
+	userConnector->AddConnection( titleMask, layoutName, exeName );
 }
 
 void CFangameDetector::initSearthThread() const
@@ -160,12 +180,29 @@ BOOL CALLBACK CFangameDetector::findAllWindowsProcedure( HWND window, LPARAM det
 	CFangameDetector* detector = reinterpret_cast<CFangameDetector*>( detectorParam );
 	GetWindowTitle( window, detector->windowTitleBuffer );
 
+	const auto connectorName = detector->findConnectorName( window );
+	if( !connectorName.IsEmpty() ) {
+		detector->windowBuffer.Add( window, connectorName );
+		return TRUE;
+	}
+
 	const auto fangameName = getFangameWindowName( detector );
 	if( !fangameName.IsEmpty() ) {
 		detector->windowBuffer.Add( window, fangameName );
 	}
 
 	return TRUE;
+}
+
+CUnicodeView CFangameDetector::findConnectorName( HWND window ) const
+{
+	const auto path = baseConnector->FindLayoutPath( window, windowTitleBuffer );
+	if( !path.IsEmpty() ) {
+		return path;
+	}
+
+	CReadLock lock( connectorSection );
+	return userConnector->FindLayoutPath( window, windowTitleBuffer );
 }
 
 CUnicodeView CFangameDetector::getFangameWindowName( const CFangameDetector* detector )

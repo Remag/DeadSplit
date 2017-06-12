@@ -58,7 +58,7 @@ public:
 	void TogglePauseRecording();
 
 	// Check for a death and update the time passed.
-	void UpdateStatus( DWORD currentTicks );
+	void UpdateStatus( DWORD prevTicks, DWORD currentTicks );
 
 	// Draw the record icon.
 	void Draw( const IRenderParameters& renderParams ) const;

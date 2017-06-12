@@ -58,9 +58,6 @@
     <Filter Include="Header Files\Progress">
       <UniqueIdentifier>{996c1cae-bdd2-4af5-b577-e42b217efa90}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Progress">
-      <UniqueIdentifier>{758a0bcd-9907-4084-b1b2-22d7b8c7de56}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\AttackSaveData">
       <UniqueIdentifier>{dd820fa3-8a8b-47a4-98e3-12d1f43d39c2}</UniqueIdentifier>
     </Filter>
@@ -135,6 +132,21 @@
     </Filter>
     <Filter Include="Resource Files\GameInfo\Crayon">
       <UniqueIdentifier>{4da4a0fa-7536-48ae-ae79-df178d6859f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\GameInfo\Break The Series Z3">
+      <UniqueIdentifier>{81a7c945-3d81-415e-88c3-6a76ae99bb1e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\GameInfo\Cosmo">
+      <UniqueIdentifier>{7b8787c4-6608-4fd2-aec3-69ac2db1221b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\GameInfo\Contrary">
+      <UniqueIdentifier>{8e46a62b-455b-4066-8f6d-e6a05fe31003}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Progress">
+      <UniqueIdentifier>{758a0bcd-9907-4084-b1b2-22d7b8c7de56}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\GameInfo\KiraKira">
+      <UniqueIdentifier>{1bd5a4aa-eaba-4fff-9960-c4a4726023fd}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -419,6 +431,15 @@
     </ClCompile>
     <ClCompile Include="UserAliasFile.cpp">
       <Filter>Source Files\General</Filter>
+    </ClCompile>
+    <ClCompile Include="SaveReaderData.cpp">
+      <Filter>Source Files\ValueGetters</Filter>
+    </ClCompile>
+    <ClCompile Include="FooterIconPanel.cpp">
+      <Filter>Source Files\Visualization</Filter>
+    </ClCompile>
+    <ClCompile Include="FangameConnector.cpp">
+      <Filter>Source Files\Detection</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -752,6 +773,15 @@
     <ClInclude Include="UserAliasFile.h">
       <Filter>Header Files\General</Filter>
     </ClInclude>
+    <ClInclude Include="SaveReaderData.h">
+      <Filter>Header Files\ValueGetters</Filter>
+    </ClInclude>
+    <ClInclude Include="FooterIconPanel.h">
+      <Filter>Header Files\Visualization</Filter>
+    </ClInclude>
+    <ClInclude Include="FangameConnector.h">
+      <Filter>Header Files\Detection</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="messages.msg">
@@ -770,9 +800,6 @@
     </None>
     <None Include="FangameResources\userSettings.ini">
       <Filter>Resource Files</Filter>
-    </None>
-    <None Include="FangameResources\FangameInfo\I Wanna Kill The Kamilia 3\attackAliases.ini">
-      <Filter>Resource Files\GameInfo\Kamilia 3</Filter>
     </None>
     <None Include="..\ManifestSite\index.html">
       <Filter>Resource Files</Filter>
@@ -805,6 +832,24 @@
     </Xml>
     <Xml Include="FangameResources\FangameInfo\I wanna buy the crayon\layout.xml">
       <Filter>Resource Files\GameInfo\Crayon</Filter>
+    </Xml>
+    <Xml Include="FangameResources\FangameInfo\I Wanna Break The Series Z\layout.xml">
+      <Filter>Resource Files\GameInfo\Break The Series Z3</Filter>
+    </Xml>
+    <Xml Include="FangameResources\FangameInfo\Cosmo\layout.xml">
+      <Filter>Resource Files\GameInfo\Cosmo</Filter>
+    </Xml>
+    <Xml Include="FangameResources\FangameInfo\baseConnections.xml">
+      <Filter>Resource Files\GameInfo</Filter>
+    </Xml>
+    <Xml Include="FangameResources\FangameInfo\userConnections.xml">
+      <Filter>Resource Files\GameInfo</Filter>
+    </Xml>
+    <Xml Include="FangameResources\FangameInfo\i wanna be the contrary\layout.xml">
+      <Filter>Resource Files\GameInfo\Contrary</Filter>
+    </Xml>
+    <Xml Include="FangameResources\FangameInfo\KiraKira\layout.xml">
+      <Filter>Resource Files\GameInfo\KiraKira</Filter>
     </Xml>
   </ItemGroup>
   <ItemGroup>

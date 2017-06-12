@@ -13,6 +13,7 @@ class CSaveDataValueGetter;
 class CAssetLoader;
 class CBossTriggerCreater;
 class CUserAliasFile;
+struct CSaveReaderData;
 struct CBossAttackInfo;
 struct CFangameProcessInfo;
 struct CAddressInfo;
@@ -53,16 +54,12 @@ public:
 		
 	CUnicodeView GetFangameTitle() const
 		{ return fangameTitle; }
-	CUnicodeView GetSaveName() const
-		{ return saveFileName; }
 	const IValueGetter& GetDeathDetector() const
 		{ return *deathDetector; }
-	CSaveDataValueGetter* GetRoomIdDetector()
-		{ return roomIdGetter; }
-	CSaveDataValueGetter* GetHeroXDetector()
-		{ return heroXGetter; }
-	CSaveDataValueGetter* GetHeroYDetector()
-		{ return heroYGetter; }
+	CArrayView<CSaveReaderData> GetSaveReaders() const
+		{ return gameSaveReaders; }
+	CArrayBuffer<CSaveReaderData> GetSaveReaders() 
+		{ return gameSaveReaders; }
 
 	void EmptySessionCounts();
 
@@ -76,11 +73,8 @@ private:
 	CPtrOwner<CBossTriggerCreater> triggerCreater;
 	CStaticArray<CBossInfo> bossesInfo;
 	CUnicodeString fangameTitle;
-	CUnicodeString saveFileName;
 	CPtrOwner<IValueGetter> deathDetector;
-	CPtrOwner<CSaveDataValueGetter> heroXGetter;
-	CPtrOwner<CSaveDataValueGetter> heroYGetter;
-	CPtrOwner<CSaveDataValueGetter> roomIdGetter;
+	CArray<CSaveReaderData> gameSaveReaders;
 	CArray<CBossEventData> bossShowEvents;
 	CDynamicBitSet<> globalAddressMask;
 
@@ -89,7 +83,7 @@ private:
 	CXmlElement& initLayoutDocument( CUnicodeView bossFolder, CXmlDocument& layoutDoc );
 	void initDeathDetector( const CXmlElement& bossElem );
 	void initSaveDetector( const CXmlElement& bossElem );
-	CPtrOwner<CSaveDataValueGetter> createValueGetter( const CXmlElement& elem );
+	void addValueGetter( const CXmlElement& elem, CArray<CSaveDataValueGetter>& result );
 	void loadBoss( CXmlElement& bossElem, int bossId, const CBossAttackSaveFile& saveFile );
 	void loadBossView( CXmlElement& bossElem, int bossId, const CBossAttackSaveFile& saveFile );
 	void loadBossData( CXmlElement& bossElem, CBossInfo& bossInfo, int bossId, const CBossAttackSaveFile& saveFile );
@@ -117,6 +111,7 @@ private:
 	void addAttackEndTrigger( const CXmlElement& elem, CBossInfo& bossInfo, CBossAttackInfo& attackInfo );
 	void addAttackPauseTrigger( const CXmlElement& elem, CBossInfo& bossInfo, CBossAttackInfo& attackInfo );
 	void addAttackAbortTrigger( const CXmlElement& elem, CBossInfo& bossInfo, CBossAttackInfo& attackInfo );
+	void addAttackAction( const CXmlElement& elem, CBossInfo& bossInfo, CBossAttackInfo& attackInfo );
 
 	void addAttackProgress( const CXmlElement& elem, CBossAttackInfo& attack ) const;
 	void initProgressTimeColors( CBossAttackInfo& attack ) const;

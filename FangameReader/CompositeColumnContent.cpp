@@ -94,29 +94,6 @@ CPtrOwner<IColumnContentData> CCompositeColumnContent::CreateAttackData( const C
 	return CreateOwner<CCompositeColumnData>( move( leftData ), move( rightData ) );
 }
 
-void CCompositeColumnContent::DrawImage( const IRenderParameters& renderParams, const IColumnContentData& data, const TMatrix3& parentTransform, CClipVector cellSize ) const
-{
-	const auto& compositeData = getCompositeData( data );
-	const int rowCount = compositeData.GetRowCount();
-	TMatrix3 modelToClip = parentTransform;
-	for( int i = rowCount - 1; i >= 0; i-- ) {
-		compositeData.DrawCellImage( renderParams, i, modelToClip, cellSize );
-		modelToClip( 2, 1 ) += cellSize.Y();
-	}
-}
-
-void CCompositeColumnContent::DrawText( const IRenderParameters& renderParams, const IColumnContentData& data, CArrayView<CColor> rowData,
-	const TMatrix3& parentTransform, CPixelVector cellSize, float cellYAdvance ) const
-{
-	const auto& compositeData = getCompositeData( data );
-	const int rowCount = compositeData.GetRowCount();
-	TMatrix3 modelToClip = parentTransform;
-	for( int i = rowCount - 1; i >= 0; i-- ) {
-		compositeData.DrawCellText( renderParams, i, rowData[i], modelToClip, cellSize );
-		modelToClip( 2, 1 ) += cellYAdvance;
-	}
-}
-
 const CCompositeColumnData& CCompositeColumnContent::getCompositeData( const IColumnContentData& data ) const
 {
 	return static_cast<const CCompositeColumnData&>( data );

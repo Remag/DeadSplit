@@ -13,7 +13,7 @@
 #include <GdiPlusRenderParams.h>
 
 #include <DetectorActionController.h>
-#include <Icon.h>
+#include <FooterIconPanel.h>
 #include <MouseTarget.h>
 #include <WindowUtils.h>
 #include <MouseInputHandler.h>
@@ -43,34 +43,6 @@ CFangameDetectorState::CFangameDetectorState( CEventSystem& _eventSystem, CWindo
 {
 }
 
-void CFangameDetectorState::initializeSettingsIcon()
-{
-	settingsIcon = CreateOwner<CIcon>( CPixelRect{ 4, 28, 24, 8 } );
-	settingsIcon->SetHitboxMargins( TVector4{ 4.0f, 8.0f, 4.0f, 8.0f } );
-	settingsIcon->SetImageData( assets->GetOrCreateIcon( L"Counter\\Gear.png" ), 0 );
-	settingsIcon->SetImageData( assets->GetOrCreateIcon( L"Counter\\GearHL.png" ), 1 );
-
-	const auto settingsAction = []( IUserActionController& controller ){ controller.ShowSettings(); };
-	auto mouseTarget = CreateOwner<CIconMouseTarget>( settingsAction );
-	settingsIcon->SetMouseTarget( move( mouseTarget ) );
-
-	const TMatrix3 modelToWorld( 1.0f );
-	settingsIcon->SetModelToWorld( modelToWorld );
-}
-
-void CFangameDetectorState::initializeOpenIcon()
-{
-	openIcon = CreateOwner<CIcon>( CPixelRect{ 32, 28, 52, 8 } );
-	openIcon->SetHitboxMargins( TVector4{ 4.0f, 8.0f, 4.0f, 8.0f } );
-	openIcon->SetImageData( assets->GetOrCreateIcon( L"Counter\\OpenFile.png" ), 0 );
-	openIcon->SetImageData( assets->GetOrCreateIcon( L"Counter\\OpenFileHL.png" ), 1 );
-	const auto openAction = []( IUserActionController& controller ){ controller.OpenFangame(); };
-	auto mouseTarget = CreateOwner<CIconMouseTarget>( openAction );
-	openIcon->SetMouseTarget( move( mouseTarget ) );
-	const TMatrix3 modelToWorld( 1.0f );
-	openIcon->SetModelToWorld( modelToWorld );
-}
-
 CEventTarget CFangameDetectorState::createWindowChangeEvent( CEventSystem& events )
 {
 	return events.AddEventTarget( Events::CWindowSizeChange(), [this]( const TWindowChangeEvent& ){ onWindowSizeChange(); } );
@@ -93,8 +65,7 @@ CFangameDetectorState::~CFangameDetectorState()
 void CFangameDetectorState::OnStart()
 {
 	initTextPanel();
-	initializeSettingsIcon();
-	initializeOpenIcon();
+	footerPanel = CreateOwner<CFooterIconPanel>( *assets, windowSettings );
 	actionController = CreateOwner<CDetectorActionController>( *this );
 	mouseInputHandler = CreateOwner<CMouseInputHandler>();
 
@@ -128,7 +99,7 @@ void CFangameDetectorState::detectFangame()
 		lastDetectWnd = lastDetectResult->WndHandle;
 		detector->SuspendSearch();
 		GetStateManager().ImmediatePushState( CreateOwner<CFangameVisualizerState>( move( *lastDetectResult ), eventSystem, windowSettings, *assets, *inputHandler, 
-			*detector, *sessionMonitor, *updater ) );
+			*detector, *sessionMonitor, *updater, *footerPanel ) );
 	}
 }
 
@@ -142,7 +113,7 @@ void CFangameDetectorState::Update( TTime )
 		lastDetectWnd = lastDetectResult->WndHandle;
 		detector->SuspendSearch();
 		GetStateManager().PushState<CFangameVisualizerState>( move( *lastDetectResult ), eventSystem, windowSettings, *assets, *inputHandler,
-			*detector, *sessionMonitor, *updater );
+			*detector, *sessionMonitor, *updater, *footerPanel );
 	} else {
 		lastDetectWnd = nullptr;
 	}
@@ -166,12 +137,7 @@ void CFangameDetectorState::doDraw( const IRenderParameters& renderParams ) cons
 		scanningPanel->Draw( renderParams );
 	}
 	GetRenderer().InitializeImageDrawing();
-	if( settingsIcon != nullptr ) {
-		settingsIcon->Draw( renderParams, 0 );
-	}
-	if( openIcon != nullptr ) {
-		openIcon->Draw( renderParams, 0 );
-	}
+	footerPanel->Draw( renderParams );
 	GetRenderer().FinalizeImageDrawing();
 	GetRenderer().FinalizeFrame();
 }
@@ -202,23 +168,12 @@ void CFangameDetectorState::invalidateRect()
 
 IMouseTarget* CFangameDetectorState::OnMouseAction( CPixelVector pos )
 {
-	ClearIconHighlight();
-	if( settingsIcon->Has( pos ) ) {
-		settingsIcon->SetHighlight( true );
-		return settingsIcon->GetMouseTarget();
-	} else if( openIcon->Has( pos ) ) {
-		openIcon->SetHighlight( true );
-		return openIcon->GetMouseTarget();
-	} else {
-		return nullptr;
-	}
+	return footerPanel->OnMouseAction( pos );
 }
 
 void CFangameDetectorState::ClearIconHighlight()
 {
-	settingsIcon->SetHighlight( false );
-	openIcon->SetHighlight( false );
-	invalidateRect();
+	footerPanel->ClearHighlight();
 }
 
 void CFangameDetectorState::ShowSettings()
@@ -249,7 +204,7 @@ void CFangameDetectorState::peekFangame( CUnicodeView fangameName )
 	}
 
 	GetStateManager().PushState<CFangamePeekerState>( fangameName, eventSystem, windowSettings, *assets, *inputHandler,
-		*detector, *sessionMonitor, *updater );
+		*detector, *sessionMonitor, *updater, *footerPanel );
 }
 
 //////////////////////////////////////////////////////////////////////////

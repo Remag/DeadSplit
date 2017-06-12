@@ -34,8 +34,6 @@ public:
 		{ return CreateOwner<CEmptyContentData>(); }
 	virtual CPtrOwner<IColumnContentData> CreateAttackData( const CBossInfo&, float, TTableColumnZone ) const override final
 		{ return CreateOwner<CEmptyContentData>(); }
-	virtual void DrawImage( const IRenderParameters&, const IColumnContentData&, const TMatrix3&, CClipVector ) const override final {}
-	virtual void DrawText( const IRenderParameters&, const IColumnContentData&, CArrayView<CColor>, const TMatrix3&, CPixelVector, float ) const override final {}
 };
  
 //////////////////////////////////////////////////////////////////////////

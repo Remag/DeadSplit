@@ -29,6 +29,7 @@ namespace Events {
 	class CAllAttacksClear {};
 	class CTimePassedEvent {};
 	class CFangameValueChange {};
+	class CDeath {};
 }
 
 typedef CEvent<Events::CWindowSizeChange> TWindowChangeEvent;
@@ -83,12 +84,16 @@ private:
 
 class CUpdateEvent : public CFangameEvent<Events::CTimePassedEvent> {
 public:
-	CUpdateEvent( CFangameVisualizerState& visualizer, DWORD _currentTime ) : CFangameEvent( visualizer ), currentTime( _currentTime ) {}
+	CUpdateEvent( CFangameVisualizerState& visualizer, DWORD _prevTime, DWORD _currentTime ) : 
+		CFangameEvent( visualizer ), prevTime( _prevTime ), currentTime( _currentTime ) {}
 
+	DWORD GetPrevTime() const
+		{ return prevTime; }
 	DWORD GetTime() const
 		{ return currentTime; }
 
 private:
+	DWORD prevTime;
 	DWORD currentTime;
 };
 
