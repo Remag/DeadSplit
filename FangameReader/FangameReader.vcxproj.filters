@@ -441,6 +441,9 @@
     <ClCompile Include="FangameConnector.cpp">
       <Filter>Source Files\Detection</Filter>
     </ClCompile>
+    <ClCompile Include="UpdateInstaller.cpp">
+      <Filter>Source Files\General</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common.h">
@@ -781,6 +784,9 @@
     </ClInclude>
     <ClInclude Include="FangameConnector.h">
       <Filter>Header Files\Detection</Filter>
+    </ClInclude>
+    <ClInclude Include="UpdateInstaller.h">
+      <Filter>Header Files\General</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

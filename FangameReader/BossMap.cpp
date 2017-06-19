@@ -263,8 +263,8 @@ void CBossMap::loadBossData( CXmlElement& bossElem, CBossInfo& bossInfo, int bos
 	bossInfo.SessionClearFlag = bossStats.SessionClearFlag;
 	bossInfo.SessionStats = bossStats.SessionStats;
 	bossInfo.TotalStats = bossStats.TotalStats;
-	bossInfo.SessionStats.Time = 1.0f * Floor( bossStats.SessionStats.Time );
-	bossInfo.TotalStats.Time = 1.0f * Floor( bossStats.TotalStats.Time );
+	bossInfo.SessionStats.Time = 1.0 * Floor( bossStats.SessionStats.Time );
+	bossInfo.TotalStats.Time = 1.0 * Floor( bossStats.TotalStats.Time );
 }
 
 const CUnicodeView attackOrderAttrib = L"attackOrder";
@@ -389,8 +389,8 @@ CBossAttackInfo& CBossMap::addBossAttackAttribs( CXmlElement& elem, CEntryInfo& 
 	bossInfo.AttackCount++;
 	newAttack.SessionStats = attackDeathData.SessionStats;
 	newAttack.TotalStats = attackDeathData.TotalStats;
-	newAttack.SessionStats.Time = 1.0f * Floor( newAttack.SessionStats.Time );
-	newAttack.TotalStats.Time = 1.0f * Floor( newAttack.TotalStats.Time );
+	newAttack.SessionStats.Time = 1.0 * Floor( newAttack.SessionStats.Time );
+	newAttack.TotalStats.Time = 1.0 * Floor( newAttack.TotalStats.Time );
 	newAttack.IsRepeatable = elem.GetAttributeValue( loopingAttrib, false );
 	newAttack.NotifyAddressChangeOnEnd = elem.GetAttributeValue( notifyAddressChangeAttrib, false );
 

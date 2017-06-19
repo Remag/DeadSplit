@@ -25,7 +25,7 @@ struct CEntryStats {
 	int PassCount = 0;
 	int CurrentStreak = 0;
 	int MaxStreak = 0;
-	float Time = 0.0f;
+	double Time = 0.0;
 
 	CEntryStats() = default;
 };

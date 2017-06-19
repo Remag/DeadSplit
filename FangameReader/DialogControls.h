@@ -38,7 +38,7 @@ private:
 
 class CTimeEdit {
 public:
-	CTimeEdit( int _hourId, int _minuteId, int _secondId, float& _targetTime, HWND dialogWnd ) :
+	CTimeEdit( int _hourId, int _minuteId, int _secondId, double& _targetTime, HWND dialogWnd ) :
 		hourId( _hourId ), minuteId( _minuteId ), secondId( _secondId ), targetTime( _targetTime ) { loadChanges( dialogWnd ); }
 
 	void SaveChanges( HWND dialogWnd );
@@ -47,7 +47,7 @@ private:
 	int hourId;
 	int minuteId;
 	int secondId;
-	float& targetTime;
+	double& targetTime;
 
 	void loadChanges( HWND dialogWnd );
 	static CUnicodeString createTimeString( int timeCount );

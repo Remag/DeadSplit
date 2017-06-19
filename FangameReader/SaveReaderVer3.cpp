@@ -21,9 +21,9 @@ CMap<CUnicodeString, CBossSaveData> CSaveReaderVer3::SerializeData( CArchive& sr
 		newData.AttackData = move( oldData.AttackData );
 		newData.SessionClearFlag = oldData.SessionClearFlag;
 		newData.SessionStats.DeathCount = oldData.SessionDeathCount;
-		newData.SessionStats.Time = 1.0f * oldData.SessionTimeOnBoss;
+		newData.SessionStats.Time = 1.0 * oldData.SessionTimeOnBoss;
 		newData.TotalStats.DeathCount = oldData.TotalDeathCount;
-		newData.TotalStats.Time = 1.0f * oldData.TotalTimeOnBoss;
+		newData.TotalStats.Time = 1.0 * oldData.TotalTimeOnBoss;
 	}
 
 	return result;

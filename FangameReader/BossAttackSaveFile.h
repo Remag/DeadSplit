@@ -66,7 +66,7 @@ inline CArchive& operator<<( CArchive& archive, CEntryStats stats )
 	archive << stats.PassCount;
 	archive << stats.CurrentStreak;
 	archive << stats.MaxStreak;
-	archive << stats.Time;
+	archive << static_cast<float>( stats.Time );
 	return archive;
 }
 
@@ -76,7 +76,9 @@ inline CArchive& operator>>( CArchive& archive, CEntryStats& stats )
 	archive >> stats.PassCount;
 	archive >> stats.CurrentStreak;
 	archive >> stats.MaxStreak;
-	archive >> stats.Time;
+	float timeFlt;
+	archive >> timeFlt;
+	stats.Time = timeFlt;
 	return archive;
 }
 

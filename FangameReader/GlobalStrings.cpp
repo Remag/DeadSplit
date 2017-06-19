@@ -19,7 +19,7 @@ extern const CUnicodeView BaseConnectionFile = L"baseConnections.xml";
 extern const CUnicodeView UserConnectionFile = L"userConnections.xml";
 extern const CUnicodeView SessionFileName = L"CurrentSession";
 extern const CUnicodeView UpdateTempFolder = L"Update";
-extern const CUnicodeView UpdatedExeName = L"Update\\DeadSplitUpdater.exe";
+extern const CUnicodeView UpdatedExeName = L"Update\\DeadSplit.exe";
 
 }
 

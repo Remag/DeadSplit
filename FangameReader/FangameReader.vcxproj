@@ -108,6 +108,7 @@
     <ClCompile Include="GlGradientRect.cpp" />
     <ClCompile Include="TextInfoPanel.cpp" />
     <ClCompile Include="GlTexturedQuad.cpp" />
+    <ClCompile Include="UpdateInstaller.cpp" />
     <ClCompile Include="UserAliasFile.cpp" />
     <ClCompile Include="ValueGetter.cpp" />
     <ClCompile Include="VisualizerActionController.cpp" />
@@ -152,6 +153,7 @@
     <ClInclude Include="SessionMonitor.h" />
     <ClInclude Include="SettingsDialogFrame.h" />
     <ClInclude Include="SolidBrush.h" />
+    <ClInclude Include="UpdateInstaller.h" />
     <ClInclude Include="UserActionController.h" />
     <ClInclude Include="UserAliasFile.h" />
     <ClInclude Include="VisualizerActionController.h" />

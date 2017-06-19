@@ -12,6 +12,7 @@
 #include <OpenGlRenderer.h>
 #include <WinGdiRenderer.h>
 #include <GlobalStrings.h>
+#include <UpdateInstaller.h>
 
 namespace Fangame {
 
@@ -131,18 +132,9 @@ int CMainApp::skipWhitespace( int pos, CUnicodeView str )
 
 void CMainApp::finalizeUpdateInstall( CUnicodeView updateSource, bool openAfter )
 {
-	for( ;; ) {
-		try {
-			FileSystem::Copy( GetCurrentModulePath(), updateSource );
-			break;
-		} catch( CException& ) {
-			Sleep( 500 );
-		}
-	}
-
-	if( openAfter ) {
-		CProcess::CreateAndAbandon( UnicodeStr( updateSource ) );
-	}
+	Sleep( 1000 );
+	CUpdateInstaller installer;
+	installer.InstallUpdate( updateSource, GetCurrentModulePath(), openAfter );
 }
 
 void CMainApp::cleanupUpdater()

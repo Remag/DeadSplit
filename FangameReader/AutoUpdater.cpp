@@ -54,7 +54,8 @@ void CAutoUpdater::installUpdate( bool reopenAfter )
 	const auto currentFolder = FileSystem::GetPath( currentName );
 	assert( FileSystem::DirAccessible( currentFolder ) );
 	filterUserFiles( updateFiles );
-	if( !writeUpdateFiles( updateFiles, currentFolder ) ) {
+	const auto updateFolder = FileSystem::MergePath( currentFolder, L"Update" );
+	if( !writeUpdateFiles( updateFiles, updateFolder ) ) {
 		return;
 	}
 	const auto updatedExePath = FileSystem::MergePath( currentFolder, Paths::UpdatedExeName );
@@ -74,7 +75,11 @@ void CAutoUpdater::filterUserFiles( CFileCollection& collection )
 	for( int i = fileCount - 1; i >= 0; i-- ) {
 		const auto filePath = collection.GetFileName( i );
 		const auto fileName = FileSystem::GetNameExt( filePath );
-		if( fileName == Paths::FanagameSaveFile || fileName == Paths::FangameAliasesFile || fileName == Paths::UserSettingsFile ) {
+		if( fileName == Paths::FanagameSaveFile 
+			|| fileName == Paths::FangameAliasesFile 
+			|| fileName == Paths::UserSettingsFile 
+			|| fileName == Paths::UserConnectionFile ) 
+		{
 			collection.DeleteFile( i );
 		}
 	}
@@ -87,32 +92,12 @@ bool CAutoUpdater::writeUpdateFiles( CFileCollection& collection, CUnicodeView d
 			collection.WriteToFolder( destination );
 			return true;
 		} catch( CException& ) {
-			if( tryFixDuplicateExe( collection, destination ) ) {
-				continue;
-			}
 			const auto userInput = ::MessageBox( nullptr, L"DeadSplit installation failed!\r\nMake sure no other copies of the application are running on the background.", L"DeadSplit", MB_OKCANCEL );
 			if( userInput == 0 || userInput == IDCANCEL ) {
 				return false;
 			}
 		}
 	}
-}
-
-bool CAutoUpdater::tryFixDuplicateExe( CFileCollection& collection, CUnicodeView destination )
-{
-	const auto moduleName = GetCurrentModulePath();
-	const auto fullDestination = FileSystem::CreateFullPath( destination );
-	const int fileCount = collection.GetFileCount();
-	for( int i = 0; i < fileCount; i++ ) {
-		const auto fileName = collection.GetFileName( i );
-		const auto fullName = FileSystem::MergePath( fullDestination, fileName );
-		if( fullName == moduleName ) {
-			collection.SetFileName( i, Paths::UpdatedExeName );
-			return true;
-		}
-	}
-
-	return false;
 }
 
 void CAutoUpdater::RemoveNotifyTarget( HWND wnd )
@@ -169,7 +154,7 @@ int CAutoUpdater::fetchManifestAction()
 	return 0;
 }
 
-const int deadsplitUpdateVersion = 1;
+const int deadsplitUpdateVersion = 2;
 void CAutoUpdater::parseManifestData()
 {
 	const char* manifestRawStr = reinterpret_cast<char*>( rawManifestData.Ptr() );
@@ -262,6 +247,7 @@ void CAutoUpdater::parseManifestUrl( int pos, CStringPart manifestStr )
 	}
 	const auto domainPos = potentialDomainPos < length && manifestStr[potentialDomainPos] == L'/' ? potentialDomainPos : pos;
 	manifestData.UpdateUrl = protocolPrefix + manifestStr.Mid( startPos, domainPos - startPos ) + domainSuffix + manifestStr.Mid( domainPos, pos - domainPos ) + deadsplitDownloadSuffix;
+	//manifestData.UpdateUrl = Str( "https://github.com/Remag/DeadSplit/releases/download/v1.0/DeadSplit.recol.gz" );
 }
 
 void CAutoUpdater::changeStatusAndNotify( TAutoUpdateStatus newValue )

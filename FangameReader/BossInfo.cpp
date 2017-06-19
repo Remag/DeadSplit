@@ -39,9 +39,9 @@ static void makeChildrenConsistent( CEntryInfo& entry ) {
 static void makeDeathTimeConsistentWithChildData( CEntryInfo& entry )
 {
 	entry.SessionStats.DeathCount = 0;
-	entry.SessionStats.Time = 0.0f;
+	entry.SessionStats.Time = 0.0;
 	entry.TotalStats.DeathCount = 0;
-	entry.TotalStats.Time = 0.0f;
+	entry.TotalStats.Time = 0.0;
 	for( auto& child : entry.Children ) {
 		entry.SessionStats.DeathCount += child.SessionStats.DeathCount;
 		entry.SessionStats.Time += child.SessionStats.Time;

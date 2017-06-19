@@ -89,7 +89,6 @@ private:
 	CUnicodeString getModuleName() const;
 	bool writeUpdateFiles( CFileCollection& collection, CUnicodeView destination );
 	void filterUserFiles( CFileCollection& collection );
-	bool tryFixDuplicateExe( CFileCollection& collection, CUnicodeView destination );
 
 	void doFetchManifest();
 	int fetchManifestAction();
