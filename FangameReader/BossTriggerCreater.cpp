@@ -102,6 +102,31 @@ void CBossTriggerCreater::AddBossEndTrigger( const CXmlElement& elem, CBossInfo&
 	addTrigger( elem, bossInfo, clearReaction, bossInfo.EntryId, bossInfo.AddressMask, result );
 }
 
+static void doAbortBoss( CFangameVisualizerState& visualizer )
+{
+	visualizer.GetTimeline().AbortBoss();
+}
+
+static void abortBoss( CEventSystem& events, double delay, CFangameVisualizerState& visualizer )
+{
+	if( delay <= 0 ) {
+		doAbortBoss( visualizer );
+	} else {
+		CDelayedTimerAction<CFangameVisualizerState&> timerAction( delay, doAbortBoss, visualizer );
+		auto newTarget = events.AddEventTarget( Events::CTimePassedEvent(), move( timerAction ) );
+		visualizer.AttachTimerEvent( move( newTarget ) );
+	}
+}
+
+void CBossTriggerCreater::AddBossAbortTrigger( const CXmlElement& elem, CBossInfo& bossInfo, CArray<CBossEventData>& result ) const
+{
+	const auto delay = elem.GetAttributeValue( delayAttrib, 0.0 );
+	const auto abortReaction = [this, delay]( CFangameVisualizerState& visualizer ) {
+		abortBoss( events, delay, visualizer );
+	};
+	addTrigger( elem, bossInfo, abortReaction, bossInfo.EntryId, bossInfo.AddressMask, result );
+}
+
 void CBossTriggerCreater::AddDefaultBossStartTrigger( CArray<CBossEventData>& result ) const
 {
 	addGameRestartTrigger( doStartBoss, result );

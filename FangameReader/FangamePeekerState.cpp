@@ -224,7 +224,9 @@ void CFangamePeekerState::doDraw( const IRenderParameters& renderParams ) const
 		visualizer->Draw( renderParams );
 	}
 
+	GetRenderer().InitializeImageDrawing();
 	footerIcons.Draw( renderParams );
+	GetRenderer().FinalizeImageDrawing();
 
 	GetRenderer().FinalizeFrame();
 }

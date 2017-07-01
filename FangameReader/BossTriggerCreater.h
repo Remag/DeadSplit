@@ -22,6 +22,7 @@ public:
 	void AddBossShowTrigger( const CXmlElement& triggerElem, CBossInfo& bossInfo, CDynamicBitSet<>& globalAddressMask, CArray<CBossEventData>& result ) const;
 	void AddBossStartTrigger( const CXmlElement& triggerElem, CBossInfo& bossInfo, CArray<CBossEventData>& result ) const;
 	void AddBossEndTrigger( const CXmlElement& triggerElem, CBossInfo& bossInfo, CArray<CBossEventData>& result ) const;
+	void AddBossAbortTrigger( const CXmlElement& triggerElem, CBossInfo& bossInfo, CArray<CBossEventData>& result ) const;
 
 	void AddDefaultBossStartTrigger( CArray<CBossEventData>& result ) const;
 	void AddDefaultBossEndTrigger( CArray<CBossEventData>& result ) const;

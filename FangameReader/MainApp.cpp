@@ -134,7 +134,7 @@ void CMainApp::finalizeUpdateInstall( CUnicodeView updateSource, bool openAfter 
 {
 	Sleep( 1000 );
 	CUpdateInstaller installer;
-	installer.InstallUpdate( updateSource, GetCurrentModulePath(), openAfter );
+	installer.InstallUpdate( GetCurrentModulePath(), updateSource, openAfter );
 }
 
 void CMainApp::cleanupUpdater()

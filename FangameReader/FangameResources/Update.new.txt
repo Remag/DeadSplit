@@ -1,2 +1,6 @@
-Deadsplit v1.0 - Release Notes.
-Boss edit instructions, triggers that change attack names/icons, 3 new fangames.
+Deadsplit v1.03 - Release Notes.
+Added new fangames:
+I Wanna Bye The Bye
+I Wanna Bye The Entrance
+I Wanna Be The Snow Drive
+I Wanna Sunspike

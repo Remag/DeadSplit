@@ -231,6 +231,11 @@ void CAvoidanceTimeline::ClearBoss()
 	clearCurrentBoss();
 }
 
+void CAvoidanceTimeline::AbortBoss()
+{
+	UndoRecording();
+}
+
 void CAvoidanceTimeline::CheckBossAttacksFinish()
 {
 	if( status != BTS_Recording ) {

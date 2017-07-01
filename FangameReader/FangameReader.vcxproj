@@ -260,9 +260,11 @@
     <Xml Include="FangameResources\FangameInfo\baseConnections.xml" />
     <Xml Include="FangameResources\FangameInfo\Cosmo\layout.xml" />
     <Xml Include="FangameResources\FangameInfo\i wanna be the contrary\layout.xml" />
+    <Xml Include="FangameResources\FangameInfo\I wanna be the Snow Drive\layout.xml" />
     <Xml Include="FangameResources\FangameInfo\I Wanna Break The Series Z\layout.xml" />
     <Xml Include="FangameResources\FangameInfo\I wanna buy the crayon\layout.xml" />
     <Xml Include="FangameResources\FangameInfo\I wanna bye the bye\layout.xml" />
+    <Xml Include="FangameResources\FangameInfo\I wanna bye the Entrance\layout.xml" />
     <Xml Include="FangameResources\FangameInfo\I wanna call me it\layout.xml" />
     <Xml Include="FangameResources\FangameInfo\I Wanna Kill The Kamilia 3\layout.xml">
       <SubType>Designer</SubType>
@@ -270,6 +272,7 @@
     <Xml Include="FangameResources\FangameInfo\I Wanna Kill The Kamilia II\layout.xml">
       <SubType>Designer</SubType>
     </Xml>
+    <Xml Include="FangameResources\FangameInfo\I Wanna Sunspike\layout.xml" />
     <Xml Include="FangameResources\FangameInfo\I wanna Touch the Entrance\layout.xml">
       <SubType>Designer</SubType>
     </Xml>

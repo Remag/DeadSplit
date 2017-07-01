@@ -96,6 +96,7 @@ private:
 	void addClearTrigger( const CXmlElement& elem, CBossInfo& bossInfo );
 	void addBossStartTrigger( const CXmlElement& elem, CBossInfo& bossInfo );
 	void addBossShowTrigger( const CXmlElement& elem, CBossInfo& bossInfo );
+	void addBossAbortTrigger( const CXmlElement& elem, CBossInfo& bossInfo );
 	void addDefaultClearTrigger( CBossInfo& bossInfo );
 	void addDefaultBossStartTrigger( CBossInfo& bossInfo );
 

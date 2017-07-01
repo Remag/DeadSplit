@@ -124,9 +124,6 @@
     <Filter Include="Resource Files\GameInfo\Perfect Bear">
       <UniqueIdentifier>{4c78a7cd-27a1-4d91-8d7d-861271acab10}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resource Files\GameInfo\Bye the Bye">
-      <UniqueIdentifier>{2fa6cbf0-73a6-4fbc-bd9f-7cf7f80547db}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Resource Files\GameInfo\Call Me It">
       <UniqueIdentifier>{d57f3619-4d39-451d-9bec-35b1edb03be0}</UniqueIdentifier>
     </Filter>
@@ -147,6 +144,18 @@
     </Filter>
     <Filter Include="Resource Files\GameInfo\KiraKira">
       <UniqueIdentifier>{1bd5a4aa-eaba-4fff-9960-c4a4726023fd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\GameInfo\Bye The Entrance">
+      <UniqueIdentifier>{254e063e-77f5-4dda-ae48-05084d138233}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\GameInfo\Bye The Bye">
+      <UniqueIdentifier>{2fa6cbf0-73a6-4fbc-bd9f-7cf7f80547db}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\GameInfo\Snow Drive">
+      <UniqueIdentifier>{d2861990-1e1a-4b00-97fe-fb80f6b148a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\GameInfo\Sunspike">
+      <UniqueIdentifier>{fc32f9ef-4289-42d8-8da2-e18bbe0f4c45}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -831,7 +840,7 @@
       <Filter>Resource Files\GameInfo\Perfect Bear</Filter>
     </Xml>
     <Xml Include="FangameResources\FangameInfo\I wanna bye the bye\layout.xml">
-      <Filter>Resource Files\GameInfo\Bye the Bye</Filter>
+      <Filter>Resource Files\GameInfo\Bye The Bye</Filter>
     </Xml>
     <Xml Include="FangameResources\FangameInfo\I wanna call me it\layout.xml">
       <Filter>Resource Files\GameInfo\Call Me It</Filter>
@@ -856,6 +865,15 @@
     </Xml>
     <Xml Include="FangameResources\FangameInfo\KiraKira\layout.xml">
       <Filter>Resource Files\GameInfo\KiraKira</Filter>
+    </Xml>
+    <Xml Include="FangameResources\FangameInfo\I wanna bye the Entrance\layout.xml">
+      <Filter>Resource Files\GameInfo\Bye The Entrance</Filter>
+    </Xml>
+    <Xml Include="FangameResources\FangameInfo\I wanna be the Snow Drive\layout.xml">
+      <Filter>Resource Files\GameInfo\Snow Drive</Filter>
+    </Xml>
+    <Xml Include="FangameResources\FangameInfo\I Wanna Sunspike\layout.xml">
+      <Filter>Resource Files\GameInfo\Sunspike</Filter>
     </Xml>
   </ItemGroup>
   <ItemGroup>

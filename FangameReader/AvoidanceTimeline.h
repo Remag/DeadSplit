@@ -42,11 +42,12 @@ public:
 	bool IsAttackCurrent( int attackId ) const;
 	DWORD GetAttackStartTime( int attackId ) const;
 	void StartBoss();
+	void ClearBoss();
+	void AbortBoss();
 	void StartBossAttack( int attackId );
 	void FinishBossAttack( int attackId );
 	void PauseBossAttack( int attackId );
 	void AbortBossAttack( int attackId );
-	void ClearBoss();
 	void CheckBossAttacksFinish();
 
 	// Signal hero death if the recording is on.

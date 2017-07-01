@@ -1,4 +1,4 @@
-DeadSplit v1.0
+DeadSplit v1.03
 
 This is a program for tracking your death count and other stats in fangames.
 =============================================================
@@ -16,11 +16,15 @@ List of supported fangames:
 - I Wanna Kill The Kamilia 3
 - I Wanna Buy The Crayon ( final boss )
 - I Wanna Call Me It ( extra boss )
-- I Wanna Touch the Entrance
+- I Wanna Touch The Entrance
 - I Wanna Grand Of The Perfect Bear
 - I Wanna Be The C/O/S/M/O
 - I Wanna Be The Contrary
 - I Wanna KiraKira
+- I Wanna Bye The Bye
+- I Wanna Bye The Entrance
+- I Wanna Be The Snow Drive
+- I Wanna Sunspike
 
 =============================================================
 

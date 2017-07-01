@@ -213,6 +213,8 @@ void CBossMap::loadBoss( CXmlElement& bossElem, int bossId, const CBossAttackSav
 			addBossStartTrigger( child, bossInfo );
 		} else if( name == showTriggerName ) {
 			addBossShowTrigger( child, bossInfo );
+		} else if( name == abortTriggerChildName ) {
+			addBossAbortTrigger( child, bossInfo );
 		} else {
 			Log::Warning( unknownBossChild.SubstParam( name ), this );
 		}
@@ -489,6 +491,11 @@ void CBossMap::addBossStartTrigger( const CXmlElement& elem, CBossInfo& bossInfo
 void CBossMap::addBossShowTrigger( const CXmlElement& elem, CBossInfo& bossInfo )
 {
 	triggerCreater->AddBossShowTrigger( elem, bossInfo, globalAddressMask, bossShowEvents );
+}
+
+void CBossMap::addBossAbortTrigger( const CXmlElement& elem, CBossInfo& bossInfo )
+{
+	triggerCreater->AddBossAbortTrigger( elem, bossInfo, bossInfo.BossEvents );
 }
 
 void CBossMap::addDefaultClearTrigger( CBossInfo& bossInfo )
