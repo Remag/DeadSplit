@@ -124,7 +124,7 @@ void CWindowSettings::initColors()
 	textColor = settingsFile.GetValue( colorsSectionName, textColorName, GetDefaultTextColor() );
 	highlightColor = settingsFile.GetValue( colorsSectionName, highlightColorName, GetDefaultMouseHighlightColor() );
 	finishedAttackColor = settingsFile.GetValue( colorsSectionName, finishedAttackColorName, GetDefaultFinishedAttackColor() );
-	backgroundColor = settingsFile.GetValue( colorsSectionName, bgOddColorName, GetDefaultBackgroundColor() );
+	backgroundColor = settingsFile.GetValue( colorsSectionName, backgroundColorName, GetDefaultBackgroundColor() );
 	rowOddColor = settingsFile.GetValue( colorsSectionName, bgOddColorName, GetDefaultRowOddColor() );
 	rowEvenColor = settingsFile.GetValue( colorsSectionName, bgEvenColorName, GetDefaultRowEvenColor() );
 	separatorLineColor = settingsFile.GetValue( colorsSectionName, separatorName, GetDefaultSeparatorColor() );

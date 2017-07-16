@@ -157,6 +157,9 @@
     <Filter Include="Resource Files\GameInfo\Sunspike">
       <UniqueIdentifier>{fc32f9ef-4289-42d8-8da2-e18bbe0f4c45}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\GameInfo\MeteorStream">
+      <UniqueIdentifier>{27829a04-dfee-474c-a6b4-bf09e826a01e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="common.cpp">
@@ -874,6 +877,9 @@
     </Xml>
     <Xml Include="FangameResources\FangameInfo\I Wanna Sunspike\layout.xml">
       <Filter>Resource Files\GameInfo\Sunspike</Filter>
+    </Xml>
+    <Xml Include="FangameResources\FangameInfo\I wanna appreciate meteor stream\layout.xml">
+      <Filter>Resource Files\GameInfo\MeteorStream</Filter>
     </Xml>
   </ItemGroup>
   <ItemGroup>

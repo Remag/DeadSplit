@@ -24,7 +24,7 @@ private:
 		TIntVector2 Size;
 
 		int HashKey() const
-			{ return CombineHashKey( GetUnicodeStringHash( Name ), Size.HashKey() ); }
+			{ return CombineHashKey( GetUnicodeHash( Name ), Size.HashKey() ); }
 		bool operator==( const CFontData& other ) const
 			{ return Name == other.Name && Size == other.Size; }
 	};

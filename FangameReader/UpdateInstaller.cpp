@@ -87,7 +87,11 @@ void CUpdateInstaller::moveUpdateFiles( CArrayView<CFileStatus> files, CUnicodeV
 		}
 
 		const auto targetFile = FileSystem::MergePath( targetFolder, relPath );
+		const auto targetPath = FileSystem::GetDrivePath( targetFile );
 		try {
+			if( !FileSystem::DirAccessible( targetPath ) ) {
+				FileSystem::CreateDir( targetPath );
+			}
 			FileSystem::Move( file.FullName, targetFile );
 		} catch( CException& ) {
 			failedFiles.Add( copy( file ) );

@@ -27,7 +27,7 @@ struct CBossAttackNameData {
 	CUnicodeString AttackName;
 
 	int HashKey() const
-		{ return CombineHashKey( GetUnicodeStringHash( BossName ), GetUnicodeStringHash( AttackName ) ); }
+		{ return CombineHashKey( GetUnicodeHash( BossName ), GetUnicodeHash( AttackName ) ); }
 	bool operator==( const CBossAttackNameData& other ) const
 		{ return BossName == other.BossName && AttackName == other.AttackName; }
 };

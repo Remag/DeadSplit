@@ -38,7 +38,7 @@ const CStackArray<int, 17> indexToControlId {
 void CColorSettingsDialog::fillChosenColors()
 {
 	chosenColors.ResetBuffer( indexToControlId.Size() );
-	addColorInfo( windowSettings.GetBackgroundColor() );
+	addColorInfo( windowSettings.GetBackgroundColor() ); 
 	addColorInfo( windowSettings.GetTextColor() );
 	addColorInfo( windowSettings.GetMouseHighlightColor() ); 
 

@@ -259,6 +259,7 @@
   <ItemGroup>
     <Xml Include="FangameResources\FangameInfo\baseConnections.xml" />
     <Xml Include="FangameResources\FangameInfo\Cosmo\layout.xml" />
+    <Xml Include="FangameResources\FangameInfo\I wanna appreciate meteor stream\layout.xml" />
     <Xml Include="FangameResources\FangameInfo\i wanna be the contrary\layout.xml" />
     <Xml Include="FangameResources\FangameInfo\I wanna be the Snow Drive\layout.xml" />
     <Xml Include="FangameResources\FangameInfo\I Wanna Break The Series Z\layout.xml" />

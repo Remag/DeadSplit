@@ -25,6 +25,7 @@ List of supported fangames:
 - I Wanna Bye The Entrance
 - I Wanna Be The Snow Drive
 - I Wanna Sunspike
+- I Wanna Appreciate Meteor Stream
 
 =============================================================
 
