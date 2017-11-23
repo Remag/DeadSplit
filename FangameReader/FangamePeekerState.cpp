@@ -137,8 +137,8 @@ void CFangamePeekerState::ShowSettings()
 	}
 	
 	GetStateManager().PopState();
-	GetStateManager().PushState<CFangamePeekerState>( fangameFolder, eventSystem, windowSettings, assets, inputHandler,
-		detector, sessionMonitor, updater, footerIcons );
+	GetStateManager().PushState( CreateOwner<CFangamePeekerState>( fangameFolder, eventSystem, windowSettings, assets, inputHandler,
+		detector, sessionMonitor, updater, footerIcons ) );
 }
 
 void CFangamePeekerState::OpenFangame()
@@ -150,8 +150,8 @@ void CFangamePeekerState::OpenFangame()
 	}
 
 	GetStateManager().PopState();
-	GetStateManager().PushState<CFangamePeekerState>( fangameName, eventSystem, windowSettings, assets, inputHandler,
-		detector, sessionMonitor, updater, footerIcons );
+	GetStateManager().PushState( CreateOwner<CFangamePeekerState>( fangameName, eventSystem, windowSettings, assets, inputHandler,
+		detector, sessionMonitor, updater, footerIcons ) );
 }
 
 void CFangamePeekerState::SaveData()
@@ -200,8 +200,8 @@ void CFangamePeekerState::initializeVisualizer( CFangameProcessInfo processInfo 
 {
 	GetStateManager().PopState();
 	detector.SuspendSearch();
-	GetStateManager().PushState<CFangameVisualizerState>( move( processInfo ), eventSystem, windowSettings, assets, inputHandler,
-		detector, sessionMonitor, updater, footerIcons );
+	GetStateManager().PushState( CreateOwner<CFangameVisualizerState>( move( processInfo ), eventSystem, windowSettings, assets, inputHandler,
+		detector, sessionMonitor, updater, footerIcons ) );
 }
 
 void CFangamePeekerState::Draw( const IRenderParameters& renderParams ) const

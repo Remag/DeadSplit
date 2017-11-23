@@ -44,6 +44,8 @@ public:
 		{ return srcBossInfo; }
 	float GetTableScale() const
 		{ return tableVerticalScale; }
+	float GetLinePixelSize() const
+		{ return linePixelHeight; }
 
 	void ResizeTable( CPixelVector newSize );
 	int GetTableView() const
@@ -118,6 +120,12 @@ private:
 		explicit CAttackRowData( CBossAttackInfo& srcAttack ) : SrcAttack( srcAttack ) {}
 	};
 
+	struct CAttackIterationPos {
+		int AttackPos;
+		const CAttackRowData* Attack;
+		int RowPos;
+	};
+
 	IUserActionController& controller;
 	const CTableLayout& layout;
 	CAssetLoader& assets;
@@ -146,6 +154,10 @@ private:
 	CStaticArray<CColor> rowColorList;
 	CArray<CColumnData> columnList;
 	CStaticArray<CFooterData> footerList;
+
+	COptional<CBossAttackInfo> unknownBossSrcAttack;
+	COptional<CAttackRowData> unknownBossRowData;
+	CArray<CPtrOwner<IColumnContentData>> unknownAttackData;
 
 	TMatrix3 baseModelToClip;
 	float tableVerticalScale;
@@ -215,6 +227,7 @@ private:
 	int findMaxChildRowCount( const CEntryInfo& entry ) const;
 	int findAttackCount() const;
 	void addChildren( CEntryInfo& entry );
+	void addUnknownAttack( CBossInfo& bossInfo );
 	void initBackgroundRects();
 	void initSubsplitIcons();
 
@@ -226,6 +239,7 @@ private:
 	void addEntryPass( CEntryStats& stats );
 	void ensureSubsplitVisibility( int attackId );
 	void ensureChildrenVisibility( const CEntryInfo& target, int attackId );
+	void calculateVisibleRowCount();
 	void setAttackColor( int attackPos, CColor color );
 
 	void drawBackgroundRects( const IRenderParameters& renderParams ) const;
@@ -275,6 +289,12 @@ private:
 	int findFirstVisibleSplit() const;
 	int findNextVisibleSplit( int currentPos ) const;
 	int findAttackPos( int visualPos ) const;
+	int getAttackCount() const;
+
+	CAttackIterationPos findFirstUnspoiledSplit() const;
+	CAttackIterationPos findNextUnspoiledSplit( CAttackIterationPos currentPos ) const;
+	bool isHiddenAttack( CAttackIterationPos pos ) const;
+	bool isSeenPosition( int pos ) const;
 };
 
 //////////////////////////////////////////////////////////////////////////

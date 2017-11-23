@@ -36,7 +36,6 @@ CBossDeathTable::CBossDeathTable( CUserAliasFile& _aliases, IUserActionControlle
 {
 	initializeAttackRows();
 	maxRowCount = findMaxRowCount();
-	currentRowCount = windowSettings.ShouldUseSubsplits() ? srcBoss.Children.Size() : maxRowCount;
 	const auto& nameRenderer = srcBoss.BossFont;
 	const auto& textRenderer = assets.GetOrCreateFont( windowSettings.GetTextFontName(), windowSettings.GetTextFontSize() );
 	bossName = GetRenderer().CreateTextData( srcBoss.UserVisualName, nameRenderer );
@@ -52,19 +51,23 @@ CBossDeathTable::CBossDeathTable( CUserAliasFile& _aliases, IUserActionControlle
 	invalidateTable();
 	clearBaseColors();
 	resizeIcons();
+	calculateVisibleRowCount();
 }
 
 int CBossDeathTable::findMaxRowCount() const
 {
+	const auto hideUnseenAttacks = windowSettings.ShouldHideUnseenAttacks();
 	if( !windowSettings.ShouldUseSubsplits() ) {
 		int rowCount = 0;
 		for( int i = findFirstVisibleSplit(); i != NotFound; i = findNextVisibleSplit( i ) ) {
 			rowCount++;
 		}
-		return rowCount;
+		return hideUnseenAttacks ? rowCount + 1 : rowCount;
 	}
 
-	return findMaxChildRowCount( srcBossInfo );
+	const auto showExtraAttack = windowSettings.ShowExtraUnseenAttack();
+	const auto rowCount = findMaxChildRowCount( srcBossInfo );
+	return ( hideUnseenAttacks && showExtraAttack ) ? rowCount + 1 : rowCount;
 }
 
 int CBossDeathTable::findMaxChildRowCount( const CEntryInfo& entry ) const
@@ -83,6 +86,7 @@ void CBossDeathTable::initializeTableView( int viewPos )
 	const int columnCount = layout.GetColumnCount( viewPos );
 	// Populate the columns with data.
 	columnList.Empty();
+	unknownAttackData.Empty();
 	statCaption.Empty();
 	dataColumnCount = 0;
 	float widthLeft = getAdjustedTableWidth();
@@ -236,7 +240,11 @@ void CBossDeathTable::addCaption( CUnicodePart caption )
 void CBossDeathTable::addAttackColumn( const CTableColumnData& data, TTableColumnZone zone, float& widthLeft )
 {
 	auto& newValue = columnList.Add( data, zone );
-	newValue.ContentData = data.Content->CreateAttackData( srcBossInfo, linePixelHeight, zone );
+	newValue.ContentData = data.Content->CreateAttackData( srcBossInfo.Children, srcBossInfo.AttackCount, srcBossInfo.BossFont, linePixelHeight, zone );
+
+	auto unknownData = data.Content->CreateAttackData( CArrayView<CBossAttackInfo>( *unknownBossSrcAttack ), 1, srcBossInfo.BossFont, linePixelHeight, zone );
+	unknownAttackData.Add( move( unknownData ) );
+
 	widthLeft -= data.MinPixelWidth;
 }
 
@@ -321,7 +329,8 @@ void CBossDeathTable::initSubsplitIcons()
 	subsplitImages.Add( &assets.GetOrCreateIcon( L"Counter\\OpenSplitArrow.png" ) );
 	subsplitImages.Add( &assets.GetOrCreateIcon( L"Counter\\OpenSplitArrowHL.png" ) );
 
-	for( int i = 0; i < rowList.Size(); i++ ) {
+	const auto attackCount = getAttackCount();
+	for( int i = 0; i < attackCount; i++ ) {
 		const auto iconAction = [this, i]( IUserActionController& ) { ToggleSubsplit( i ); };
 		subsplitIconTargets.Add( CreateOwner<CIconMouseTarget>( iconAction ) );
 	}
@@ -359,11 +368,12 @@ CBossDeathTable::~CBossDeathTable()
 
 void CBossDeathTable::initializeAttackRows()
 {
-	const int rowCount = findAttackCount();
+	const int rowCount = findAttackCount() + 1;
 	rowList.ResetBuffer( rowCount );
 	rowColorList.ResetBuffer( rowCount );
 	attackMouseTargets.ReserveBuffer( rowCount );
 	addChildren( srcBossInfo );
+	addUnknownAttack( srcBossInfo );
 
 	bossMouseTarget = CreateOwner<CBossMouseTarget>( aliases, srcBossInfo, *this );
 	footerMouseTarget = CreateOwner<CFooterMouseTarget>( aliases, srcBossInfo, *this );
@@ -382,6 +392,18 @@ void CBossDeathTable::addChildren( CEntryInfo& entry )
 		rowColorList.Add( CColor( 0, 0, 0, 0 ) );
 		addChildren( attack );
 	}
+}
+
+void CBossDeathTable::addUnknownAttack( CBossInfo& bossInfo )
+{
+	const auto& icon = assets.GetOrCreateIcon( L"Counter\\UnknownAttack.png" );
+	unknownBossSrcAttack.CreateValue( bossInfo, bossInfo, NotFound, icon, 0.0, 0.0 );
+	unknownBossRowData.CreateValue( *unknownBossSrcAttack );
+	rowList.Add( *unknownBossRowData );
+	attackMouseTargets.Add( aliases, *unknownBossSrcAttack, *this );
+	rowColorList.Add( CColor( 0, 0, 0, 0 ) );
+	unknownBossSrcAttack->UserVisualName = L"???";
+	unknownBossSrcAttack->BaseTextColor = windowSettings.GetFinishedAttackColor();
 }
 
 void CBossDeathTable::initializeIcons()
@@ -582,6 +604,7 @@ void CBossDeathTable::SetTableView( int newView )
 
 void CBossDeathTable::ResetTable( CPixelVector newSize, int newView )
 {
+	maxRowCount = findMaxRowCount();
 	currentTableView = newView;
 	initVerticalSizes( newSize );
 	initBackgroundRects();
@@ -655,13 +678,14 @@ void CBossDeathTable::RefreshTableData()
 	const auto& nameRenderer = srcBossInfo.BossFont;
 	bossName = GetRenderer().CreateTextData( srcBossInfo.UserVisualName, nameRenderer );
 	initializeTableView( currentTableView );
+	calculateVisibleRowCount();
 	invalidateTable();
 }
 
 bool CBossDeathTable::AddAttackDeath( int attackPos )
 {
 	assert( attackPos >= 0 );
-	if( attackPos >= rowList.Size() ) {
+	if( attackPos >= getAttackCount() ) {
 		return false;
 	}
 
@@ -763,7 +787,8 @@ void CBossDeathTable::FadeFrozenAttacks( DWORD currentTime )
 	}
 
 	animators.Empty();
-	for( int i = 0; i < rowList.Size(); i++ ) {
+	const auto attackCount = getAttackCount();
+	for( int i = 0; i < attackCount; i++ ) {
 		auto& attack = rowList[i];
 		if( attack.ProgressStatus == APS_Frozen ) {
 			animators.Add( i, attack.ProgressTopColor, 3.0, currentTime, 0.0f );
@@ -795,7 +820,7 @@ void CBossDeathTable::ZeroPbMarks()
 
 void CBossDeathTable::StartAttack( int attackPos, DWORD currentTime )
 {
-	assert( attackPos < rowList.Size() );
+	assert( attackPos < getAttackCount() );
 	auto& attack = rowList[attackPos];
 	attack.CurrentProgress = 1.0f;
 	attack.ProgressStatus = APS_Current;
@@ -816,15 +841,14 @@ void CBossDeathTable::StartAttack( int attackPos, DWORD currentTime )
 void CBossDeathTable::ensureSubsplitVisibility( int attackId )
 {
 	openSubsplits.Empty();
-	currentRowCount = srcBossInfo.Children.Size();
 	ensureChildrenVisibility( srcBossInfo, attackId );
+	calculateVisibleRowCount();
 }
 
 void CBossDeathTable::ensureChildrenVisibility( const CEntryInfo& target, int attackId )
 {
 	const int firstId = target.Children[0].EntryId;
 	if( attackId == firstId ) {
-		currentRowCount += target.Children[0].Children.Size();
 		openSubsplits.Add( firstId );
 		return;
 	}
@@ -833,12 +857,10 @@ void CBossDeathTable::ensureChildrenVisibility( const CEntryInfo& target, int at
 		const int id = target.Children[i].EntryId;
 		if( id == attackId ) {
 			openSubsplits.Add( id );
-			currentRowCount += target.Children[i].Children.Size();
 			return;
 		} else if( id > attackId ) {
 			const auto& prevChild = target.Children[i - 1];
 			openSubsplits.Add( prevChild.EntryId );
-			currentRowCount += prevChild.Children.Size();
 			ensureChildrenVisibility( prevChild, attackId );
 			return;
 		}
@@ -847,6 +869,14 @@ void CBossDeathTable::ensureChildrenVisibility( const CEntryInfo& target, int at
 	const int lastAttackId = target.Children.Size() - 1;
 	openSubsplits.Add( target.Children[lastAttackId].EntryId );
 	ensureChildrenVisibility( target.Children[lastAttackId], attackId );
+}
+
+void CBossDeathTable::calculateVisibleRowCount()
+{
+	currentRowCount = 0;
+	for( auto currentAttack = findFirstUnspoiledSplit(); currentAttack.AttackPos != NotFound; currentAttack = findNextUnspoiledSplit( currentAttack ) ) {
+		currentRowCount++;
+	}
 }
 
 void CBossDeathTable::EndAttack( int attackPos )
@@ -859,7 +889,7 @@ void CBossDeathTable::EndAttack( int attackPos )
 
 void CBossDeathTable::PauseAttack( int attackPos )
 {
-	assert( attackPos < rowList.Size() );
+	assert( attackPos < getAttackCount() );
 	auto& attack = rowList[attackPos];
 	auto& attackInfo = attack.SrcAttack;
 	assert( attack.ProgressStatus == APS_Current );
@@ -884,8 +914,8 @@ void CBossDeathTable::ToggleSubsplit( int rowPos )
 	
 	const int openPos = SearchPos( openSubsplits, rowPos );
 	if( openPos == 0 ) {
-		currentRowCount = srcBossInfo.Children.Size();
 		openSubsplits.Empty();
+		calculateVisibleRowCount();
 	} else if( openPos != NotFound ) {
 		ensureSubsplitVisibility( openSubsplits[openPos - 1] );
 	} else {
@@ -922,13 +952,13 @@ void CBossDeathTable::drawBackgroundRects( const IRenderParameters& renderParams
 
 	int prevPos = 0;
 	addMatrixVOffset( modelToClip, -getHeaderHeight() - lineHeigth );
-	for( int currentPos = findFirstVisibleSplit(); currentPos != NotFound; currentPos = findNextVisibleSplit( currentPos ) ) {
+	for( auto currentPos = findFirstUnspoiledSplit(); currentPos.AttackPos != NotFound; currentPos = findNextUnspoiledSplit( currentPos ) ) {
 
 		renderer.DrawRect( renderParams, *attackBackgroundRect, modelToClip, currentBgColor, currentBgColor );
-		const auto isStatusHidden = rowList[currentPos].SrcAttack.AttackStatus == ACS_Hidden;
+		const auto isStatusHidden = currentPos.Attack->SrcAttack.AttackStatus == ACS_Hidden;
 		const auto drawCurrentStatus = drawCurrentBg && !isStatusHidden;
 
-		const auto isCurrentActive = rowList[currentPos].ProgressStatus == APS_Current;
+		const auto isCurrentActive = currentPos.Attack->ProgressStatus == APS_Current;
 		const auto verticalLineColor = drawCurrentStatus && isCurrentActive ? activeLineColor : lineColor;
 
 		if( drawVerticalLine ) {
@@ -938,10 +968,10 @@ void CBossDeathTable::drawBackgroundRects( const IRenderParameters& renderParams
 		}
 
 		if( drawCurrentStatus ) {
-			drawProgressRect( renderParams, rowList[currentPos], modelToClip );
+			drawProgressRect( renderParams, *currentPos.Attack, modelToClip );
 		}
 		if( drawPbMark ) {
-			drawAttackPbMark( renderParams, rowList[currentPos], modelToClip );
+			drawAttackPbMark( renderParams, *currentPos.Attack, modelToClip );
 		}
 
 		const auto isPrevActive = rowList[prevPos].ProgressStatus == APS_Current;
@@ -952,7 +982,7 @@ void CBossDeathTable::drawBackgroundRects( const IRenderParameters& renderParams
 		addMatrixVOffset( modelToClip, -lineHeigth );
 
 		swap( currentBgColor, nextColor );
-		prevPos = currentPos;
+		prevPos = currentPos.AttackPos;
 	}
 
 	const auto lastLineColor = !rowList.IsEmpty() && rowList.Last().ProgressStatus == APS_Current ? activeLineColor : lineColor;
@@ -1040,13 +1070,13 @@ void CBossDeathTable::drawAttackIcons( const IRenderParameters& renderParams ) c
 
 	const auto useSubsplits = windowSettings.ShouldUseSubsplits();
 	float subsplitOffset = 0.0f;
-	int nextPos;
-	for( int currentPos = findFirstVisibleSplit(); ; currentPos = nextPos ) {
+	CAttackIterationPos nextPos;
+	for( auto currentPos = findFirstUnspoiledSplit(); ; currentPos = nextPos ) {
 		float totalSubsplitOffset;
-		if( !rowList[currentPos].SrcAttack.Children.IsEmpty() ) {
+		if( !currentPos.Attack->SrcAttack.Children.IsEmpty() ) {
 			totalSubsplitOffset = subsplitOffset + subsplitIconOffset;
 			modelToClip( 2, 0 ) = baseModelToClip( 2, 0 );
-			drawSubsplitIcon( renderParams, currentPos, modelToClip, subsplitOffset );
+			drawSubsplitIcon( renderParams, currentPos.AttackPos, modelToClip, subsplitOffset );
 		} else {
 			totalSubsplitOffset = subsplitOffset;
 		}
@@ -1057,17 +1087,19 @@ void CBossDeathTable::drawAttackIcons( const IRenderParameters& renderParams ) c
 			const auto cellWidth = columnPos == lastPrefixColumnPos ? max( 1.0f, column.PixelWidth - totalSubsplitOffset ) : column.PixelWidth;
 			CClipVector cellSize( cellWidth * modelToClip( 0, 0 ), lineClipHeight );
 			modelToClip( 2, 0 ) = baseModelToClip( 2, 0 ) + modelToClip( 0, 0 ) * columnOffset;
-			column.ContentData->DrawCellImage( renderParams, currentPos, modelToClip, cellSize );
+			const auto& columnData = isHiddenAttack( currentPos ) ? unknownAttackData[columnPos] : column.ContentData;
+			columnData->DrawCellImage( renderParams, currentPos.RowPos, modelToClip, cellSize );
 		}
 		modelToClip( 2, 1 ) -= lineClipHeight;
-		nextPos = findNextVisibleSplit( currentPos );
-		if( nextPos == NotFound ) {
+		nextPos = findNextUnspoiledSplit( currentPos );
+		if( nextPos.AttackPos == NotFound ) {
 			break;
 		}
-		const auto nextParent = &rowList[nextPos].SrcAttack.Parent;
-		if( nextParent == &rowList[currentPos].SrcAttack ) {
+		const auto& currentRealAttack = rowList[currentPos.AttackPos].SrcAttack;
+		const auto nextRealParent = &rowList[nextPos.AttackPos].SrcAttack.Parent;
+		if( nextRealParent == &currentRealAttack ) {
 			subsplitOffset += unitSubsplitOffset;
-		} else if( nextParent != &rowList[currentPos].SrcAttack.Parent && useSubsplits ) {
+		} else if( nextRealParent != &currentRealAttack.Parent && useSubsplits ) {
 			subsplitOffset -= unitSubsplitOffset;
 		}
 	}
@@ -1142,29 +1174,31 @@ void CBossDeathTable::drawAttackText( const IRenderParameters& renderParams ) co
 	const auto highlightColor = windowSettings.GetMouseHighlightColor();
 	const auto useSubsplits = windowSettings.ShouldUseSubsplits();
 	float subsplitOffset = 0.0f;
-	int nextPos;
-	for( int currentPos = findFirstVisibleSplit(); ; currentPos = nextPos ) {
-		const auto attackColor = currentPos == highlightedAttackPos ? highlightColor : rowColorList[currentPos];
-		const auto totalSubsplitOffset = rowList[currentPos].SrcAttack.Children.IsEmpty() ? subsplitOffset : subsplitOffset + subsplitIconOffset;
+	CAttackIterationPos nextPos;
+	for( auto currentPos = findFirstUnspoiledSplit(); ; currentPos = nextPos ) {
+		const auto attackColor = currentPos.AttackPos == highlightedAttackPos ? highlightColor : rowColorList[currentPos.AttackPos];
+		const auto totalSubsplitOffset = currentPos.Attack->SrcAttack.Children.IsEmpty() ? subsplitOffset : subsplitOffset + subsplitIconOffset;
 		const int columnCount = columnList.Size();
 		for( int columnPos = 0; columnPos < columnCount; columnPos++ ) {
 			const auto& column = columnList[columnPos];
-			const auto currentAttackColor = column.Zone == TCZ_Prefix ? rowColorList[currentPos] : attackColor;
+			const auto currentAttackColor = column.Zone == TCZ_Prefix ? rowColorList[currentPos.AttackPos] : attackColor;
 			const auto columnOffset = column.Zone == TCZ_Prefix ? column.PixelOffset + totalSubsplitOffset : column.PixelOffset;
 			const auto cellWidth = columnPos == lastPrefixColumnPos ? max( 1.0f, column.PixelWidth - totalSubsplitOffset ) : column.PixelWidth;
 			CPixelVector cellSize( cellWidth, linePixelHeight );
 			modelToClip( 2, 0 ) = baseModelToClip( 2, 0 ) + modelToClip( 0, 0 ) * columnOffset;
-			column.ContentData->DrawCellText( renderParams, currentPos, currentAttackColor, modelToClip, cellSize );
+			const auto& columnData = isHiddenAttack( currentPos ) ? unknownAttackData[columnPos] : column.ContentData;
+			columnData->DrawCellText( renderParams, currentPos.RowPos, currentAttackColor, modelToClip, cellSize );
 		}
 		modelToClip( 2, 1 ) -= lineClipHeight;
-		nextPos = findNextVisibleSplit( currentPos );
-		if( nextPos == NotFound ) {
+		nextPos = findNextUnspoiledSplit( currentPos );
+		if( nextPos.AttackPos == NotFound ) {
 			break;
 		}
-		const auto nextParent = &rowList[nextPos].SrcAttack.Parent;
-		if( nextParent == &rowList[currentPos].SrcAttack ) {
+		const auto& currentRealAttack = rowList[currentPos.AttackPos].SrcAttack;
+		const auto nextRealParent = &rowList[nextPos.AttackPos].SrcAttack.Parent;
+		if( nextRealParent == &currentRealAttack ) {
 			subsplitOffset += unitSubsplitOffset;
-		} else if( nextParent != &rowList[currentPos].SrcAttack.Parent && useSubsplits ) {
+		} else if( nextRealParent != &currentRealAttack.Parent && useSubsplits ) {
 			subsplitOffset -= unitSubsplitOffset;
 		}
 	}
@@ -1198,7 +1232,8 @@ void CBossDeathTable::updateAttackProgress( float secDelta )
 {
 	const auto realtimeUpdate = windowSettings.IsUpdateRealtime();
 	bool currentAttackFound = false;
-	for( int i = 0; i < rowList.Size(); i++ ) {
+	const auto attackCount = getAttackCount();
+	for( int i = 0; i < attackCount; i++ ) {
 		auto& attack = rowList[i];
 		if( attack.ProgressStatus == APS_Current ) {
 			currentAttackFound = true;
@@ -1295,9 +1330,9 @@ void CBossDeathTable::invalidateRowProgressDelta( int rowPos, float progress, fl
 int CBossDeathTable::findVisualPos( int rowPos ) const
 {
 	int visualPos = 0;
-	for( int i = findFirstVisibleSplit(); i != NotFound; i = findNextVisibleSplit( i ) ) {
-		const int entryId = rowList[i].SrcAttack.EntryId;
-		if( entryId >= rowPos ) {
+	for( auto i = findFirstUnspoiledSplit(); i.AttackPos != NotFound; i = findNextUnspoiledSplit( i ) ) {
+		const int entryId = i.Attack->SrcAttack.EntryId;
+		if( entryId != NotFound && entryId >= rowPos ) {
 			return entryId == rowPos ? visualPos : NotFound;
 		}
 		visualPos++;
@@ -1441,7 +1476,7 @@ IMouseTarget* CBossDeathTable::getFooterMouseTarget( CPixelVector mousePos )
 
 	const auto footerOffset = tableWindowSize.Y() - tableVerticalScale * ( getHeaderHeight() + linePixelHeight * currentRowCount );
 	const auto footerHeight = getFooterHeight() * tableVerticalScale;
-	if( mousePos.X() > sessionDataOffset * tableVerticalScale && mousePos.Y() > footerOffset - footerHeight ) {
+	if( mousePos.X() > sessionDataOffset * tableVerticalScale && mousePos.Y() > footerOffset - footerHeight && mousePos.Y() <= footerOffset ) {
 		return footerMouseTarget;
 	}
 
@@ -1483,7 +1518,8 @@ int CBossDeathTable::findFirstVisibleSplit() const
 		return 0;
 	}
 
-	for( int i = 0; i < rowList.Size(); i++ ) {
+	const auto attackCount = getAttackCount();
+	for( int i = 0; i < attackCount; i++ ) {
 		if( rowList[i].SrcAttack.Children.IsEmpty() ) {
 			return i;
 		}
@@ -1494,8 +1530,9 @@ int CBossDeathTable::findFirstVisibleSplit() const
 
 int CBossDeathTable::findNextVisibleSplit( int currentPos ) const
 {
+	const auto attackCount = getAttackCount();
 	if( !windowSettings.ShouldUseSubsplits() ) {
-		for( int i = currentPos + 1; i < rowList.Size(); i++ ) {
+		for( int i = currentPos + 1; i < attackCount; i++ ) {
 			if( rowList[i].SrcAttack.Children.IsEmpty() ) {
 				return i;
 			}
@@ -1510,25 +1547,82 @@ int CBossDeathTable::findNextVisibleSplit( int currentPos ) const
 	} else {
 		const int childCount = currentChildren.Size();
 		nextPos = currentPos + childCount;
-		while( nextPos < rowList.Size() && &rowList[nextPos].SrcAttack.Parent != &rowList[currentPos].SrcAttack.Parent ) {
+		while( nextPos < attackCount && &rowList[nextPos].SrcAttack.Parent != &rowList[currentPos].SrcAttack.Parent ) {
 			nextPos++;
 		}
 	}
 	
-	return nextPos >= rowList.Size() ? NotFound : nextPos;
+	return nextPos >= attackCount ? NotFound : nextPos;
 }
 
 int CBossDeathTable::findAttackPos( int visualPos ) const
 {
 	int currentVisualPos = 0;
-	for( int currentPos = findFirstVisibleSplit(); currentPos != NotFound; currentPos = findNextVisibleSplit( currentPos ) ) {
+	for( auto currentPos = findFirstUnspoiledSplit(); currentPos.AttackPos != NotFound; currentPos = findNextUnspoiledSplit( currentPos ) ) {
 		if( currentVisualPos == visualPos ) {
-			return currentPos;
+			return isHiddenAttack( currentPos ) ? NotFound : currentPos.AttackPos;
 		}
 		currentVisualPos++;
 	}
 
 	return NotFound;
+}
+
+int CBossDeathTable::getAttackCount() const
+{
+	return rowList.Size() - 1;
+}
+
+CBossDeathTable::CAttackIterationPos CBossDeathTable::findFirstUnspoiledSplit() const
+{
+	const auto firstPos = findFirstVisibleSplit();
+	return CAttackIterationPos{ firstPos, firstPos == NotFound ? nullptr : &rowList[firstPos], firstPos };
+}
+
+CBossDeathTable::CAttackIterationPos CBossDeathTable::findNextUnspoiledSplit( CAttackIterationPos currentPos ) const
+{
+	if( !windowSettings.ShouldHideUnseenAttacks() ) {
+		const auto nextPos = findNextVisibleSplit( currentPos.AttackPos );
+		return CAttackIterationPos{ nextPos, nextPos == NotFound ? nullptr : &rowList[nextPos], nextPos };
+	}
+
+	const int currentAttack = currentPos.AttackPos;
+	auto nextPos = findNextVisibleSplit( currentAttack );
+	if( isHiddenAttack( currentPos ) ) {
+		while( nextPos != NotFound && !isSeenPosition( nextPos ) ) {
+			nextPos = findNextVisibleSplit( nextPos );
+		}
+		
+		if( nextPos == NotFound ) {
+			return CAttackIterationPos{ NotFound, nullptr, NotFound };
+		}
+	}
+
+	if( nextPos == NotFound ) {
+		if( !windowSettings.ShowExtraUnseenAttack() || currentPos.Attack->SrcAttack.TotalStats.PassCount > 0 ) {
+			return CAttackIterationPos{ NotFound, nullptr, NotFound };
+		} else {
+			return CAttackIterationPos{ currentAttack, &( *unknownBossRowData ), 0 };
+		}
+	}
+
+	const auto& attack = rowList[nextPos];
+	if( isSeenPosition( nextPos ) ) {
+		return CAttackIterationPos{ nextPos, &attack, nextPos };
+	} else {
+		return CAttackIterationPos{ nextPos, &( *unknownBossRowData ), 0 };
+	}
+}
+
+bool CBossDeathTable::isHiddenAttack( CAttackIterationPos pos ) const
+{
+	return pos.Attack == &( *unknownBossRowData );
+}
+
+bool CBossDeathTable::isSeenPosition( int pos ) const
+{
+	const auto& attack = rowList[pos];
+	return attack.SrcAttack.TotalStats.DeathCount > 0 || attack.SrcAttack.TotalStats.PassCount > 0 || attack.ProgressStatus == APS_Current;
 }
 
 //////////////////////////////////////////////////////////////////////////

@@ -14,7 +14,7 @@ CGeneralSettingsDialog::CGeneralSettingsDialog( HWND owner, CWindowSettings& _wi
 	windowSettings( _windowSettings )
 {
 	CreateDialog( ::GetModuleHandle( nullptr ), MAKEINTRESOURCE( IDD_GeneralSettings ), owner, dialogProcedure );
-	::SetWindowPos( dialogWnd, owner, 13, 33, 275, 324, SWP_NOZORDER );
+	::SetWindowPos( dialogWnd, owner, 13, 33, 275, 370, SWP_NOZORDER );
 	::ShowWindow( dialogWnd, 0 );
 }
 
@@ -46,6 +46,7 @@ void CGeneralSettingsDialog::SaveData()
 	windowSettings.SetUpdateRealtime( getButtonCheck( IDC_RealtimeUpdateCheck ) );
 	windowSettings.SetUseSubsplits( getButtonCheck( IDC_UseSubsplitsCheck ) );
 	windowSettings.SetAutoUpdate( getButtonCheck( IDC_AutoUpdateCheck ) );
+	windowSettings.SetHideUnseenAttacks( getButtonCheck( IDC_SpoilerFreeCheck ) );
 
 	const auto cyclePeriod = getButtonCheck( IDC_CycleCheck ) ? getEditInt( IDC_CyclePeriod ) : 0;
 	windowSettings.SetViewCyclePeriod( static_cast<float>( cyclePeriod ) );
@@ -101,6 +102,7 @@ void CGeneralSettingsDialog::fillDefaultControlData()
 	setButtonCheck( IDC_UseSubsplitsCheck, windowSettings.ShouldDefaultUseSubsplits() );
 	setButtonCheck( IDC_RealtimeUpdateCheck, windowSettings.DefaultIsUpdateRealtime() );
 	setButtonCheck( IDC_AutoUpdateCheck, windowSettings.ShouldDefaultAutoUpdate() );
+	setButtonCheck( IDC_SpoilerFreeCheck, windowSettings.DefaultHideUnseenAttacks() );
 
 	setCycleControl( windowSettings.GetDefaultCyclePeriod() );
 	setFontControl( windowSettings.GetDefaultFontName() );
@@ -139,6 +141,7 @@ void CGeneralSettingsDialog::fillControlData()
 	setButtonCheck( IDC_UseSubsplitsCheck, windowSettings.ShouldUseSubsplits() );
 	setButtonCheck( IDC_RealtimeUpdateCheck, windowSettings.IsUpdateRealtime() );
 	setButtonCheck( IDC_AutoUpdateCheck, windowSettings.ShouldAutoUpdate() );
+	setButtonCheck( IDC_SpoilerFreeCheck, windowSettings.ShouldHideUnseenAttacks() );
 
 	setCycleControl( windowSettings.GetViewCyclePeriod() );
 	setFontControl( windowSettings.GetNameFontName() );

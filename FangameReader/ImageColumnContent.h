@@ -49,7 +49,8 @@ public:
 	~CImageColumnContent();
 
 	virtual CPtrOwner<IColumnContentData> CreateFooterData( const CBossInfo& bossInfo, float linePixelHeight, TTableColumnZone zone ) const override final;
-	virtual CPtrOwner<IColumnContentData> CreateAttackData( const CBossInfo& bossInfo, float linePixelHeight, TTableColumnZone zone ) const override final;
+	virtual CPtrOwner<IColumnContentData> CreateAttackData( CArrayView<CBossAttackInfo> attacks, int attackCount, const IFontRenderData& bossFont,
+		float linePixelHeight, TTableColumnZone zone ) const override final;
 
 private:
 	CAssetLoader& assets;
@@ -57,7 +58,7 @@ private:
 	CBitSet<CCV_EnumCount> params;
 	TVector4 imageMargins;
 
-	void addEntryImages( const CEntryInfo& entry, float imageHeight, TTableColumnZone zone, CImageColumnData& result ) const;
+	void addEntryImages( CArrayView<CBossAttackInfo> attacks, float imageHeight, TTableColumnZone zone, CImageColumnData& result ) const;
 	const CImageColumnData& getImageData( const IColumnContentData& data ) const;
 
 	const IImageRenderData& getAttackImage( const CBossAttackInfo& attack, TTableColumnZone zone ) const;

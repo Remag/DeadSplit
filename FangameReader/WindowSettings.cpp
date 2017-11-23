@@ -32,6 +32,8 @@ const CUnicodeView appearOnTopName = L"AppearOnTop";
 const CUnicodeView useSubsplitsName = L"UseSubsplits";
 const CUnicodeView realtimeUpdateName = L"RealtimeUpdate";
 const CUnicodeView autoUpdateName = L"AutoUpdate";
+const CUnicodeView hideUnseenAttacksName = L"HideUnseenAttacks";
+const CUnicodeView showExtraUnseenAttackName = L"ShowExtraUnseenAttack";
 CWindowSettings::CWindowSettings( CUnicodeView fileName ) :
 	settingsFile( fileName )
 {
@@ -58,6 +60,8 @@ CWindowSettings::CWindowSettings( CUnicodeView fileName ) :
 	useSubsplits = settingsFile.GetValue( generalSectionName, useSubsplitsName, ShouldDefaultUseSubsplits() );
 	isUpdateRealtime = settingsFile.GetValue( generalSectionName, realtimeUpdateName, DefaultIsUpdateRealtime() );
 	shouldAutoUpdate = settingsFile.GetValue( generalSectionName, autoUpdateName, ShouldDefaultAutoUpdate() );
+	hideUnseenAttacks = settingsFile.GetValue( generalSectionName, hideUnseenAttacksName, DefaultHideUnseenAttacks() );
+	showExtraUnseenAttack = settingsFile.GetValue( generalSectionName, showExtraUnseenAttackName, DefaultShowExtraUnseenAttack() );
 
 	initColors();
 
@@ -756,6 +760,28 @@ void CWindowSettings::SetAutoUpdate( bool newValue )
 bool CWindowSettings::ShouldDefaultAutoUpdate()
 {
 	return true;
+}
+
+void CWindowSettings::SetHideUnseenAttacks( bool newValue )
+{
+	hideUnseenAttacks = newValue;
+	settingsFile.SetValue( generalSectionName, hideUnseenAttacksName, newValue );
+}
+
+bool CWindowSettings::DefaultHideUnseenAttacks()
+{
+	return false;
+}
+
+void CWindowSettings::SetShowExtraUnseenAttack( bool newValue )
+{
+	showExtraUnseenAttack = newValue;
+	settingsFile.SetValue( generalSectionName, showExtraUnseenAttackName, newValue );
+}
+
+bool CWindowSettings::DefaultShowExtraUnseenAttack()
+{
+	return false;
 }
 
 //////////////////////////////////////////////////////////////////////////

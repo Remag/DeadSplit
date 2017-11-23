@@ -9,7 +9,7 @@ class CFangameLog : public IMessageLog {
 public:
 	explicit CFangameLog( CUnicodeView fileName );
 
-	virtual void AddMessage( CUnicodeView text, TLogMessageType type ) override final;
+	virtual void AddMessage( CUnicodeView text, TLogMessageType type, CMessageSource src ) override final;
 
 private:
 	CWindowMessageLog windowLog;

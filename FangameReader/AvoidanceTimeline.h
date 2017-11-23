@@ -94,7 +94,7 @@ private:
 	CPtrOwner<CRecordStatusIcon> recordIcon;
 
 	void shrinkCurrentAttacks();
-	bool tryFinilizeAttack( const CBossAttackInfo& attack );
+	bool tryFinalizeAttack( const CBossAttackInfo& attack );
 	bool tryPauseAttack( const CBossAttackInfo& attack );
 	void tryAbortAttack( const CBossAttackInfo& attack );
 	void stopAttackTimer( int attackId );

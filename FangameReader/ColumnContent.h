@@ -2,9 +2,11 @@
 
 namespace Fangame {
 
+class IFontRenderData;
 class CAssetLoader;
 class CWindowSettings;
 struct CBossInfo;
+struct CBossAttackInfo;
 struct CAttackRowData;
 enum TTableColumnZone;
 //////////////////////////////////////////////////////////////////////////
@@ -33,7 +35,7 @@ class IColumnContent : public IConstructable<const CXmlElement&, CAssetLoader&, 
 public:
 	// Create the modifiable data for the given boss.
 	virtual CPtrOwner<IColumnContentData> CreateFooterData( const CBossInfo& bossInfo, float linePixelHeight, TTableColumnZone zone ) const = 0;
-	virtual CPtrOwner<IColumnContentData> CreateAttackData( const CBossInfo& bossInfo, float linePixelHeight, TTableColumnZone zone ) const = 0;
+	virtual CPtrOwner<IColumnContentData> CreateAttackData( CArrayView<CBossAttackInfo> attacks, int attackCount, const IFontRenderData& bossFont, float linePixelHeight, TTableColumnZone zone ) const = 0;
 };
 
 //////////////////////////////////////////////////////////////////////////

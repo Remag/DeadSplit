@@ -11,9 +11,10 @@ class ITextRenderData;
 class CTextColumnData : public IColumnContentData {
 public:
 	explicit CTextColumnData( const CWindowSettings& windowSettings, int attackCount, CUnicodeView _textTemplate, CBitSet<CCV_EnumCount> substParams, 
-		TTableColumnZone _zone, TVector4 margins, CColor baseColor );
+		TTableColumnZone _zone, TVector4 margins );
 
 	void AddTextMesh( CPtrOwner<ITextRenderData> newValue );
+	void AddColor( CColor newValue );
 
 	CArrayView<CPtrOwner<ITextRenderData>> GetMeshes() const
 		{ return textMeshes; }
@@ -30,11 +31,11 @@ public:
 private:
 	const CWindowSettings& windowSettings;
 	CStaticArray<CPtrOwner<ITextRenderData>> textMeshes;
+	CStaticArray<CColor> baseColors;
 	CUnicodeView textTemplate;
 	CBitSet<CCV_EnumCount> params;
 	TTableColumnZone zone;
 	TVector4 margins;
-	CColor baseColor;
 };	
 
 //////////////////////////////////////////////////////////////////////////
@@ -46,7 +47,7 @@ public:
 	~CTextColumnContent();
 
 	virtual CPtrOwner<IColumnContentData> CreateFooterData( const CBossInfo& bossInfo, float linePixelHeight, TTableColumnZone zone ) const override final;
-	virtual CPtrOwner<IColumnContentData> CreateAttackData( const CBossInfo& bossInfo, float linePixelHeight, TTableColumnZone zone ) const override final;
+	virtual CPtrOwner<IColumnContentData> CreateAttackData( CArrayView<CBossAttackInfo> attacks, int attackCount, const IFontRenderData& bossFont, float linePixelHeight, TTableColumnZone zone ) const override final;
 
 private:
 	const CWindowSettings& windowSettings;
@@ -56,7 +57,7 @@ private:
 	CColor baseColor;
 
 	const CTextColumnData& getTextData( const IColumnContentData& data ) const;
-	void addAttacksText( const CEntryInfo& entry, TTableColumnZone zone, const IFontRenderData& font, CTextColumnData& result ) const;
+	void addAttacksText( CArrayView<CBossAttackInfo> attacks, TTableColumnZone zone, const IFontRenderData& font, CTextColumnData& result ) const;
 };
 
 //////////////////////////////////////////////////////////////////////////

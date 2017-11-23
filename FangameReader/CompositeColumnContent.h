@@ -40,7 +40,8 @@ public:
 	~CCompositeColumnContent();
 
 	virtual CPtrOwner<IColumnContentData> CreateFooterData( const CBossInfo& bossInfo, float linePixelHeight, TTableColumnZone zone ) const override final;
-	virtual CPtrOwner<IColumnContentData> CreateAttackData( const CBossInfo& bossInfo, float linePixelHeight, TTableColumnZone zone ) const override final;
+	virtual CPtrOwner<IColumnContentData> CreateAttackData( CArrayView<CBossAttackInfo> attacks, int attackCount, const IFontRenderData& bossFont,
+		float linePixelHeight, TTableColumnZone zone ) const override final;
 
 private:
 	CPtrOwner<IColumnContent> leftContent;

@@ -3,6 +3,7 @@
 namespace Fangame {
 
 class IRenderer;
+class IBroadcaster;
 class CWindowSettings;
 //////////////////////////////////////////////////////////////////////////
 
@@ -40,6 +41,7 @@ private:
 	CEventSystem eventSystem;
 	CPtrOwner<CWindowSettings> windowSettings;
 	CPtrOwner<IRenderer> renderer;
+	CPtrOwner<IBroadcaster> broadcaster;
 
 	void initializeRenderer();
 

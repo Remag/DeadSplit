@@ -116,23 +116,24 @@ CPtrOwner<IColumnContentData> CImageColumnContent::CreateFooterData( const CBoss
 	return move( result );
 }
 
-CPtrOwner<IColumnContentData> CImageColumnContent::CreateAttackData( const CBossInfo& bossInfo, float linePixelHeight, TTableColumnZone zone ) const
+CPtrOwner<IColumnContentData> CImageColumnContent::CreateAttackData( CArrayView<CBossAttackInfo> attacks, int attackCount, const IFontRenderData&,
+	float linePixelHeight, TTableColumnZone zone ) const
 {
-	auto result = CreateOwner<CImageColumnData>( bossInfo.AttackCount, imageMargins.X() + imageMargins.Z() );
+	auto result = CreateOwner<CImageColumnData>( attackCount, imageMargins.X() + imageMargins.Z() );
 	
 	const auto imageHeight = linePixelHeight - imageMargins.Y() - imageMargins.W();
-	addEntryImages( bossInfo, imageHeight, zone, *result );
+	addEntryImages( attacks, imageHeight, zone, *result );
 
 	return move( result );
 }
 
-void CImageColumnContent::addEntryImages( const CEntryInfo& entry, float imageHeight, TTableColumnZone zone, CImageColumnData& result ) const
+void CImageColumnContent::addEntryImages( CArrayView<CBossAttackInfo> attacks, float imageHeight, TTableColumnZone zone, CImageColumnData& result ) const
 {
-	for( const auto& attack : entry.Children ) {
+	for( const auto& attack : attacks ) {
 		const auto& attackImage = getAttackImage( attack, zone );
 		result.AddImage( attackImage );
 		result.AddQuad( getQuadRect( imageHeight, attackImage.GetImageSize() ) );
-		addEntryImages( attack, imageHeight, zone, result );
+		addEntryImages( attack.Children, imageHeight, zone, result );
 	}
 }
 

@@ -11,6 +11,7 @@
 #include <FangameChangeDetector.h>
 #include <AddressSearchExpansion.h>
 #include <WindowSettings.h>
+#include <Broadcaster.h>
 
 #include <FangameVisualizerState.h>
 
@@ -81,6 +82,7 @@ void CAvoidanceTimeline::startBoss( DWORD currentTime )
 	bossStartTime = currentTime;
 	deathStartCount = getCurrentDeathCount();
 	recordIcon->SetStatus( RS_Play );
+	GetBroadcaster().NotifyBossStart( bossTable.EntryId );
 	setRecordStatus( BTS_Recording );
 	auto& changeDetector = visualizer.GetChangeDetector();
 	events.Notify( CFangameEvent<Events::CBossStart>( visualizer ) );
@@ -101,8 +103,7 @@ void CAvoidanceTimeline::StartBossAttack( int attackId )
 	const auto currentTime = visualizer.GetCurrentFrameTime();
 	assert( attacksTimeline.Size() > attackId );
 	auto& attackTimeInfo = attacksTimeline[attackId];
-	const bool shouldRestart = attack.IsRepeatable;
-	if( IsAttackCurrent( attackId ) || ( attackTimeInfo.HasStarted && !shouldRestart ) ) {
+	if( IsAttackCurrent( attackId ) || ( attackTimeInfo.HasStarted && !attack.IsRepeatable ) ) {
 		return;
 	}
 
@@ -110,6 +111,7 @@ void CAvoidanceTimeline::StartBossAttack( int attackId )
 	attackTimeInfo.HasFinished = false;
 	attackTimeInfo.StartTime = currentTime;
 	deathTable->StartAttack( attackId, currentTime );
+	GetBroadcaster().NotifyAttackStart( attackId, attack.Children.Size() );
 
 	auto& changeDetector = visualizer.GetChangeDetector();
 	attackEndExpansions[attackId] = changeDetector.ExpandAddressSearch( attack.EndTriggerAddressMask, false );
@@ -131,7 +133,7 @@ void CAvoidanceTimeline::FinishBossAttack( int attackId )
 	}
 
 	const auto& attack = FindAttackById( *bossInfo, attackId );
-	if( tryFinilizeAttack( attack ) ) {
+	if( tryFinalizeAttack( attack ) ) {
 		events.Notify( CBossAttackEndEvent( visualizer, attack ) );
 		if( attack.NotifyAddressChangeOnEnd ) {
 			visualizer.GetChangeDetector().ResendCurrentAddressChanges();
@@ -139,7 +141,7 @@ void CAvoidanceTimeline::FinishBossAttack( int attackId )
 	}
 }
 
-bool CAvoidanceTimeline::tryFinilizeAttack( const CBossAttackInfo& attack )
+bool CAvoidanceTimeline::tryFinalizeAttack( const CBossAttackInfo& attack )
 {
 	const auto attackId = attack.EntryId;
 	if( !IsAttackCurrent( attackId ) ) {
@@ -148,9 +150,10 @@ bool CAvoidanceTimeline::tryFinilizeAttack( const CBossAttackInfo& attack )
 
 	stopAttackTimer( attackId );
 	deathTable->EndAttack( attackId );
+	GetBroadcaster().NotifyAttackPass( attackId );
 
 	for( const auto& child : attack.Children ) {
-		tryFinilizeAttack( child );
+		tryFinalizeAttack( child );
 	}
 	return true;
 }
@@ -252,7 +255,12 @@ void CAvoidanceTimeline::CheckBossAttacksFinish()
 
 void CAvoidanceTimeline::clearCurrentBoss()
 {
+	for( const auto& attack : bossInfo->Children ) {
+		tryFinalizeAttack( attack );
+	}
+
 	shrinkCurrentAttacks();
+	GetBroadcaster().NotifyBossClear( deathTable->GetBossId() );
 	setRecordStatus( BTS_Waiting );
 	recordIcon->SetStatus( RS_Clear );
 	deathTable->AddTotalPass();
@@ -292,6 +300,7 @@ void CAvoidanceTimeline::OnGameRestart()
 		} else {
 			shrinkCurrentAttacks();
 			deathTable->ClearTableColors();
+			GetBroadcaster().NotifyCounterUndo( deathTable->GetBossId() );
 		}
 		recordIcon->SetStatus( RS_Restarted );
 	}
@@ -318,6 +327,7 @@ void CAvoidanceTimeline::UndoRecording()
 	deathTable->ClearAttackProgress();
 	deathTable->ClearTableColors();
 	shrinkCurrentAttacks();
+	GetBroadcaster().NotifyCounterUndo( deathTable->GetBossId() );
 	setRecordStatus( BTS_Waiting );
 	recordIcon->SetStatus( RS_Pause );
 }
@@ -327,6 +337,7 @@ void CAvoidanceTimeline::PauseRecording( bool isSet )
 	if( deathTable != nullptr ) {
 		deathTable->ClearAttackProgress();
 		deathTable->ClearTableColors();
+		GetBroadcaster().NotifyCounterUndo( deathTable->GetBossId() );
 	}
 	if( status == BTS_Recording ) {
 		shrinkCurrentAttacks();
@@ -400,6 +411,7 @@ void CAvoidanceTimeline::signalHeroDeath( float secondDelta )
 	shrinkCurrentAttacks();
 
 	if( secondDelta < babyRagePeriod ) {
+		GetBroadcaster().NotifyCounterUndo( deathTable->GetBossId() );
 		return;
 	}
 
@@ -410,12 +422,14 @@ void CAvoidanceTimeline::signalHeroDeath( float secondDelta )
 		if( attack.HasStarted && !attack.HasFinished ) {
 			activeAttackFound = true;
 			deathTable->AddAttackDeath( i );
+			GetBroadcaster().NotifyHeroDeath( i );
 		}
 	}
 
 	if( activeAttackFound ) {
 		deathTable->AddTotalDeath();
 	}
+	GetBroadcaster().NotifyBossFail( deathTable->GetBossId() );
 }
 
 float CAvoidanceTimeline::getTimeDelta( DWORD current, DWORD prev ) const

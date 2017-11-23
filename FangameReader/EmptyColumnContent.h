@@ -32,7 +32,7 @@ public:
 
 	virtual CPtrOwner<IColumnContentData> CreateFooterData( const CBossInfo&, float, TTableColumnZone ) const override final
 		{ return CreateOwner<CEmptyContentData>(); }
-	virtual CPtrOwner<IColumnContentData> CreateAttackData( const CBossInfo&, float, TTableColumnZone ) const override final
+	virtual CPtrOwner<IColumnContentData> CreateAttackData( CArrayView<CBossAttackInfo>, int, const IFontRenderData&, float, TTableColumnZone ) const override final
 		{ return CreateOwner<CEmptyContentData>(); }
 };
  

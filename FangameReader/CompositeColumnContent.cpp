@@ -86,10 +86,11 @@ CPtrOwner<IColumnContentData> CCompositeColumnContent::CreateFooterData( const C
 	return CreateOwner<CCompositeColumnData>( move( leftData ), move( rightData ) );
 }
 
-CPtrOwner<IColumnContentData> CCompositeColumnContent::CreateAttackData( const CBossInfo& bossInfo, float linePixelHeight, TTableColumnZone zone ) const
+CPtrOwner<IColumnContentData> CCompositeColumnContent::CreateAttackData( CArrayView<CBossAttackInfo> attacks, int attackCount, const IFontRenderData& bossFont,
+	float linePixelHeight, TTableColumnZone zone ) const
 {
-	auto leftData = leftContent->CreateAttackData( bossInfo, linePixelHeight, zone );
-	auto rightData = rightContent->CreateAttackData( bossInfo, linePixelHeight, zone );
+	auto leftData = leftContent->CreateAttackData( attacks, attackCount, bossFont, linePixelHeight, zone );
+	auto rightData = rightContent->CreateAttackData( attacks, attackCount, bossFont, linePixelHeight, zone );
 
 	return CreateOwner<CCompositeColumnData>( move( leftData ), move( rightData ) );
 }

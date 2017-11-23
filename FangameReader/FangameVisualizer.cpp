@@ -7,6 +7,7 @@
 #include <BossDeathTable.h>
 #include <TableLayout.h>
 #include <FooterIconPanel.h>
+#include <Broadcaster.h>
 
 namespace Fangame {
 
@@ -57,14 +58,17 @@ void CFangameVisualizer::CycleTableView()
 
 void CFangameVisualizer::SetBossTable( CBossInfo& bossTable )
 {
-	currentTablePos = bossTable.EntryId;
-	if( bossTables[currentTablePos] == nullptr ) {
-		bossTables[currentTablePos] = CreateOwner<CBossDeathTable>( bossInfo.GetUserAliases(), controller, *tableLayout, bossTable, windowSettings, assets, currentTableView, drawAutoCycle );
+	const auto newPos = bossTable.EntryId;
+	if( bossTables[newPos] == nullptr ) {
+		bossTables[newPos] = CreateOwner<CBossDeathTable>( bossInfo.GetUserAliases(), controller, *tableLayout, bossTable, windowSettings, assets, currentTableView, drawAutoCycle );
 	} else {
-		bossTables[currentTablePos]->ResetTable( CPixelVector( GetMainWindow().WindowSize() ), currentTableView );
+		bossTables[newPos]->ResetTable( CPixelVector( GetMainWindow().WindowSize() ), currentTableView );
 	}
 
-	footerIcons.ResizePanel( bossTables[currentTablePos]->GetTableScale() );
+	const auto newScale = bossTables[newPos]->GetTableScale();
+	footerIcons.ResizePanel( newScale );
+	currentTablePos = newPos;
+	GetBroadcaster().NotifyTableScale( newScale );
 }
 
 void CFangameVisualizer::SetNextTable()

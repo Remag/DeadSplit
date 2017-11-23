@@ -48,7 +48,6 @@ void CAttackMouseTarget::editAttack( IUserActionController& controller )
 	// Recount parent entry values.
 	MakeParentsConsistentWithChildren( targetAttack );
 	deathTable.RefreshTableData();
-	
 	controller.OnCloseDialog();
 }
 

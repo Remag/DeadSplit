@@ -28,6 +28,7 @@
 #include <AutoUpdater.h>
 #include <SaveReaderData.h>
 #include <FooterIconPanel.h>
+#include <Broadcaster.h>
 
 namespace Fangame {
 
@@ -77,6 +78,7 @@ CFangameVisualizerState::~CFangameVisualizerState()
 	if( windowSettings.ShouldSaveTotalCountOnQuit() ) {
 		onTotalCountSave();
 	}
+	GetBroadcaster().NotifyFangameClose();
 }
 
 const CUnicodeView titlePanelStr = L"Found a fangame:";
@@ -171,10 +173,12 @@ void CFangameVisualizerState::setNewBossTable( CBossInfo& bossTable, bool setAdd
 
 	visualizer->SetBossTable( bossTable );
 
-	currentTimeline->SetBossData( bossTable, visualizer->GetActiveTable(), bossTable.SessionClearFlag );
+	auto& activeTable = visualizer->GetActiveTable();
+	currentTimeline->SetBossData( bossTable, activeTable, bossTable.SessionClearFlag );
 	addBossStartEvents( bossTable );
 	timerEvents.Empty();
 	bossStartExpansion = changeDetector->ExpandAddressSearch( bossTable.AddressMask, setAddressEvents );
+	GetBroadcaster().NotifyBossChange( bossTable.EntryId, bossTable.Children.Size(), activeTable.GetLinePixelSize() );
 }
 
 void CFangameVisualizerState::addBossStartEvents( const CBossInfo& bossTable )
@@ -292,7 +296,9 @@ void CFangameVisualizerState::OnStart()
 	initBossTable();
 	currentTimeline->PauseRecording( false );
 
-	Log::Message( fangameFoundMsg.SubstParam( bossInfo->GetFangameTitle() ), this );
+	const auto fangameName = bossInfo->GetFangameTitle();
+	Log::Message( fangameFoundMsg.SubstParam( fangameName ), this );
+	GetBroadcaster().NotifyFangameOpen( fangameName );
 	mouseSwt = CreateOwner<CMouseInputSwitcher>( *mouseController );
 	::InvalidateRect( GetMainWindow().Handle(), nullptr, true );
 }
@@ -422,7 +428,9 @@ void CFangameVisualizerState::onWindowSizeChange()
 	if( visualizer->HasActiveTable() ) {
 		auto& activeTable =	visualizer->GetActiveTable();
 		activeTable.ResizeTable( windowSize );
-		footerIcons.ResizePanel( activeTable.GetTableScale() );
+		const auto newScale = activeTable.GetTableScale();
+		footerIcons.ResizePanel( newScale );
+		GetBroadcaster().NotifyTableScale( newScale );
 	}
 
 	heroPosPanel->SetPanelSize( windowSize );
@@ -578,8 +586,8 @@ void CFangameVisualizerState::onOpenFangame()
 	}
 
 	GetStateManager().PopState();
-	GetStateManager().PushState<CFangamePeekerState>( fangameName, eventSystem, windowSettings, assets, inputHandler, 
-		detector, sessionMonitor, updater, footerIcons );
+	GetStateManager().PushState( CreateOwner<CFangamePeekerState>( fangameName, eventSystem, windowSettings, assets, inputHandler, 
+		detector, sessionMonitor, updater, footerIcons ) );
 }
 
 void CFangameVisualizerState::updateViewCycle( float secondsPassed )

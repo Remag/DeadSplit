@@ -13,6 +13,7 @@
 #include <WinGdiRenderer.h>
 #include <GlobalStrings.h>
 #include <UpdateInstaller.h>
+#include <FileBroadcaster.h>
 
 namespace Fangame {
 
@@ -20,6 +21,7 @@ namespace Fangame {
 
 CMainApp::CMainApp()
 {
+	broadcaster = CreateOwner<CFileBroadcaster>( L"SessionEvents" );
 }
 
 CMainApp::~CMainApp()

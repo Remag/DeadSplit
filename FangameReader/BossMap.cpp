@@ -290,10 +290,6 @@ TAttackCurrentStatus CBossMap::getAttackStatus( const CXmlElement& elem ) const
 	return AttackStatusToNameDict.FindEnum( orderName, ACS_Shown );
 }
 
-const CUnicodeView iconAttrib = L"icon";
-const CUnicodeView attackVisualNameAttrib = L"displayName";
-const CUnicodeView loopingAttrib = L"isLooping";
-
 const CUnicodeView timeName = L"Time";
 const CUnicodeView attackProgressName = L"Progress";
 const CUnicodeView unknownAttackChild = L"Unknown attack child: %0.";
@@ -358,6 +354,10 @@ CBossAttackInfo& CBossMap::addBossAttackView( CXmlElement& elem, CEntryInfo& par
 	return newAttack;
 }
 
+const CUnicodeView iconAttrib = L"icon";
+const CUnicodeView attackVisualNameAttrib = L"displayName";
+const CUnicodeView loopingAttrib = L"isLooping";
+const CUnicodeView colorAttrib = L"color";
 const CUnicodeView notifyAddressChangeAttrib = L"notifyAddressChangeOnEnd";
 CBossAttackInfo& CBossMap::addBossAttackAttribs( CXmlElement& elem, CEntryInfo& parent, int attackId, CBossInfo& bossInfo, const CBossAttackSaveFile& saveFile )
 {
@@ -368,6 +368,8 @@ CBossAttackInfo& CBossMap::addBossAttackAttribs( CXmlElement& elem, CEntryInfo& 
 	const auto iconName = userAliases->GetUserIconPath( bossInfo.KeyName, attackName, iconBaseName );
 	const auto baseStatus = getAttackStatus( elem );
 	const auto attackStatus = userAliases->GetUserAttackStatus( bossInfo.KeyName, attackName, baseStatus );
+
+	const auto attackColor = elem.GetAttributeValue( colorAttrib, windowSettings.GetTextColor() );
 
 	const auto attackDeathData = saveFile.GetAttackData( bossInfo.KeyName, attackName );
 
@@ -395,6 +397,7 @@ CBossAttackInfo& CBossMap::addBossAttackAttribs( CXmlElement& elem, CEntryInfo& 
 	newAttack.TotalStats.Time = 1.0 * Floor( newAttack.TotalStats.Time );
 	newAttack.IsRepeatable = elem.GetAttributeValue( loopingAttrib, false );
 	newAttack.NotifyAddressChangeOnEnd = elem.GetAttributeValue( notifyAddressChangeAttrib, false );
+	newAttack.BaseTextColor = attackColor;
 
 	return newAttack;
 }

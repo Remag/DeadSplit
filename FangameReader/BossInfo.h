@@ -57,6 +57,7 @@ struct CBossAttackInfo : public CEntryInfo {
 	CPtrOwner<IProgressReporter> Progress;
 	CColor CurrentRectTopColor;
 	CColor CurrentRectBottomColor;
+	CColor BaseTextColor;
 	double TotalPB = 2.0;
 	double SessionPB = 2.0;
 	bool IsRepeatable = false;

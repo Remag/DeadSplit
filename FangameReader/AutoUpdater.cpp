@@ -154,7 +154,7 @@ int CAutoUpdater::fetchManifestAction()
 	return 0;
 }
 
-const int deadsplitUpdateVersion = 6;
+const int deadsplitUpdateVersion = 7;
 void CAutoUpdater::parseManifestData()
 {
 	const char* manifestRawStr = reinterpret_cast<char*>( rawManifestData.Ptr() );
@@ -247,7 +247,7 @@ void CAutoUpdater::parseManifestUrl( int pos, CStringPart manifestStr )
 	}
 	const auto domainPos = potentialDomainPos < length && manifestStr[potentialDomainPos] == L'/' ? potentialDomainPos : pos;
 	manifestData.UpdateUrl = protocolPrefix + manifestStr.Mid( startPos, domainPos - startPos ) + domainSuffix + manifestStr.Mid( domainPos, pos - domainPos ) + deadsplitDownloadSuffix;
-	//manifestData.UpdateUrl = Str( "https://github.com/Remag/DeadSplit/releases/download/v1.04/DeadSplit.recol.gz" );
+	//manifestData.UpdateUrl = Str( "https://github.com/Remag/DeadSplit/releases/download/1.1/DeadSplit.recol.gz" );
 }
 
 void CAutoUpdater::changeStatusAndNotify( TAutoUpdateStatus newValue )

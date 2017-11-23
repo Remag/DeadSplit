@@ -160,6 +160,18 @@
     <Filter Include="Resource Files\GameInfo\MeteorStream">
       <UniqueIdentifier>{27829a04-dfee-474c-a6b4-bf09e826a01e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Broadcast">
+      <UniqueIdentifier>{3af52366-bd41-4447-b102-0880206db9f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Broadcast">
+      <UniqueIdentifier>{7c5bddea-6825-41ac-a9f3-32f06c9045e4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\GameInfo\BreakThingsIntoPieces">
+      <UniqueIdentifier>{5f6fc1d9-3f7c-45ef-affd-929070b73f6b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Fish">
+      <UniqueIdentifier>{7d8e36ec-5ac8-48f9-ab2e-e036b54ad524}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="common.cpp">
@@ -455,6 +467,12 @@
     </ClCompile>
     <ClCompile Include="UpdateInstaller.cpp">
       <Filter>Source Files\General</Filter>
+    </ClCompile>
+    <ClCompile Include="FileBroadcaster.cpp">
+      <Filter>Source Files\Broadcast</Filter>
+    </ClCompile>
+    <ClCompile Include="StringBroadcaster.cpp">
+      <Filter>Source Files\Broadcast</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -800,6 +818,15 @@
     <ClInclude Include="UpdateInstaller.h">
       <Filter>Header Files\General</Filter>
     </ClInclude>
+    <ClInclude Include="Broadcaster.h">
+      <Filter>Header Files\Broadcast</Filter>
+    </ClInclude>
+    <ClInclude Include="StringBroadcaster.h">
+      <Filter>Header Files\Broadcast</Filter>
+    </ClInclude>
+    <ClInclude Include="FileBroadcaster.h">
+      <Filter>Header Files\Broadcast</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="messages.msg">
@@ -880,6 +907,12 @@
     </Xml>
     <Xml Include="FangameResources\FangameInfo\I wanna appreciate meteor stream\layout.xml">
       <Filter>Resource Files\GameInfo\MeteorStream</Filter>
+    </Xml>
+    <Xml Include="FangameResources\FangameInfo\I wanna break Things into Pieces\layout.xml">
+      <Filter>Resource Files\GameInfo\BreakThingsIntoPieces</Filter>
+    </Xml>
+    <Xml Include="FangameResources\FangameInfo\I wanna be the Fish\layout.xml">
+      <Filter>Resource Files\Fish</Filter>
     </Xml>
   </ItemGroup>
   <ItemGroup>

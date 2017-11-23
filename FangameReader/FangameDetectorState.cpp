@@ -112,8 +112,8 @@ void CFangameDetectorState::Update( TTime )
 	if( lastDetectResult.IsValid() ) {
 		lastDetectWnd = lastDetectResult->WndHandle;
 		detector->SuspendSearch();
-		GetStateManager().PushState<CFangameVisualizerState>( move( *lastDetectResult ), eventSystem, windowSettings, *assets, *inputHandler,
-			*detector, *sessionMonitor, *updater, *footerPanel );
+		GetStateManager().PushState( CreateOwner<CFangameVisualizerState>( move( *lastDetectResult ), eventSystem, windowSettings, *assets, *inputHandler,
+			*detector, *sessionMonitor, *updater, *footerPanel ) );
 	} else {
 		lastDetectWnd = nullptr;
 	}
@@ -203,8 +203,8 @@ void CFangameDetectorState::peekFangame( CUnicodeView fangameName )
 		return;
 	}
 
-	GetStateManager().PushState<CFangamePeekerState>( fangameName, eventSystem, windowSettings, *assets, *inputHandler,
-		*detector, *sessionMonitor, *updater, *footerPanel );
+	GetStateManager().PushState( CreateOwner<CFangamePeekerState>( fangameName, eventSystem, windowSettings, *assets, *inputHandler,
+		*detector, *sessionMonitor, *updater, *footerPanel ) );
 }
 
 //////////////////////////////////////////////////////////////////////////

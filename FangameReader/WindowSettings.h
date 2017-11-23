@@ -290,6 +290,16 @@ public:
 	void SetAutoUpdate( bool newValue );
 	static bool ShouldDefaultAutoUpdate();
 
+	bool ShouldHideUnseenAttacks() const
+		{ return hideUnseenAttacks; }
+	void SetHideUnseenAttacks( bool newValue );
+	static bool DefaultHideUnseenAttacks();
+
+	bool ShowExtraUnseenAttack() const
+	{ return showExtraUnseenAttack; }
+	void SetShowExtraUnseenAttack( bool newValue );
+	static bool DefaultShowExtraUnseenAttack();
+
 private:
 	int fps;
 	TIntVector2 windowSize;
@@ -347,6 +357,8 @@ private:
 	bool useSubsplits;
 	bool isUpdateRealtime;
 	bool shouldAutoUpdate;
+	bool hideUnseenAttacks;
+	bool showExtraUnseenAttack;
 
 	CIniFile settingsFile;
 
