@@ -7,11 +7,11 @@ namespace Fangame {
 
 //////////////////////////////////////////////////////////////////////////
 
-CGlFont::CGlFont( CUnicodeView fontName, TIntVector2 fontSize ) :
-	font( fontName )
+CGlFont::CGlFont( CUnicodeView fontName, int fontSize ) :
+	font( fontName ),
+	renderer( font )
 {
-	font.SetFontSize( fontSize );
-	renderer.LoadFont( font );
+	font.SetPixelSize( fontSize );
 	renderer.LoadBasicCharSet();
 }
 

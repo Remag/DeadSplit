@@ -26,6 +26,8 @@ List of supported fangames:
 - I Wanna Be The Snow Drive
 - I Wanna Sunspike
 - I Wanna Appreciate Meteor Stream
+- I Wanna Break Things Into Pieces
+- I Wanna Be The Fish.
 
 =============================================================
 
@@ -36,7 +38,7 @@ Special Thanks to:
 
 - Danil2332 for layouts and testing.
 - IWBTB_Hype for layouts and testing.
-- Kamilia for help with 1.50 integration.
+- Kamilia for his help with 1.50 integration.
 - PrincessKennyTheBest, you know for what.
 - Rasty for layouts and testing.
 - SUDALV for layouts and testing.

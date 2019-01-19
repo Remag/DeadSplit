@@ -8,7 +8,7 @@ class CGlFont;
 
 class CGlText : public ITextRenderData {
 public:
-	CGlText( CUnicodePart text, const CGlFont& glFont );
+	CGlText( CUnicodePart text, const CGlFont& font );
 
 	virtual CPixelRect GetBoundRect() const override final;
 	virtual bool SetText( CUnicodePart newValue ) override final;
@@ -17,6 +17,7 @@ public:
 
 private:
 	CTextMesh mesh;
+	CUnicodeString textStr;
 };
 
 //////////////////////////////////////////////////////////////////////////

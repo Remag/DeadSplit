@@ -14,7 +14,7 @@ CAssetLoader::CAssetLoader()
 {
 }
 
-const Fangame::IFontRenderData& CAssetLoader::GetOrCreateFont( CUnicodePart fontName, TIntVector2 fontSize )
+const Fangame::IFontRenderData& CAssetLoader::GetOrCreateFont( CUnicodePart fontName, int fontSize )
 {
 	CFontData fontData{ UnicodeStr( fontName ), fontSize };
 	const CUnicodeView fontNameCopy = fontData.Name;
@@ -49,7 +49,7 @@ void CAssetLoader::tryLoadIcon( CUnicodeView iconPath, CPtrOwner<IImageRenderDat
 }
 
 const CUnicodeView defaultFontName = L"Arial";
-void CAssetLoader::tryLoadFont( CUnicodeView fontPath, TIntVector2 fontSize, CPtrOwner<IFontRenderData>& result )
+void CAssetLoader::tryLoadFont( CUnicodeView fontPath, int fontSize, CPtrOwner<IFontRenderData>& result )
 {
 	try {
 		result = GetRenderer().CreateFontData( fontPath, fontSize );

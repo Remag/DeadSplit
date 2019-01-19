@@ -49,7 +49,7 @@ private:
 	void initSaveFile();
 	bool tryReadFromFile( CUnicodeView fileName );
 	bool tryReadFromFile( CFile& file );
-	void readFromArchive( CArchive& src );
+	void readFromArchive( CArchiveReader& src );
 
 	void saveAttackData( CArrayView<CBossInfo> bossesInfo, CUnicodeView name );
 	void saveDataToFile( CUnicodeView name );
@@ -60,7 +60,7 @@ private:
 
 //////////////////////////////////////////////////////////////////////////
 
-inline CArchive& operator<<( CArchive& archive, CEntryStats stats )
+inline CArchiveWriter& operator<<( CArchiveWriter& archive, CEntryStats stats )
 {
 	archive << stats.DeathCount;
 	archive << stats.PassCount;
@@ -70,7 +70,7 @@ inline CArchive& operator<<( CArchive& archive, CEntryStats stats )
 	return archive;
 }
 
-inline CArchive& operator>>( CArchive& archive, CEntryStats& stats )
+inline CArchiveReader& operator>>( CArchiveReader& archive, CEntryStats& stats )
 {
 	archive >> stats.DeathCount;
 	archive >> stats.PassCount;
@@ -82,7 +82,7 @@ inline CArchive& operator>>( CArchive& archive, CEntryStats& stats )
 	return archive;
 }
 
-inline CArchive& operator<<( CArchive& archive, const CBossAttackSaveData& saveData )
+inline CArchiveWriter& operator<<( CArchiveWriter& archive, const CBossAttackSaveData& saveData )
 {
 	archive << saveData.SessionStats;
 	archive << saveData.TotalStats;
@@ -92,7 +92,7 @@ inline CArchive& operator<<( CArchive& archive, const CBossAttackSaveData& saveD
 	return archive;
 }
 
-inline CArchive& operator>>( CArchive& archive, CBossAttackSaveData& saveData )
+inline CArchiveReader& operator>>( CArchiveReader& archive, CBossAttackSaveData& saveData )
 {
 	archive >> saveData.SessionStats;
 	archive >> saveData.TotalStats;
@@ -102,18 +102,18 @@ inline CArchive& operator>>( CArchive& archive, CBossAttackSaveData& saveData )
 	return archive;
 }
 
-inline CArchive& operator<<( CArchive& archive, CBossSaveData& saveData )
+inline CArchiveWriter& operator<<( CArchiveWriter& archive, const CBossSaveData& saveData )
 {
-	saveData.AttackData.Serialize( archive );
+	archive << saveData.AttackData;
 	archive << saveData.SessionStats;
 	archive << saveData.TotalStats;
 	archive << saveData.SessionClearFlag;
 	return archive;
 }
 
-inline CArchive& operator>>( CArchive& archive, CBossSaveData& saveData )
+inline CArchiveReader& operator>>( CArchiveReader& archive, CBossSaveData& saveData )
 {
-	saveData.AttackData.Serialize( archive );
+	archive >> saveData.AttackData;
 	archive >> saveData.SessionStats;
 	archive >> saveData.TotalStats;
 	archive >> saveData.SessionClearFlag;

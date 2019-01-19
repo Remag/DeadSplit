@@ -16,6 +16,7 @@
 #include <AssetLoader.h>
 
 #include <Renderer.h>
+#include <Broadcaster.h>
 
 namespace Fangame {
 
@@ -43,7 +44,8 @@ CBossDeathTable::CBossDeathTable( CUserAliasFile& _aliases, IUserActionControlle
 	sampleNameText = GetRenderer().CreateTextData( sampleStr, nameRenderer );
 	sampleDescrText = GetRenderer().CreateTextData( sampleStr, textRenderer );
 	linePixelHeight = calculateAttackLineHeight();
-	initVerticalSizes( CPixelVector( GetMainWindow().WindowSize() ) );
+	const auto windowSize = GetMainWindow().WindowSize();
+	initVerticalSizes( CPixelVector( windowSize ) );
 	initializeIcons();
 	initializeTableView( currentTableView );
 	initBackgroundRects();
@@ -52,6 +54,7 @@ CBossDeathTable::CBossDeathTable( CUserAliasFile& _aliases, IUserActionControlle
 	clearBaseColors();
 	resizeIcons();
 	calculateVisibleRowCount();
+	GetBroadcaster().NotifyTableLayoutChange( getHeaderHeight(), linePixelHeight );
 }
 
 int CBossDeathTable::findMaxRowCount() const
@@ -359,6 +362,8 @@ void CBossDeathTable::initVerticalSizes( CPixelVector newTableSize )
 	tableWindowSize = newTableSize;
 	baseModelToClip = Coordinates::PixelToClip();
 	baseModelToClip( 2, 1 ) += newTableSize.Y() * baseModelToClip( 1, 1 );
+
+	GetBroadcaster().NotifyTableScaleChange( tableVerticalScale );
 }
 
 CBossDeathTable::~CBossDeathTable()
@@ -595,11 +600,17 @@ void CBossDeathTable::resizeIcons()
 
 void CBossDeathTable::SetTableView( int newView )
 {
+	const auto oldFooterCount = layout.GetFooterCount( currentTableView );
 	currentTableView = newView;
 	initVerticalSizes( tableWindowSize );
 	initializeTableView( currentTableView );
 	resizeIcons();
 	invalidateTable();
+
+	const auto newFooterCount = layout.GetFooterCount( newView );
+	if( oldFooterCount != newFooterCount ) {
+		GetBroadcaster().NotifyTableFooterChange( newFooterCount );
+	}
 }
 
 void CBossDeathTable::ResetTable( CPixelVector newSize, int newView )

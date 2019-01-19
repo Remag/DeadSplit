@@ -21,7 +21,7 @@ COpenGlRenderer::COpenGlRenderer()
 {
 	shaderInitializer = CreateOwner<Shaders::CShaderInitializer>();
 	try {
-		CRegistryKey fontKey( RRK_LocalMachine, fontKeyName );
+		CRegistryKey fontKey( RRK_LocalMachine, fontKeyName, RAT_Read );
 		fontKey.GetValueNames( fontValues );
 		for( int i = fontValues.Size() - 1; i >= 0; i-- ) {
 			if( fontValues[i].IsEmpty() ) {
@@ -37,7 +37,7 @@ COpenGlRenderer::~COpenGlRenderer()
 {
 }
 
-CPtrOwner<IFontRenderData> COpenGlRenderer::CreateFontData( CUnicodeView fontName, TIntVector2 fontSize ) const
+CPtrOwner<IFontRenderData> COpenGlRenderer::CreateFontData( CUnicodeView fontName, int fontSize ) const
 {
 	auto fontFileName = getFontFileName( fontName );
 	FileSystem::AddExtIfNone( fontFileName, L"ttf" );
@@ -52,7 +52,7 @@ CUnicodeString COpenGlRenderer::getFontFileName( CUnicodeView fontName ) const
 {
 	for( CUnicodeView name : fontValues ) {
 		if( name.HasPrefix( fontName ) ) {
-			CRegistryKey fontKey( RRK_LocalMachine, fontKeyName );
+			CRegistryKey fontKey( RRK_LocalMachine, fontKeyName, RAT_Read );
 			return fontKey.GetValue( name, CUnicodeView() );
 		}
 	}

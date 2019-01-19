@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Aliases> 
+	<Boss name="Rubik" statusAlias="shown" nameAlias="Rubik"> 
+		<Attack name="Intro" iconAlias="FruitRed.png" statusAlias="shown" nameAlias="Intro3"/>
+		<Attack name="Walls and Rain" iconAlias="FruitOrange.png" statusAlias="shown" nameAlias="Walls and Rain"/>
+		<Attack name="Hearts and RNG" iconAlias="FruitRed.png" statusAlias="shown" nameAlias="Hearts and RNG"/>
+		<Attack name="Flower" iconAlias="FruitGreen.png" statusAlias="shown" nameAlias="Flower"/>
+		<Attack name="Squares" iconAlias="FruitFive.png" statusAlias="shown" nameAlias="Squares"/>
+		<Attack name="Squares and Heart" iconAlias="FruitFive.png" statusAlias="shown" nameAlias="Squares and Heart"/>
+		<Attack name="Haha Squares" iconAlias="FruitFive.png" statusAlias="shown" nameAlias="Haha Squares"/>
+		<Attack name="Big Platform Rain" iconAlias="FruitYellow.png" statusAlias="shown" nameAlias="Big Platform Rain"/>
+		<Attack name="Big platform Squares" iconAlias="FruitFive.png" statusAlias="shown" nameAlias="Big platform Squares"/>
+		<Attack name="Big Platform Hearts" iconAlias="FruitLightGrey.png" statusAlias="shown" nameAlias="Big Platform Hearts"/>
+		<Attack name="Small Platform Curve" iconAlias="FruitRed.png" statusAlias="shown" nameAlias="Small Platform Curve"/>
+		<Attack name="Small Platform Squares LuL" iconAlias="FruitFive.png" statusAlias="shown" nameAlias="Small Platform Squares LuL"/>
+		<Attack name="Small Platform Curve again.." iconAlias="FruitRed.png" statusAlias="shown" nameAlias="Small Platform Curve again.."/>
+		<Attack name="Grand Final" iconAlias="FruitFive.png" statusAlias="shown" nameAlias="Grand Final"/>
+	</Boss>
+</Aliases>

@@ -117,7 +117,6 @@ private:
 	// Footer icons.
 	CFooterIconPanel& footerIcons;
 
-
 	CArray<CPtrOwner<CChangingFile>> saveFiles;
 
 	// Information about currently saved hero position.
@@ -145,6 +144,7 @@ private:
 	CPtrOwner<CMouseInputSwitcher> mouseSwt;
 
 	CAddressSearchExpansion bossStartExpansion;
+	CArray<CAddressSearchExpansion> bossShowExpansions;
 
 	CEventTarget createWindowChangeEvent( CEventSystem& events );
 	CEventTarget createStatusChangeEvent( CEventSystem& events );

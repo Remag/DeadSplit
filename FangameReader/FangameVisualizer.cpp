@@ -68,7 +68,6 @@ void CFangameVisualizer::SetBossTable( CBossInfo& bossTable )
 	const auto newScale = bossTables[newPos]->GetTableScale();
 	footerIcons.ResizePanel( newScale );
 	currentTablePos = newPos;
-	GetBroadcaster().NotifyTableScale( newScale );
 }
 
 void CFangameVisualizer::SetNextTable()

@@ -8,12 +8,13 @@ namespace Fangame {
 
 //////////////////////////////////////////////////////////////////////////
 
-CMap<CUnicodeString, CBossSaveData> CSaveReaderVer1::SerializeData( CArchive& src )
+CMap<CUnicodeString, CBossSaveData> CSaveReaderVer1::SerializeData( CArchiveReader& src )
 {
 	CMap<CBossAttackNameData, CBossAttackSaveDataVer1> nameToAttackData;
 	CMap<CUnicodeString, CBossTotalSaveDataVer1> bossTotalData;
-	nameToAttackData.Serialize( src );
-	bossTotalData.Serialize( src );
+
+	src >> nameToAttackData;
+	src >> bossTotalData;
 
 	CMap<CUnicodeString, CBossSaveData> result;
 

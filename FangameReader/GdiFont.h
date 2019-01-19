@@ -12,7 +12,7 @@ namespace Fangame {
 
 class CGdiFont : public IFontRenderData {
 public:
-	explicit CGdiFont( CUnicodeView fontFileName, TIntVector2 fontSize );
+	explicit CGdiFont( CUnicodeView fontFileName, int fontSize );
 	~CGdiFont();
 
 	float GetBaselineOffset() const

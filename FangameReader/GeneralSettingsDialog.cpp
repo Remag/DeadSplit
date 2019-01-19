@@ -229,9 +229,12 @@ void CGeneralSettingsDialog::changeFontName()
 	}
 	font.lfFaceName[length] = 0;
 
-	const auto fontSize = windowSettings.GetNameFontSize().Y();
-	
-	font.lfHeight = fontSize;
+	const auto fontPtSize = windowSettings.GetNameFontSize();
+	const auto wndDc = ::GetDC( dialogWnd );
+	const auto fontSize = ::MulDiv( fontPtSize, ::GetDeviceCaps( wndDc, LOGPIXELSY ), 72 );
+	::ReleaseDC( dialogWnd, wndDc );
+
+	font.lfHeight = -fontSize;
 	font.lfCharSet = DEFAULT_CHARSET;
 	font.lfClipPrecision = OUT_DEFAULT_PRECIS;
 

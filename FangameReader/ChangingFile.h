@@ -9,6 +9,7 @@ class CFolderChangesNotifier;
 // A file that is changed from an external source.
 class CChangingFile {
 public:
+	explicit CChangingFile( CUnicodePart fullPath );
 	explicit CChangingFile( CUnicodePart relPath, const CProcessHandle& moduleHandle );
 	~CChangingFile();
 
@@ -27,7 +28,7 @@ private:
 	CPtrOwner<CFolderChangesNotifier> folderNotifier;
 	CUnicodeString fullPath;
 	CUnicodeString relPath;
-	const CProcessHandle& processHandle;
+	const CProcessHandle* processHandle;
 
 	COptional<CFile> createOpenFile();
 	bool tryObtainFullFileName();

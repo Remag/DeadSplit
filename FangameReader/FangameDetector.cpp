@@ -52,10 +52,10 @@ void CFangameDetector::SuspendSearch()
 	threadSuspendFlag.Store( true );
 }
 
-void CFangameDetector::AddConnection( CUnicodePart layoutName, CUnicodePart titleMask, CUnicodePart exeName )
+void CFangameDetector::AddConnection( CUnicodePart layoutName, CUnicodePart titleMask, CUnicodePart exeName, bool requireDeaths )
 {
 	CWriteLock lock( connectorSection );
-	userConnector->AddConnection( titleMask, layoutName, exeName );
+	userConnector->AddConnection( titleMask, layoutName, exeName, requireDeaths );
 }
 
 void CFangameDetector::initSearthThread() const

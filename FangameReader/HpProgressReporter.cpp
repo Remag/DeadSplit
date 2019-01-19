@@ -46,11 +46,18 @@ const double CHpProgressReporter::getCurrentHp() const
 	assert( hpAddressId != NotFound );
 
 	const auto hpValue = changeDetector.GetCurrentAddressValue( hpAddressId );
-	if( hpValue.Size() < sizeof( maxHp ) ) {
-		return 0.0;
+	switch( hpValue.Size() ) {
+		case 1:
+			return static_cast<double>( *reinterpret_cast<const BYTE*>( hpValue.Ptr() ) );
+		case 2:
+			return static_cast<int>( hpValue[0] ) * 100 + hpValue[1];
+		case 4:
+			return static_cast<double>( *reinterpret_cast<const int*>( hpValue.Ptr() ) );
+		case 8:
+			return *reinterpret_cast<const double*>( hpValue.Ptr() );
+		default:
+			return 0.0;
 	}
-
-	return *reinterpret_cast<const double*>( hpValue.Ptr() );
 }
 
 double CHpProgressReporter::FindProgress() const

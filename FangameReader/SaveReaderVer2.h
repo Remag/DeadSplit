@@ -32,7 +32,7 @@ struct CBossSaveDataVer2 {
 
 class CSaveReaderVer2 {
 public:
-	CMap<CUnicodeString, CBossSaveData> SerializeData( CArchive& src );
+	CMap<CUnicodeString, CBossSaveData> SerializeData( CArchiveReader& src );
 
 private:
 	CBossSaveData createCurrentVersionEntry( const CBossSaveDataVer2& data ) const;
@@ -41,7 +41,7 @@ private:
 
 //////////////////////////////////////////////////////////////////////////
 
-inline CArchive& operator<<( CArchive& archive, const CBossAttackSaveDataVer2& saveData )
+inline CArchiveWriter& operator<<( CArchiveWriter& archive, const CBossAttackSaveDataVer2& saveData )
 {
 	archive << saveData.SessionDeathCount;
 	archive << saveData.TotalDeathCount;
@@ -50,7 +50,7 @@ inline CArchive& operator<<( CArchive& archive, const CBossAttackSaveDataVer2& s
 	return archive;
 }
 
-inline CArchive& operator>>( CArchive& archive, CBossAttackSaveDataVer2& saveData )
+inline CArchiveReader& operator>>( CArchiveReader& archive, CBossAttackSaveDataVer2& saveData )
 {
 	archive >> saveData.SessionDeathCount;
 	archive >> saveData.TotalDeathCount;
@@ -59,18 +59,18 @@ inline CArchive& operator>>( CArchive& archive, CBossAttackSaveDataVer2& saveDat
 	return archive;
 }
 
-inline CArchive& operator<<( CArchive& archive, CBossSaveDataVer2& saveData )
+inline CArchiveWriter& operator<<( CArchiveWriter& archive, CBossSaveDataVer2& saveData )
 {
-	saveData.AttackData.Serialize( archive );
+	archive << saveData.AttackData;
 	archive << saveData.SessionDeathCount;
 	archive << saveData.TotalDeathCount;
 	archive << saveData.SessionClearFlag;
 	return archive;
 }
 
-inline CArchive& operator>>( CArchive& archive, CBossSaveDataVer2& saveData )
+inline CArchiveReader& operator>>( CArchiveReader& archive, CBossSaveDataVer2& saveData )
 {
-	saveData.AttackData.Serialize( archive );
+	archive >> saveData.AttackData;
 	archive >> saveData.SessionDeathCount;
 	archive >> saveData.TotalDeathCount;
 	archive >> saveData.SessionClearFlag;

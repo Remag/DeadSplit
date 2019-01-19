@@ -11,7 +11,8 @@ namespace Fangame {
 //////////////////////////////////////////////////////////////////////////
 
 const auto textZOrder = 0.5f;
-CGlText::CGlText( CUnicodePart text, const CGlFont& glFont )
+CGlText::CGlText( CUnicodePart text, const CGlFont& glFont ) :
+	textStr( text )
 {
 	mesh = glFont.GetRenderer().RenderLine( text );
 	mesh.SetZOrder( textZOrder );
@@ -19,10 +20,10 @@ CGlText::CGlText( CUnicodePart text, const CGlFont& glFont )
 
 bool CGlText::SetText( CUnicodePart newValue )
 {
-	const auto fontRenderer = mesh.GetFontRenderer();
-	assert( fontRenderer != nullptr );
-	if( mesh.GetText() != newValue ) {
-		mesh = fontRenderer->RenderLine( newValue );
+	const auto renderer = mesh.GetFontRenderer();
+	assert( renderer != nullptr )
+	if( textStr != newValue ) {
+		mesh = renderer->RenderLine( newValue );
 		mesh.SetZOrder( textZOrder );
 		return true;
 	}

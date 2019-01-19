@@ -8,10 +8,10 @@ namespace Fangame {
 
 //////////////////////////////////////////////////////////////////////////
 
-CMap<CUnicodeString, CBossSaveData> CSaveReaderVer3::SerializeData( CArchive& src )
+CMap<CUnicodeString, CBossSaveData> CSaveReaderVer3::SerializeData( CArchiveReader& src )
 {
 	CMap<CUnicodeString, CBossSaveDataVer3> resultVer3;
-	resultVer3.Serialize( src );
+	src >> resultVer3;
 
 	CMap<CUnicodeString, CBossSaveData> result;
 

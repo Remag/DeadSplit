@@ -23,7 +23,8 @@ bool CUpdateInstaller::InstallUpdate( CUnicodeView updateModule, CUnicodeView ta
 	}
 
 	if( launchAfterUpdate ) {
-		CProcess::CreateAndAbandon( UnicodeStr( targetModule ) );
+		auto commandArgs = L'"' + targetModule + L"\" \"AllowDuplicateProcess:true\"";
+		CProcess::CreateAndAbandon( move( commandArgs ) );
 	}
 
 	return true;

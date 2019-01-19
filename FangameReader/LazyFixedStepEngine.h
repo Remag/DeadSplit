@@ -9,7 +9,7 @@ class CLazyFixedStepEngine : public CEngine {
 public:
 	explicit CLazyFixedStepEngine( int fpsCount );
 
-	virtual TTime MakeStep() override final;
+	virtual CFrameInformation AdvanceFrame() override final;
 
 private:
 	CFixedStepEngine baseEngine;

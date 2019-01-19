@@ -8,5 +8,5 @@ varying vec2 fragTexCoord;
 void main()
 {
 	vec4 color = mix( LowColor, HighColor, fragTexCoord.x );
-	gl_FragColor = color;
+	gl_FragColor = color; 
 }

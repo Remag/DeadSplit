@@ -37,19 +37,21 @@ bool CFangameConnector::HasLayout( CUnicodePart layoutPath ) const
 const CUnicodeView titleMaskAttrib = L"titlePrefix";
 const CUnicodeView layoutPathAttrib = L"layoutPath";
 const CUnicodeView exeNameAttrib = L"exeName";
+const CUnicodeView requireDeathCountAttrib = L"requireDeaths";
 void CFangameConnector::parseConnectionUnit( const CXmlElement& elem )
 {
 	const auto titleMask = elem.GetAttributeValue( titleMaskAttrib, CUnicodePart() );
 	const auto layoutPath = elem.GetAttributeValue( layoutPathAttrib, CUnicodePart() );
 	const auto exeName = elem.GetAttributeValue( exeNameAttrib, CUnicodePart() );
+	const auto requireDeaths = elem.GetAttributeValue( requireDeathCountAttrib, true );
 
-	connections.Add( titleMask, layoutPath, exeName );
+	connections.Add( titleMask, layoutPath, exeName, requireDeaths );
 }
 
 const CUnicodeView connectionChild = L"Link";
-void CFangameConnector::AddConnection( CUnicodePart titleMask, CUnicodePart layoutPath, CUnicodePart executableName )
+void CFangameConnector::AddConnection( CUnicodePart titleMask, CUnicodePart layoutPath, CUnicodePart executableName, bool requireDeaths )
 {
-	connections.Add( titleMask, layoutPath, executableName );
+	connections.Add( titleMask, layoutPath, executableName, requireDeaths );
 	auto& newLink = connectionDoc.GetRoot().CreateChild( connectionChild );
 	newLink.AddAttribute( titleMaskAttrib, titleMask );
 	newLink.AddAttribute( layoutPathAttrib, layoutPath );
@@ -63,7 +65,7 @@ CUnicodeView CFangameConnector::FindLayoutPath( HWND targetWnd, CUnicodeView win
 		return CUnicodeView();
 	}
 	for( const auto& connection : connections ) {
-		if( windowTitle.HasPrefix( connection.WindowTitle ) ) {
+		if( windowTitle.HasPrefix( connection.WindowTitle ) && checkDeathCount( connection, windowTitle ) ) {
 			CProcessHandle process( targetWnd );
 			const auto filePath = GetModuleFileName( process.Handle() );
 			const auto fileName = FileSystem::GetNameExt( filePath );	
@@ -74,6 +76,11 @@ CUnicodeView CFangameConnector::FindLayoutPath( HWND targetWnd, CUnicodeView win
 	}
 
 	return CUnicodeView();
+}
+
+bool CFangameConnector::checkDeathCount( const CConnectionData& data, CUnicodeView windowTitle ) const
+{
+	return !data.RequireDeaths || ParseDeathCount( windowTitle ).IsValid();
 }
 
 //////////////////////////////////////////////////////////////////////////

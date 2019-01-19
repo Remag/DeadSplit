@@ -10,5 +10,5 @@ void main()
 {
 	vec3 screenPos = ModelToClip * vec3( position.xy, 1 );
 	gl_Position = vec4( screenPos.xy, ZOrder, 1 );
-	fragTexCoord = position.zw;
+	fragTexCoord = position.zw; 
 }

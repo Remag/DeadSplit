@@ -14,14 +14,14 @@ CLazyFixedStepEngine::CLazyFixedStepEngine( int fpsCount ) :
 {
 }
 
-TTime CLazyFixedStepEngine::MakeStep()
+CFrameInformation CLazyFixedStepEngine::AdvanceFrame()
 {
-	const auto resultTime = baseEngine.MakeStep();
-	if( resultTime != 0 ) {
+	const auto resultTime = baseEngine.AdvanceFrame();
+	if( resultTime.RunDraw || resultTime.RunUpdate ) {
 		return resultTime;
 	} else {
 		::Sleep( 1 );
-		return 0;
+		return resultTime;
 	} 
 }
 

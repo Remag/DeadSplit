@@ -31,7 +31,8 @@ void CTextInfoPanel::SetPanelSize( CPixelVector newValue )
 void CTextInfoPanel::initTransformation( CPixelVector newValue )
 {
 	modelToClip = Coordinates::PixelToClip();
-	const auto pixelOrigin = newValue.Y() / 2 + textCenterOffset;
+
+	const auto pixelOrigin = Round( newValue.Y() / 2 + textCenterOffset );
 	modelToClip( 2, 1 ) += modelToClip( 1, 1 ) * pixelOrigin;
 }
 

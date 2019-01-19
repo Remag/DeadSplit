@@ -77,7 +77,7 @@ class IRenderer : public CSingleton<IRenderer> {
 public:
 	virtual ~IRenderer() {};
 
-	virtual CPtrOwner<IFontRenderData> CreateFontData( CUnicodeView fontName, TIntVector2 fontSize ) const = 0;
+	virtual CPtrOwner<IFontRenderData> CreateFontData( CUnicodeView fontName, int fontSize ) const = 0;
 	virtual CPtrOwner<ITextRenderData> CreateTextData( CUnicodePart text, const IFontRenderData& fontData ) const = 0;
 	virtual CPtrOwner<IImageRenderData> CreateImageData( CUnicodeView fileName ) const = 0;
 	virtual CPtrOwner<ISpriteRenderData> CreateSpriteData( CPixelRect baseRect ) const = 0;

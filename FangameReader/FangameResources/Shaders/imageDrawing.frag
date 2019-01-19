@@ -5,5 +5,5 @@ varying vec2 fragTexCoord;
 
 void main()
 {
-	gl_FragColor = texture2D( SpriteImage, fragTexCoord );
+	gl_FragColor = texture2D( SpriteImage, fragTexCoord ); 
 }

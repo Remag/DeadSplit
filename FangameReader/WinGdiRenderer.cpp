@@ -46,7 +46,7 @@ CWinGdiRenderer::~CWinGdiRenderer()
 	Gdiplus::GdiplusShutdown( startupToken );
 }
 
-CPtrOwner<IFontRenderData> CWinGdiRenderer::CreateFontData( CUnicodeView fontName, TIntVector2 fontSize ) const
+CPtrOwner<IFontRenderData> CWinGdiRenderer::CreateFontData( CUnicodeView fontName, int fontSize ) const
 {
 	return CreateOwner<CGdiFont>( fontName, fontSize );
 }

@@ -9,7 +9,7 @@ namespace Fangame {
 //////////////////////////////////////////////////////////////////////////
 
 CGlLine::CGlLine() :
-	lineMesh( MDM_Lines, 2 )
+	lineMesh( MDM_Lines )
 {
 	lineData.ReserveBuffer( 2, BUH_StaticDraw );
 	lineMesh.BindBuffer( lineData, { 0 } );
@@ -31,7 +31,7 @@ void CGlLine::Draw( TMatrix3 modelToClip, CColor color, float zOrder ) const
 	shaderData.ZOrder = zOrder;
 	shaderData.LowColor = color;
 	shaderData.HighColor = color;
-	lineMesh.Draw( shaderData.Shader );
+	lineMesh.Draw( shaderData.Shader, 2 );
 }
 
 //////////////////////////////////////////////////////////////////////////

@@ -11,7 +11,7 @@ public:
 
 	bool HasLayout( CUnicodePart layoutPath ) const;
 
-	void AddConnection( CUnicodePart titleMask, CUnicodePart layoutPath, CUnicodePart executableName );
+	void AddConnection( CUnicodePart titleMask, CUnicodePart layoutPath, CUnicodePart executableName, bool requireDeaths );
 	CUnicodeView FindLayoutPath( HWND targetWnd, CUnicodeView windowTitle ) const;
 
 private:
@@ -19,14 +19,17 @@ private:
 		CUnicodeString WindowTitle;
 		CUnicodeString LayoutPath;
 		CUnicodeString ExecutableName;
+		bool RequireDeaths;
 
-		CConnectionData( CUnicodePart title, CUnicodePart layout, CUnicodePart exeName ) : WindowTitle( title ), LayoutPath( layout ), ExecutableName( exeName ) {}
+		CConnectionData( CUnicodePart title, CUnicodePart layout, CUnicodePart exeName, bool requireDeaths ) : 
+			WindowTitle( title ), LayoutPath( layout ), ExecutableName( exeName ), RequireDeaths( requireDeaths ) {}
 	};
 
 	CArray<CConnectionData> connections;
 	CXmlDocument connectionDoc;
 
 	void parseConnectionUnit( const CXmlElement& elem );
+	bool checkDeathCount( const CConnectionData& data, CUnicodeView windowTitle ) const;
 };
 
 

@@ -67,9 +67,11 @@ void CFooterIconPanel::ResizePanel( float newTableScale )
 void CFooterIconPanel::Draw( const IRenderParameters& renderParams ) const
 {
 	if( windowSettings.ShowFooterIcons() ) {
+		GetRenderer().InitializeImageDrawing();
 		for( const auto& icon : footerIcons ) {
 			icon.Draw( renderParams, 0 );
 		}
+		GetRenderer().FinalizeImageDrawing();
 	}
 }
 

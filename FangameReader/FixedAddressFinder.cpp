@@ -2,6 +2,7 @@
 #pragma hdrstop
 
 #include <FixedAddressFinder.h>
+#include <ProcessMemoryScanner.h>
 
 namespace Fangame {
 
@@ -16,9 +17,9 @@ CFixedAddressFinder::CFixedAddressFinder( const CXmlElement& elem )
 	addressPtr = reinterpret_cast<const void*>( *addressValue );
 }
 
-const void* CFixedAddressFinder::FindGameAddress( const CProcessMemoryScanner& )
+const void CFixedAddressFinder::FindGameValue( const CProcessMemoryScanner& scanner, void* dataPtr, int dataSize )
 {
-	return addressPtr;
+	scanner.ReadProcessData( addressPtr, dataPtr, dataSize );
 }
 
 //////////////////////////////////////////////////////////////////////////

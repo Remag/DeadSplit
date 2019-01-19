@@ -58,7 +58,7 @@ bool CBossAttackSaveFile::tryReadFromFile( CUnicodeView name )
 {
 	try {
 		CFile saveFile( name, CFile::OF_ShareDenyNone );
-		CArchive saveArchive( &saveFile, CArchive::D_Loading );
+		CArchiveReader saveArchive( saveFile );
 		readFromArchive( saveArchive );
 		return true;
 
@@ -71,7 +71,7 @@ bool CBossAttackSaveFile::tryReadFromFile( CUnicodeView name )
 bool CBossAttackSaveFile::tryReadFromFile( CFile& file )
 {
 	try {
-		CArchive saveArchive( &file, CArchive::D_Loading );
+		CArchiveReader saveArchive( file );
 		readFromArchive( saveArchive );
 		return true;
 
@@ -82,7 +82,7 @@ bool CBossAttackSaveFile::tryReadFromFile( CFile& file )
 }
 
 const CUnicodeView badArchiveVersion = L"Unknown save file format!";
-void CBossAttackSaveFile::readFromArchive( CArchive& src )
+void CBossAttackSaveFile::readFromArchive( CArchiveReader& src )
 {
 	const auto currentVersion = src.ReadSmallValue();
 	if( currentVersion == 1 ) {
@@ -153,9 +153,9 @@ const auto currentSaveVersion = 4;
 void CBossAttackSaveFile::saveDataToFile( CUnicodeView name )
 {
 	CFile saveFile( name, CFile::OF_CreateOrOpen | CFile::OF_ShareDenyNone | CFile::OF_Write );
-	CArchive saveArchive( &saveFile, CArchive::D_Storing );
+	CArchiveWriter saveArchive( saveFile );
 	saveArchive.WriteSmallValue( currentSaveVersion );
-	bossNameToData.Serialize( saveArchive );
+	saveArchive << bossNameToData;
 }
 
 //////////////////////////////////////////////////////////////////////////

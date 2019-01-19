@@ -66,7 +66,7 @@ CWindowSettings::CWindowSettings( CUnicodeView fileName ) :
 	initColors();
 
 	const auto fontName = settingsFile.GetValue( generalSectionName, textFontName, GetDefaultFontName() );
-	const auto fontSize = settingsFile.GetValue( generalSectionName, textSizeName, GetDefaultFontSize().X() );
+	const auto fontSize = settingsFile.GetValue( generalSectionName, textSizeName, GetDefaultFontSize() );
 	initTextFonts( fontName, fontSize );
 	initInputs();
 }
@@ -154,8 +154,8 @@ void CWindowSettings::initColors()
 void CWindowSettings::initTextFonts( CUnicodeView fontName, int fontSize )
 {
 	nameFont = textFont = fontName;
-	nameFontSize = TIntVector2{ fontSize, fontSize };
-	textFontSize = 0.8f * nameFontSize;
+	nameFontSize = fontSize;
+	textFontSize = Floor( 0.8f * fontSize );
 }
 
 const CUnicodeView oldInputsSection = L"Input";
@@ -478,15 +478,15 @@ CUnicodeView CWindowSettings::GetDefaultFontName()
 	return CUnicodeView( L"Verdana" );
 }
 
-TIntVector2 CWindowSettings::GetDefaultFontSize()
+int CWindowSettings::GetDefaultFontSize()
 {
-	return TIntVector2( 18, 18 );
+	return 18;
 }
 
-void CWindowSettings::SetFontSize( TIntVector2 newValue )
+void CWindowSettings::SetFontSize( int newValue )
 {
 	nameFontSize = textFontSize = newValue;
-	settingsFile.SetValue( generalSectionName, textSizeName, newValue.X() );
+	settingsFile.SetValue( generalSectionName, textSizeName, newValue );
 }
 
 void CWindowSettings::SetTextColor( CColor newValue )

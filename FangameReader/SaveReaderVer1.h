@@ -36,7 +36,7 @@ struct CBossAttackNameData {
 
 class CSaveReaderVer1 {
 public:
-	CMap<CUnicodeString, CBossSaveData> SerializeData( CArchive& src );
+	CMap<CUnicodeString, CBossSaveData> SerializeData( CArchiveReader& src );
 
 private:
 	void createBossNames( const CMap<CBossAttackNameData, CBossAttackSaveDataVer1>& attackNames, CMap<CUnicodeString, CBossSaveData>& result );
@@ -46,35 +46,35 @@ private:
 
 //////////////////////////////////////////////////////////////////////////
 
-inline CArchive& operator<<( CArchive& archive, const CBossAttackSaveDataVer1& saveData )
+inline CArchiveWriter& operator<<( CArchiveWriter& archive, const CBossAttackSaveDataVer1& saveData )
 {
 	archive << saveData.SessionDeathCount;
 	archive << saveData.TotalDeathCount;
 	return archive;
 }
 
-inline CArchive& operator>>( CArchive& archive, CBossAttackSaveDataVer1& saveData )
+inline CArchiveReader& operator>>( CArchiveReader& archive, CBossAttackSaveDataVer1& saveData )
 {
 	archive >> saveData.SessionDeathCount;
 	archive >> saveData.TotalDeathCount;
 	return archive;
 }
 
-inline CArchive& operator<<( CArchive& archive, const CBossAttackNameData& nameData )
+inline CArchiveWriter& operator<<( CArchiveWriter& archive, const CBossAttackNameData& nameData )
 {
 	archive << nameData.BossName;
 	archive << nameData.AttackName;
 	return archive;
 }
 
-inline CArchive& operator>>( CArchive& archive, CBossAttackNameData& nameData )
+inline CArchiveReader& operator>>( CArchiveReader& archive, CBossAttackNameData& nameData )
 {
 	archive >> nameData.BossName;
 	archive >> nameData.AttackName;
 	return archive;
 }
 
-inline CArchive& operator<<( CArchive& archive, CBossTotalSaveDataVer1& saveData )
+inline CArchiveWriter& operator<<( CArchiveWriter& archive, CBossTotalSaveDataVer1& saveData )
 {
 	archive << saveData.TotalCount.SessionDeathCount;
 	archive << saveData.TotalCount.TotalDeathCount;
@@ -82,7 +82,7 @@ inline CArchive& operator<<( CArchive& archive, CBossTotalSaveDataVer1& saveData
 	return archive;
 }
 
-inline CArchive& operator>>( CArchive& archive, CBossTotalSaveDataVer1& saveData )
+inline CArchiveReader& operator>>( CArchiveReader& archive, CBossTotalSaveDataVer1& saveData )
 {
 	archive >> saveData.TotalCount.SessionDeathCount;
 	archive >> saveData.TotalCount.TotalDeathCount;

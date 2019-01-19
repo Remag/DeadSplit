@@ -16,7 +16,7 @@ public:
 	void SuspendSearch();
 
 	// Create a link between a given layout and a window.
-	void AddConnection( CUnicodePart layoutName, CUnicodePart titleMask, CUnicodePart exeName );
+	void AddConnection( CUnicodePart layoutName, CUnicodePart titleMask, CUnicodePart exeName, bool requireDeaths );
 
 	// Search for active fangames.
 	COptional<CFangameProcessInfo> FindFangame() const;

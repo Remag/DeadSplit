@@ -660,6 +660,7 @@ void CBossTriggerCreater::addDoubleTrigger( const CXmlElement& elem, const CBoss
 
 	auto triggerFlags = CreateOwner<CPair<bool>>( false, false );
 	const auto flags = triggerFlags.Ptr();
+
 	const auto resetStateReaction = [flags]( CFangameVisualizerState& ) {
 		flags->First = flags->Second = false;
 	};
@@ -811,8 +812,14 @@ void CBossTriggerCreater::addInitCounterTrigger( int roomId, TIntAARect bounds, 
 auto CBossTriggerCreater::createAddressTargetValue( const CXmlElement& elem, const CAddressInfo& info, CUnicodePart attribName ) const
 {
 	CArray<BYTE> result;
-	staticAssert( AVT_EnumCount == 2 );
+	staticAssert( AVT_EnumCount == 4 );
 	switch( info.AddressType ) {
+		case AVT_Byte: {
+			const auto elemValue = static_cast<BYTE>( elem.GetAttributeValue( attribName, 0 ) );
+			result.IncreaseSize( sizeof( elemValue ) );
+			::memcpy( result.Ptr(), &elemValue, sizeof( elemValue ) );
+			break;
+		}
 		case AVT_Int32: {
 			const auto elemValue = elem.GetAttributeValue( attribName, 0 );
 			result.IncreaseSize( sizeof( elemValue ) );
@@ -825,6 +832,13 @@ auto CBossTriggerCreater::createAddressTargetValue( const CXmlElement& elem, con
 			::memcpy( result.Ptr(), &elemValue, sizeof( elemValue ) );
 			break;
 		}
+		case AVT_Int16Base10: {
+			const auto elemValue = static_cast<unsigned short>( elem.GetAttributeValue( attribName, 0 ) );
+			result.IncreaseSize( sizeof( elemValue ) );
+			result[0] = static_cast<BYTE>( elemValue / 100 );
+			result[1] = static_cast<BYTE>( elemValue % 100 );
+			break;
+		}
 		default:
 			assert( false );
 	}
@@ -834,11 +848,19 @@ auto CBossTriggerCreater::createAddressTargetValue( const CXmlElement& elem, con
 
 int CBossTriggerCreater::compareAddressValues( CArrayView<BYTE> target, CArrayView<BYTE> value, CAddressInfo addressInfo ) 
 {
-	staticAssert( AVT_EnumCount == 2 );
-	if( addressInfo.AddressType == AVT_Int32 ) {
+	staticAssert( AVT_EnumCount == 4 );
+	if( addressInfo.AddressType == AVT_Byte ) {
+		const auto byteTarget = reinterpret_cast<const BYTE*>( target.Ptr() );
+		const auto byteValue = reinterpret_cast<const BYTE*>( value.Ptr() );
+		return static_cast<int>( ( *byteTarget ) - ( *byteValue ) );
+	} else if( addressInfo.AddressType == AVT_Int32 ) {
 		const auto intTarget = reinterpret_cast<const int*>( target.Ptr() );
 		const auto intValue = reinterpret_cast<const int*>( value.Ptr() );
 		return ( *intTarget ) - ( *intValue );
+	} else if( addressInfo.AddressType == AVT_Int16Base10 ) {
+		const auto shortTarget = reinterpret_cast<const short*>( target.Ptr() );
+		const auto shortValue = reinterpret_cast<const short*>( value.Ptr() );
+		return ( *shortTarget ) - ( *shortValue );
 	} else {
 		const auto doubleTarget = reinterpret_cast<const double*>( target.Ptr() );
 		const auto doubleValue = reinterpret_cast<const double*>( value.Ptr() );
@@ -851,6 +873,8 @@ const CUnicodeView targetValueAttrib = L"targetValue";
 const CUnicodeView excludeValueAttrib = L"excludeValue";
 const CUnicodeView maxValueAttrib = L"maxValue";
 const CUnicodeView minValueAttrib = L"minValue";
+const CUnicodeView increaseValueAttrib = L"detectIncrease";
+const CUnicodeView decreaseValueAttrib = L"detectDecrease";
 const CUnicodeView unknownAddressNameStr = L"Unknown address name: %0.";
 const CUnicodeView unknownAddressValueStr = L"Target address value for address %0 is unspecified.";
 auto CBossTriggerCreater::createAddressChangeCondition( const CXmlElement& elem, CDynamicBitSet<>& targetAddressMask ) const
@@ -870,12 +894,29 @@ auto CBossTriggerCreater::createAddressChangeCondition( const CXmlElement& elem,
 	const auto addressId = addressInfo->AddressId;
 	targetAddressMask |= addressId;
 
+	const auto detectIncrease = elem.GetAttributeValue( increaseValueAttrib, false );
+	const auto detectDecrease = elem.GetAttributeValue( decreaseValueAttrib, false );
 	const bool isTarget = elem.HasAttribute( targetValueAttrib );
 	const bool isExclude = elem.HasAttribute( excludeValueAttrib );
 	const bool isMin = elem.HasAttribute( minValueAttrib );
 	const bool isMax = elem.HasAttribute( maxValueAttrib );
-	if( !isExclude && !isTarget && !isMin && !isMax ) {
+	if( !detectDecrease && !detectIncrease && !isExclude && !isTarget && !isMin && !isMax ) {
 		Log::Warning( unknownAddressValueStr.SubstParam( addressName ), this );
+		return result;
+	}
+
+	if( detectIncrease ) {
+		result = [address = *addressInfo]( const CFangameEvent<Events::CFangameValueChange>& e ) {
+			const auto& addressEvent = static_cast<const CValueChangeEvent&>( e );
+			const auto isIncrease = addressEvent.GetAddressId() == address.AddressId && compareAddressValues( addressEvent.GetNewValue(), addressEvent.GetOldValue(), address ) > 0;
+			return isIncrease;
+		};
+		return result;
+	} else if( detectDecrease ) {
+		result = [address = *addressInfo]( const CFangameEvent<Events::CFangameValueChange>& e ) {
+			const auto& addressEvent = static_cast<const CValueChangeEvent&>( e );
+			return addressEvent.GetAddressId() == address.AddressId && compareAddressValues( addressEvent.GetNewValue(), addressEvent.GetOldValue(), address ) < 0;
+		};
 		return result;
 	}
 

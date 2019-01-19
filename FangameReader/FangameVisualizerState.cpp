@@ -140,7 +140,8 @@ void CFangameVisualizerState::addBossShowEvents()
 	}
 
 	const auto& showAddresses = bossInfo->GetGlobalAddressMask();
-	changeDetector->ExpandAddressSearch( showAddresses, true );
+	auto newExpansion = changeDetector->ExpandAddressSearch( showAddresses, true );
+	bossShowExpansions.Add( move( newExpansion ) );
 }
 
 const CUnicodeView unknownRoomIdStr = L"Current room ID unknown";
@@ -178,7 +179,7 @@ void CFangameVisualizerState::setNewBossTable( CBossInfo& bossTable, bool setAdd
 	addBossStartEvents( bossTable );
 	timerEvents.Empty();
 	bossStartExpansion = changeDetector->ExpandAddressSearch( bossTable.AddressMask, setAddressEvents );
-	GetBroadcaster().NotifyBossChange( bossTable.EntryId, bossTable.Children.Size(), activeTable.GetLinePixelSize() );
+	GetBroadcaster().NotifyBossChange( bossTable );
 }
 
 void CFangameVisualizerState::addBossStartEvents( const CBossInfo& bossTable )
@@ -430,7 +431,6 @@ void CFangameVisualizerState::onWindowSizeChange()
 		activeTable.ResizeTable( windowSize );
 		const auto newScale = activeTable.GetTableScale();
 		footerIcons.ResizePanel( newScale );
-		GetBroadcaster().NotifyTableScale( newScale );
 	}
 
 	heroPosPanel->SetPanelSize( windowSize );

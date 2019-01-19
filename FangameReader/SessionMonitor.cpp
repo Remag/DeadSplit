@@ -19,8 +19,8 @@ void CSessionMonitor::initializeSessionFromFile( CUnicodeView fileName )
 {
 	CFile sessionFile;
 	if( sessionFile.TryOpen( fileName, CFile::OF_Read | CFile::OF_ShareDenyWrite ) ) {
-		CArchive sessionArchive( &sessionFile, CArchive::D_Loading );
-		sessionFangames.Serialize( sessionArchive );
+		CArchiveReader sessionArchive( sessionFile );
+		sessionArchive >> sessionFangames;
 	}
 }
 
@@ -47,8 +47,8 @@ bool CSessionMonitor::InitializeFangame( CUnicodeView fangamePath )
 
 	sessionFangames.Set( fangamePath );
 	CFile sessionFile( Paths::SessionFileName, CFile::OF_Write | CFile::OF_ShareDenyWrite | CFile::OF_CreateAlways );
-	CArchive sessionArchive( &sessionFile, CArchive::D_Storing );
-	sessionFangames.Serialize( sessionArchive );
+	CArchiveWriter sessionArchive( sessionFile );
+	sessionArchive << sessionFangames;
 	return true;
 }
 

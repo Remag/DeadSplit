@@ -15,7 +15,6 @@ const CUnicodeView reloadOnUpdateAttrib = L"reloadOnUpdate";
 const CUnicodeView unknownOffsetValueStr = L"Unknown offset value: %0";
 CNestedAddressFinder::CNestedAddressFinder( const CXmlElement& elem )
 {
-	reloadOnChange = elem.GetAttributeValue( reloadOnChangeAttrib, false );
 	reloadOnUpdate = elem.GetAttributeValue( reloadOnUpdateAttrib, false );
 	const auto basePtrValue = elem.GetAttributeValue( basePtrAttrib, 0U );
 	basePtr = reinterpret_cast<const void*>( basePtrValue );
@@ -31,17 +30,20 @@ CNestedAddressFinder::CNestedAddressFinder( const CXmlElement& elem )
 	}
 }
 
-const void* CNestedAddressFinder::FindGameAddress( const CProcessMemoryScanner& scanner )
+const void CNestedAddressFinder::FindGameValue( const CProcessMemoryScanner& scanner, void* dataPtr, int dataSize )
 {
-	const auto startPointer = scanner.ReadAddressValue<unsigned>( basePtr );
+	auto currentPtr = cachedAddress;
+	if( currentPtr == 0 || reloadOnUpdate ) {
+		const auto startPointer = scanner.ReadAddressValue<unsigned>( basePtr );
 
-	auto currentPtr = startPointer + indirectionList[0];
-	for( int i = 1; i < indirectionList.Size(); i++ ) {
-		const auto ptr = reinterpret_cast<const void*>( currentPtr );
-		currentPtr = scanner.ReadAddressValue<unsigned>( ptr ) + indirectionList[i];
+		currentPtr = startPointer + indirectionList[0];
+		for( int i = 1; i < indirectionList.Size(); i++ ) {
+			const auto ptr = reinterpret_cast<const void*>( currentPtr );
+			currentPtr = scanner.ReadAddressValue<unsigned>( ptr ) + indirectionList[i];
+		}
 	}
-
-	return reinterpret_cast<const void*>( currentPtr );
+	
+	scanner.ReadProcessData( dataPtr, dataPtr, dataSize );
 }
 
 //////////////////////////////////////////////////////////////////////////

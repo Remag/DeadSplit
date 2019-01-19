@@ -21,12 +21,10 @@ namespace Fangame {
 
 CMainApp::CMainApp()
 {
-	broadcaster = CreateOwner<CFileBroadcaster>( L"SessionEvents" );
 }
 
 CMainApp::~CMainApp()
 {
-
 }
 
 void CMainApp::OnMainWindowResize( CVector2<int> newSize, bool )
@@ -43,6 +41,9 @@ CPtrOwner<IState> CMainApp::onInitialize( CUnicodeView commandLine )
 		finalizeUpdateInstall( startInfo.FangameUpdateSource, startInfo.OpenAppAfterUpdate );
 		return nullptr;
 	}
+	if( !initializeUniqueApplication( startInfo.AllowDuplicateProcess ) ) {
+		return nullptr;
+	}
 
 	windowSettings = CreateOwner<CWindowSettings>( Paths::UserSettingsFile );
 	const auto fps = windowSettings->GetFPS();
@@ -55,13 +56,16 @@ CPtrOwner<IState> CMainApp::onInitialize( CUnicodeView commandLine )
 	return CreateOwner<CFangameDetectorState>( eventSystem, *windowSettings, move( startInfo ) );
 }
 
-const CUnicodeView fangameArgName = L"Fangame:";
-const CUnicodeView updateFromArgName = L"UpdateFrom:";
-const CUnicodeView updateOpenArgName = L"UpdateOpen:";
+void CMainApp::onExit()
+{
+	if( broadcaster != nullptr ) {
+		broadcaster->NotifyAppExit();
+	}
+}
+
 CStartupInfo CMainApp::parseCommandLine( CUnicodeView commandLine )
 {
 	CStartupInfo result;
-
 
 	CStaticArray<CUnicodeString> commandArgs;
 	commandArgs.ResetSize( CAN_EnumCount );
@@ -81,13 +85,17 @@ CStartupInfo CMainApp::parseCommandLine( CUnicodeView commandLine )
 	const auto updateOpenValue = Value<bool>( commandArgs[CAN_UpdateOpen] );
 	result.OpenAppAfterUpdate = !updateOpenValue.IsValid() || *updateOpenValue;
 
+	const auto allowDuplicateValue = Value<bool>( commandArgs[CAN_AllowDuplicate] );
+	result.AllowDuplicateProcess = allowDuplicateValue.IsValid() && *allowDuplicateValue;
+
 	return result;
 }
 
 const CEnumDictionary<TCommandArgumentName, CAN_EnumCount> commandArgNameDict {
 	{ CAN_Fangame, L"Fangame" },
 	{ CAN_UpdateFrom, L"UpdateFrom" },
-	{ CAN_UpdateOpen, L"UpdateOpen" }
+	{ CAN_UpdateOpen, L"UpdateOpen" },
+	{ CAN_AllowDuplicate, L"AllowDuplicateProcess" }
 };
 int CMainApp::parseSingleArgument( int pos, CUnicodeView commandLine, CStaticArray<CUnicodeString>& argValues )
 {
@@ -146,11 +154,34 @@ void CMainApp::cleanupUpdater()
 	} catch( CException& ) {}
 }
 
+void CMainApp::onInitializeGlContext()
+{
+}
+
+void CMainApp::cleanupGlContext()
+{
+}
+
+const CUnicodeView uniqueMutexName = L"Redire.DeadSplit.UniqueMutex";
+bool CMainApp::initializeUniqueApplication( bool allowDuplicateProcess )
+{
+	uniqueMutex = CreateOwner<CMutex>( uniqueMutexName );
+	if( !allowDuplicateProcess && ::GetLastError() == ERROR_ALREADY_EXISTS ) {
+		CWindowMessageLog windowLog;
+		windowLog.AddMessage( L"DeadSplit is already running!", LMT_Message, this );
+		return false;
+	}
+	// In case of allowed duplicates: wait for the old process to exit.
+	uniqueMutexLock = CreateOwner<CMutexLock>( *uniqueMutex );
+	broadcaster = CreateOwner<CFileBroadcaster>( L"SessionEvents" );
+	return true;
+}
+
 void CMainApp::initializeRenderer()
 {
-	const auto initialStyle = WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_OVERLAPPEDWINDOW;
+	const DWORD initialStyle = WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_OVERLAPPEDWINDOW;
 	const HICON headIcon = reinterpret_cast<HICON>( ::LoadIcon( ::GetModuleHandle( nullptr ), MAKEINTRESOURCE( IDI_ICON1 ) ) );
-	CGlWindowSettings initialSettings{ initialStyle, windowSettings->GetWindowSize() };
+	CGlWindowSettings initialSettings{ initialStyle, TIntVector2{}, windowSettings->GetWindowSize(), WOP_Center, false };
 
 	staticAssert( RT_EnumCount == 2 );
 	switch( windowSettings->GetRendererType() ) {

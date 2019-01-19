@@ -10,8 +10,14 @@ namespace Fangame {
 
 //////////////////////////////////////////////////////////////////////////
 
+CChangingFile::CChangingFile( CUnicodePart fullPath ) :
+	processHandle( nullptr ),
+	relPath( fullPath )
+{
+}
+
 CChangingFile::CChangingFile( CUnicodePart _relPath, const CProcessHandle& moduleHandle ) :
-	processHandle( moduleHandle ),
+	processHandle( &moduleHandle ),
 	relPath( _relPath )
 {
 }
@@ -58,7 +64,7 @@ bool CChangingFile::FolderHasChanges()
 
 bool CChangingFile::tryObtainFullFileName()
 {
-	auto filePath = GetFullModuleFilePath( relPath, processHandle.Handle() );
+	auto filePath = processHandle == nullptr ? copy( relPath ) : GetFullModuleFilePath( relPath, processHandle->Handle() );
 	if( !filePath.IsEmpty() ) {
 		fullPath = move( filePath );
 		folderNotifier = CreateOwner<CFolderChangesNotifier>( FileSystem::GetDrivePath( fullPath ) );

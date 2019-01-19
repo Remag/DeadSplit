@@ -11,7 +11,7 @@ class CAssetLoader {
 public:
 	explicit CAssetLoader();
 
-	const IFontRenderData& GetOrCreateFont( CUnicodePart fontName, TIntVector2 fontSize );
+	const IFontRenderData& GetOrCreateFont( CUnicodePart fontName, int fontSize );
 
 	const IImageRenderData& GetOrCreateIcon( CUnicodePart iconName );
 	const IImageRenderData& GetDefaultIcon();
@@ -21,17 +21,17 @@ private:
 
 	struct CFontData {
 		CUnicodeString Name;
-		TIntVector2 Size;
+		int Size = 0;
 
 		int HashKey() const
-			{ return CombineHashKey( GetUnicodeHash( Name ), Size.HashKey() ); }
+			{ return CombineHashKey( GetUnicodeHash( Name ), Size ); }
 		bool operator==( const CFontData& other ) const
 			{ return Name == other.Name && Size == other.Size; }
 	};
 	CMap<CFontData, CPtrOwner<IFontRenderData>> fontDict;
 
 	void tryLoadIcon( CUnicodeView iconPath, CPtrOwner<IImageRenderData>& result );
-	void tryLoadFont( CUnicodeView fontPath, TIntVector2 fontSize, CPtrOwner<IFontRenderData>& result );
+	void tryLoadFont( CUnicodeView fontPath, int fontSize, CPtrOwner<IFontRenderData>& result );
 };
 
 

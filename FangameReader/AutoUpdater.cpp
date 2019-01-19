@@ -60,7 +60,7 @@ void CAutoUpdater::installUpdate( bool reopenAfter )
 	}
 	const auto updatedExePath = FileSystem::MergePath( currentFolder, Paths::UpdatedExeName );
 	const auto reopenString = UnicodeStr( reopenAfter );
-	CUnicodeString commandArgs = L'"' + updatedExePath + L"\" \"UpdateFrom:" + currentName + L"\" \"UpdateOpen:" + reopenString + L'"';
+	CUnicodeString commandArgs = L'"' + updatedExePath + L"\" \"UpdateFrom:" + currentName + L"\" \"UpdateOpen:" + reopenString + L"\" \"AllowDuplicateProcess:true\"";
 	CProcess::CreateAndAbandon( move( commandArgs ) );
 }
 
@@ -345,7 +345,7 @@ void CAutoUpdater::Update()
 			break;
 		case AUS_UpdateReady:
 			monitor.PreserveCurrentSession();
-			GetMainWindow().Close();
+			GetMainWindow().SendCloseCommand();
 			break;
 	}
 }

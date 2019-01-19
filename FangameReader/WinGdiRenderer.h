@@ -24,7 +24,7 @@ public:
 	explicit CWinGdiRenderer( const CWindowSettings& windowSettings );
 	~CWinGdiRenderer();
 
-	virtual CPtrOwner<IFontRenderData> CreateFontData( CUnicodeView fontName, TIntVector2 fontSize ) const override final;
+	virtual CPtrOwner<IFontRenderData> CreateFontData( CUnicodeView fontName, int fontSize ) const override final;
 	virtual CPtrOwner<ITextRenderData> CreateTextData( CUnicodePart text, const IFontRenderData& fontData ) const override final;
 	virtual CPtrOwner<IImageRenderData> CreateImageData( CUnicodeView fileName ) const override final;
 	virtual CPtrOwner<ISpriteRenderData> CreateSpriteData( CPixelRect baseRect ) const override final;

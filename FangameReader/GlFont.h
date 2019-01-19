@@ -7,7 +7,7 @@ namespace Fangame {
 
 class CGlFont : public IFontRenderData {
 public:
-	explicit CGlFont( CUnicodeView fontName, TIntVector2 fontSize );
+	explicit CGlFont( CUnicodeView fontName, int fontSize );
 
 	const CFontRenderer& GetRenderer() const
 		{ return renderer; }

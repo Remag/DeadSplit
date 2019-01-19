@@ -166,17 +166,17 @@ public:
 
 	CUnicodeView GetNameFontName() const
 		{ return nameFont; }
-	TIntVector2 GetNameFontSize() const
+	int GetNameFontSize() const
 		{ return nameFontSize; }
 	CUnicodeView GetTextFontName() const
 		{ return textFont; }
-	TIntVector2 GetTextFontSize() const
+	int GetTextFontSize() const
 		{ return textFontSize; }
 		
-	void SetFontSize( TIntVector2 newValue );
+	void SetFontSize( int newValue );
 	void SetFontName( CUnicodeView newValue );
 	static CUnicodeView GetDefaultFontName();
-	static TIntVector2 GetDefaultFontSize();
+	static int GetDefaultFontSize();
 
 	CColor GetTextColor() const
 		{ return textColor; }
@@ -312,9 +312,9 @@ private:
 	CColor activeLineColor;
 
 	CUnicodeString nameFont;
-	TIntVector2 nameFontSize;
+	int nameFontSize;
 	CUnicodeString textFont;
-	TIntVector2 textFontSize;
+	int textFontSize;
 
 	CColor textColor;
 	CColor highlightColor;

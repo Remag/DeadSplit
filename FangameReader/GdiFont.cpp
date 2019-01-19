@@ -9,10 +9,10 @@ namespace Fangame {
 //////////////////////////////////////////////////////////////////////////
 
 const CError Err_BadFont{ L"Invalid font file: %0" };
-CGdiFont::CGdiFont( CUnicodeView fontFileName, TIntVector2 fontSize )
+CGdiFont::CGdiFont( CUnicodeView fontFileName, int fontSize )
 {
 	fontFamily = CreateOwner<Gdiplus::FontFamily>( fontFileName.Ptr() );
-	const float size = static_cast<float>( fontSize.X() );
+	const float size = static_cast<float>( fontSize );
 	const auto style = Gdiplus::FontStyleRegular;
 	gdiFont = CreateOwner<Gdiplus::Font>( fontFamily, size, style, Gdiplus::UnitPixel );
 	check( gdiFont->GetLastStatus() == Gdiplus::Ok, Err_BadFont, fontFileName );

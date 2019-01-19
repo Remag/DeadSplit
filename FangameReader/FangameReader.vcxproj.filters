@@ -169,8 +169,14 @@
     <Filter Include="Resource Files\GameInfo\BreakThingsIntoPieces">
       <UniqueIdentifier>{5f6fc1d9-3f7c-45ef-affd-929070b73f6b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resource Files\Fish">
+    <Filter Include="Resource Files\GameInfo\TIS">
+      <UniqueIdentifier>{615dff83-b0ba-4ac9-a2f0-4193217385b5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\GameInfo\Fish">
       <UniqueIdentifier>{7d8e36ec-5ac8-48f9-ab2e-e036b54ad524}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\GameInfo\Rubik%27s Cube">
+      <UniqueIdentifier>{894baf10-2d02-4883-b8c6-59d9f2337623}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -471,8 +477,8 @@
     <ClCompile Include="FileBroadcaster.cpp">
       <Filter>Source Files\Broadcast</Filter>
     </ClCompile>
-    <ClCompile Include="StringBroadcaster.cpp">
-      <Filter>Source Files\Broadcast</Filter>
+    <ClCompile Include="FileAddressFinder.cpp">
+      <Filter>Source Files\AddressScan</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -821,11 +827,11 @@
     <ClInclude Include="Broadcaster.h">
       <Filter>Header Files\Broadcast</Filter>
     </ClInclude>
-    <ClInclude Include="StringBroadcaster.h">
-      <Filter>Header Files\Broadcast</Filter>
-    </ClInclude>
     <ClInclude Include="FileBroadcaster.h">
       <Filter>Header Files\Broadcast</Filter>
+    </ClInclude>
+    <ClInclude Include="FileAddressFinder.h">
+      <Filter>Header Files\AddressScan</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -862,9 +868,6 @@
     </Xml>
     <Xml Include="FangameResources\FangameInfo\I wanna Touch the Entrance\layout.xml">
       <Filter>Resource Files\GameInfo\Touch The Entrance</Filter>
-    </Xml>
-    <Xml Include="FangameResources\FangameInfo\I Wanna Kill The Kamilia II\layout.xml">
-      <Filter>Resource Files\GameInfo\Kamilia 2</Filter>
     </Xml>
     <Xml Include="FangameResources\FangameInfo\perfect bear\layout.xml">
       <Filter>Resource Files\GameInfo\Perfect Bear</Filter>
@@ -912,7 +915,16 @@
       <Filter>Resource Files\GameInfo\BreakThingsIntoPieces</Filter>
     </Xml>
     <Xml Include="FangameResources\FangameInfo\I wanna be the Fish\layout.xml">
-      <Filter>Resource Files\Fish</Filter>
+      <Filter>Resource Files\GameInfo\Fish</Filter>
+    </Xml>
+    <Xml Include="FangameResources\FangameInfo\I wanna be the TIS\layout.xml">
+      <Filter>Resource Files\GameInfo\TIS</Filter>
+    </Xml>
+    <Xml Include="FangameResources\FangameInfo\I Wanna Kill The Kamilia 2 Remake\layout.xml">
+      <Filter>Resource Files\GameInfo\Kamilia 2</Filter>
+    </Xml>
+    <Xml Include="FangameResources\FangameInfo\I wanna be the Rubik%27s Cube\layout.xml">
+      <Filter>Resource Files\GameInfo\Rubik%27s Cube</Filter>
     </Xml>
   </ItemGroup>
   <ItemGroup>

@@ -24,6 +24,8 @@ CFangameChangeDetector::~CFangameChangeDetector()
 }
 
 static const CEnumDictionary<TAddressValueType, AVT_EnumCount, int> addressSizesDict {
+	{ AVT_Byte, 1 },
+	{ AVT_Int16Base10, 2 },
 	{ AVT_Int32, 4 },
 	{ AVT_Double, 8 },
 };
@@ -53,7 +55,8 @@ void CFangameChangeDetector::expandAddressSearch( int addressId, bool sendEvents
 	}
 
 	if( sendEvents ) {
-		notifyChangeEvent( address, addressId );
+		const auto data = address.ValueData.Left( address.ValueSize );
+		notifyChangeEvent( address, addressId, data );
 	}
 }
 
@@ -91,7 +94,8 @@ void CFangameChangeDetector::ResendCurrentAddressChanges()
 {
 	for( int i = 0; i < addressList.Size(); i++ ) {
 		if( addressList[i].ScanRequestCount > 0 ) {
-			notifyChangeEvent( addressList[i], i );
+			const auto data = addressList[i].ValueData.Left( addressList[i].ValueSize );
+			notifyChangeEvent( addressList[i], i, data );
 		}
 	}
 }
@@ -117,46 +121,36 @@ void CFangameChangeDetector::RefreshCurrentValues()
 void CFangameChangeDetector::initAddressData( CAddressData& target )
 {
 	target.ScanRequestCount = 1;
-	target.Address = target.Finder->FindGameAddress( *scanner );
-	scanner->ReadProcessData( target.Address, target.ValueData.Ptr(), target.ValueSize );
+	target.Finder->FindGameValue( *scanner, target.ValueData.Ptr(), target.ValueSize );
 }
 
 void CFangameChangeDetector::updateAddressData( CAddressData& target, int id, bool notifyListeners )
 {
 	assert( target.ScanRequestCount > 0 );
-	if( target.Finder->ReloadOnUpdate() ) {
-		const auto newAddress = target.Finder->FindGameAddress( *scanner );
-		if( reinterpret_cast<INT_PTR>( newAddress ) > 4096 ) {
-			target.Address = newAddress;
-		}
-	}
 
 	CStackArray<BYTE, 8> newData;
-	scanner->ReadProcessData( target.Address, newData.Ptr(), target.ValueSize );
+	target.Finder->FindGameValue( *scanner, newData.Ptr(), target.ValueSize );
 	for( int i = 0; i < target.ValueSize; i++ ) {
 		if( newData[i] != target.ValueData[i] ) {
+			CStackArray<BYTE, 8> oldData;
+			oldData = target.ValueData;
 			target.ValueData = newData;
-			reloadAndNotify( target, id, notifyListeners );
+			reloadAndNotify( target, id, notifyListeners, oldData.Left( target.ValueSize ) );
 			return;
 		}
 	}
 }
 
-void CFangameChangeDetector::reloadAndNotify( CAddressData& newValue, int id, bool notifyListeners )
+void CFangameChangeDetector::reloadAndNotify( CAddressData& newValue, int id, bool notifyListeners, CArrayView<BYTE> oldData )
 {
-	if( newValue.Finder->ReloadOnChange() ) {
-		newValue.Address = newValue.Finder->FindGameAddress( *scanner );
-		scanner->ReadProcessData( newValue.Address, newValue.ValueData.Ptr(), newValue.ValueSize );
-	}
-
 	if( notifyListeners ) {
-		notifyChangeEvent( newValue, id );
+		notifyChangeEvent( newValue, id, oldData );
 	}
 }
 
-void CFangameChangeDetector::notifyChangeEvent( CAddressData& newValue, int id )
+void CFangameChangeDetector::notifyChangeEvent( CAddressData& newValue, int id, CArrayView<BYTE> oldData )
 {
-	events.Notify( CValueChangeEvent( visualizer, id, newValue.ValueData.Left( newValue.ValueSize ) ) );
+	events.Notify( CValueChangeEvent( visualizer, id, newValue.ValueData.Left( newValue.ValueSize ), oldData ) );
 }
 
 //////////////////////////////////////////////////////////////////////////

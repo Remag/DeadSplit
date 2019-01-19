@@ -21,14 +21,14 @@ struct CBossSaveData;
 
 class CSaveReaderVer3 {
 public:
-	CMap<CUnicodeString, CBossSaveData> SerializeData( CArchive& src );
+	CMap<CUnicodeString, CBossSaveData> SerializeData( CArchiveReader& src );
 };
 
 //////////////////////////////////////////////////////////////////////////
 
-inline CArchive& operator<<( CArchive& archive, CBossSaveDataVer3& saveData )
+inline CArchiveWriter& operator<<( CArchiveWriter& archive, CBossSaveDataVer3& saveData )
 {
-	saveData.AttackData.Serialize( archive );
+	archive << saveData.AttackData;
 	archive << saveData.SessionDeathCount;
 	archive << saveData.TotalDeathCount;
 	archive << saveData.SessionTimeOnBoss;
@@ -37,9 +37,9 @@ inline CArchive& operator<<( CArchive& archive, CBossSaveDataVer3& saveData )
 	return archive;
 }
 
-inline CArchive& operator>>( CArchive& archive, CBossSaveDataVer3& saveData )
+inline CArchiveReader& operator>>( CArchiveReader& archive, CBossSaveDataVer3& saveData )
 {
-	saveData.AttackData.Serialize( archive );
+	archive >> saveData.AttackData;
 	archive >> saveData.SessionDeathCount;
 	archive >> saveData.TotalDeathCount;
 	archive >> saveData.SessionTimeOnBoss;

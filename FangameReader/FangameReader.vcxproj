@@ -47,6 +47,7 @@
     <ClCompile Include="FangameInputHandler.cpp" />
     <ClCompile Include="FangamePeekerState.cpp" />
     <ClCompile Include="FangameVisualizer.cpp" />
+    <ClCompile Include="FileAddressFinder.cpp" />
     <ClCompile Include="FileBroadcaster.cpp" />
     <ClCompile Include="FooterIconPanel.cpp" />
     <ClCompile Include="GdiFont.cpp" />
@@ -93,7 +94,6 @@
     <ClCompile Include="SessionMonitor.cpp" />
     <ClCompile Include="SettingsDialogFrame.cpp" />
     <ClCompile Include="SolidBrush.cpp" />
-    <ClCompile Include="StringBroadcaster.cpp" />
     <ClCompile Include="TableLayout.cpp" />
     <ClCompile Include="TextColumnContent.cpp" />
     <ClCompile Include="TimeProgressReporter.cpp" />
@@ -142,6 +142,7 @@
     <ClInclude Include="FangameInputHandler.h" />
     <ClInclude Include="FangamePeekerState.h" />
     <ClInclude Include="FangameVisualizer.h" />
+    <ClInclude Include="FileAddressFinder.h" />
     <ClInclude Include="FileBroadcaster.h" />
     <ClInclude Include="FooterIconPanel.h" />
     <ClInclude Include="GeneralSettingsDialog.h" />
@@ -157,7 +158,6 @@
     <ClInclude Include="SessionMonitor.h" />
     <ClInclude Include="SettingsDialogFrame.h" />
     <ClInclude Include="SolidBrush.h" />
-    <ClInclude Include="StringBroadcaster.h" />
     <ClInclude Include="UpdateInstaller.h" />
     <ClInclude Include="UserActionController.h" />
     <ClInclude Include="UserAliasFile.h" />
@@ -267,17 +267,17 @@
     <Xml Include="FangameResources\FangameInfo\I wanna appreciate meteor stream\layout.xml" />
     <Xml Include="FangameResources\FangameInfo\i wanna be the contrary\layout.xml" />
     <Xml Include="FangameResources\FangameInfo\I wanna be the Fish\layout.xml" />
+    <Xml Include="FangameResources\FangameInfo\I wanna be the Rubik%27s Cube\layout.xml" />
     <Xml Include="FangameResources\FangameInfo\I wanna be the Snow Drive\layout.xml" />
+    <Xml Include="FangameResources\FangameInfo\I wanna be the TIS\layout.xml" />
     <Xml Include="FangameResources\FangameInfo\I Wanna Break The Series Z\layout.xml" />
     <Xml Include="FangameResources\FangameInfo\I wanna break Things into Pieces\layout.xml" />
     <Xml Include="FangameResources\FangameInfo\I wanna buy the crayon\layout.xml" />
     <Xml Include="FangameResources\FangameInfo\I wanna bye the bye\layout.xml" />
     <Xml Include="FangameResources\FangameInfo\I wanna bye the Entrance\layout.xml" />
     <Xml Include="FangameResources\FangameInfo\I wanna call me it\layout.xml" />
+    <Xml Include="FangameResources\FangameInfo\I Wanna Kill The Kamilia 2 Remake\layout.xml" />
     <Xml Include="FangameResources\FangameInfo\I Wanna Kill The Kamilia 3\layout.xml">
-      <SubType>Designer</SubType>
-    </Xml>
-    <Xml Include="FangameResources\FangameInfo\I Wanna Kill The Kamilia II\layout.xml">
       <SubType>Designer</SubType>
     </Xml>
     <Xml Include="FangameResources\FangameInfo\I Wanna Sunspike\layout.xml" />
@@ -371,7 +371,8 @@
       <Command>"$(OutDir)ResourceCopy.exe" "$(ProjectDir)FangameResources" "$(OutDir)\"</Command>
     </CustomBuildStep>
     <CustomBuildStep>
-      <Message>Copying resources...</Message>
+      <Message>
+      </Message>
     </CustomBuildStep>
     <CustomBuildStep>
       <Outputs>FakeFile.fake</Outputs>
@@ -407,7 +408,8 @@
     </Link>
     <CustomBuildStep>
       <Command>"$(OutDir)ResourceCopy.exe" "$(ProjectDir)FangameResources" "$(OutDir)\"</Command>
-      <Message>Copying resources...</Message>
+      <Message>
+      </Message>
       <Outputs>FakeFile.fake</Outputs>
       <TreatOutputAsContent>true</TreatOutputAsContent>
     </CustomBuildStep>
@@ -442,7 +444,8 @@
     </Link>
     <CustomBuildStep>
       <Command>"$(OutDir)ResourceCopy.exe" "$(ProjectDir)FangameResources" "$(OutDir)\"</Command>
-      <Message>Copying resources...</Message>
+      <Message>
+      </Message>
       <Outputs>FakeFile.fake</Outputs>
       <TreatOutputAsContent>true</TreatOutputAsContent>
     </CustomBuildStep>

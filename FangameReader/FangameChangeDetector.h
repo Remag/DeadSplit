@@ -12,16 +12,20 @@ class CProcessMemoryScanner;
 // An address value change event.
 class CValueChangeEvent : public CFangameEvent<Events::CFangameValueChange> {
 public:
-	explicit CValueChangeEvent( CFangameVisualizerState& visualizer, int _addressId, CArrayView<BYTE> _newValue ) : CFangameEvent( visualizer ), addressId( _addressId ), newValue( _newValue ) {}
+	explicit CValueChangeEvent( CFangameVisualizerState& visualizer, int _addressId, CArrayView<BYTE> _newValue, CArrayView<BYTE> _oldValue ) :
+		CFangameEvent( visualizer ), addressId( _addressId ), newValue( _newValue ), oldValue( _oldValue ) {}
 
 	int GetAddressId() const
 		{ return addressId; }
+	CArrayView<BYTE> GetOldValue() const
+		{ return oldValue; }
 	CArrayView<BYTE> GetNewValue() const
 		{ return newValue; }
 
 private:
 	int addressId;
 	CArrayView<BYTE> newValue;
+	CArrayView<BYTE> oldValue;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -59,7 +63,6 @@ private:
 	CEventSystem& events;
 
 	struct CAddressData {
-		const void* Address = nullptr;
 		TAddressValueType AddressType;
 		int ValueSize;
 		CStackArray<BYTE, 8> ValueData;
@@ -77,8 +80,8 @@ private:
 
 	void initAddressData( CAddressData& target );
 	void updateAddressData( CAddressData& target, int id, bool notifyListeners );
-	void reloadAndNotify( CAddressData& newValue, int id, bool notifyListeners );
-	void notifyChangeEvent( CAddressData& newValue, int id );
+	void reloadAndNotify( CAddressData& newValue, int id, bool notifyListeners, CArrayView<BYTE> oldData );
+	void notifyChangeEvent( CAddressData& newValue, int id, CArrayView<BYTE> oldData );
 };
 
 //////////////////////////////////////////////////////////////////////////

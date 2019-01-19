@@ -171,8 +171,11 @@ void CBossMap::loadAddressSpace( const CXmlElement& elem, CFangameChangeDetector
 const CUnicodeView valueTypeAttrib = L"valueType";
 TAddressValueType CBossMap::getAddressValueType( const CXmlElement& elem ) const
 {
+	staticAssert( AVT_EnumCount == 4 );
 	static const CEnumDictionary<TAddressValueType, AVT_EnumCount> addressTypeDict {
+		{ AVT_Byte, L"byte" },
 		{ AVT_Int32, L"int32" },
+		{ AVT_Int16Base10, L"int16base10" },
 		{ AVT_Double, L"double" },
 	};
 

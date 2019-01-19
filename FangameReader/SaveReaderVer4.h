@@ -7,7 +7,7 @@ struct CBossSaveData;
 
 class CSaveReaderVer4 {
 public:
-	CMap<CUnicodeString, CBossSaveData> SerializeData( CArchive& src );
+	CMap<CUnicodeString, CBossSaveData> SerializeData( CArchiveReader& src );
 };
 
 //////////////////////////////////////////////////////////////////////////

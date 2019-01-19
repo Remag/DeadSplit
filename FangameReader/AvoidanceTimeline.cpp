@@ -82,7 +82,7 @@ void CAvoidanceTimeline::startBoss( DWORD currentTime )
 	bossStartTime = currentTime;
 	deathStartCount = getCurrentDeathCount();
 	recordIcon->SetStatus( RS_Play );
-	GetBroadcaster().NotifyBossStart( bossTable.EntryId );
+	GetBroadcaster().NotifyBossStart();
 	setRecordStatus( BTS_Recording );
 	auto& changeDetector = visualizer.GetChangeDetector();
 	events.Notify( CFangameEvent<Events::CBossStart>( visualizer ) );
@@ -111,7 +111,7 @@ void CAvoidanceTimeline::StartBossAttack( int attackId )
 	attackTimeInfo.HasFinished = false;
 	attackTimeInfo.StartTime = currentTime;
 	deathTable->StartAttack( attackId, currentTime );
-	GetBroadcaster().NotifyAttackStart( attackId, attack.Children.Size() );
+	GetBroadcaster().NotifyAttackStart( attack );
 
 	auto& changeDetector = visualizer.GetChangeDetector();
 	attackEndExpansions[attackId] = changeDetector.ExpandAddressSearch( attack.EndTriggerAddressMask, false );
@@ -150,7 +150,7 @@ bool CAvoidanceTimeline::tryFinalizeAttack( const CBossAttackInfo& attack )
 
 	stopAttackTimer( attackId );
 	deathTable->EndAttack( attackId );
-	GetBroadcaster().NotifyAttackPass( attackId );
+	GetBroadcaster().NotifyAttackPass( attack );
 
 	for( const auto& child : attack.Children ) {
 		tryFinalizeAttack( child );
@@ -260,7 +260,7 @@ void CAvoidanceTimeline::clearCurrentBoss()
 	}
 
 	shrinkCurrentAttacks();
-	GetBroadcaster().NotifyBossClear( deathTable->GetBossId() );
+	GetBroadcaster().NotifyBossClear();
 	setRecordStatus( BTS_Waiting );
 	recordIcon->SetStatus( RS_Clear );
 	deathTable->AddTotalPass();
@@ -300,7 +300,7 @@ void CAvoidanceTimeline::OnGameRestart()
 		} else {
 			shrinkCurrentAttacks();
 			deathTable->ClearTableColors();
-			GetBroadcaster().NotifyCounterUndo( deathTable->GetBossId() );
+			GetBroadcaster().NotifyCounterUndo();
 		}
 		recordIcon->SetStatus( RS_Restarted );
 	}
@@ -327,7 +327,7 @@ void CAvoidanceTimeline::UndoRecording()
 	deathTable->ClearAttackProgress();
 	deathTable->ClearTableColors();
 	shrinkCurrentAttacks();
-	GetBroadcaster().NotifyCounterUndo( deathTable->GetBossId() );
+	GetBroadcaster().NotifyCounterUndo();
 	setRecordStatus( BTS_Waiting );
 	recordIcon->SetStatus( RS_Pause );
 }
@@ -337,7 +337,7 @@ void CAvoidanceTimeline::PauseRecording( bool isSet )
 	if( deathTable != nullptr ) {
 		deathTable->ClearAttackProgress();
 		deathTable->ClearTableColors();
-		GetBroadcaster().NotifyCounterUndo( deathTable->GetBossId() );
+		GetBroadcaster().NotifyCounterUndo();
 	}
 	if( status == BTS_Recording ) {
 		shrinkCurrentAttacks();
@@ -411,7 +411,7 @@ void CAvoidanceTimeline::signalHeroDeath( float secondDelta )
 	shrinkCurrentAttacks();
 
 	if( secondDelta < babyRagePeriod ) {
-		GetBroadcaster().NotifyCounterUndo( deathTable->GetBossId() );
+		GetBroadcaster().NotifyCounterUndo();
 		return;
 	}
 
@@ -422,14 +422,13 @@ void CAvoidanceTimeline::signalHeroDeath( float secondDelta )
 		if( attack.HasStarted && !attack.HasFinished ) {
 			activeAttackFound = true;
 			deathTable->AddAttackDeath( i );
-			GetBroadcaster().NotifyHeroDeath( i );
 		}
 	}
 
 	if( activeAttackFound ) {
 		deathTable->AddTotalDeath();
 	}
-	GetBroadcaster().NotifyBossFail( deathTable->GetBossId() );
+	GetBroadcaster().NotifyHeroDeath();
 }
 
 float CAvoidanceTimeline::getTimeDelta( DWORD current, DWORD prev ) const

@@ -90,10 +90,10 @@ void CSettingsDialogFrame::reloadProcess()
 {
 	const CUnicodeString modulePath = GetCurrentModulePath();
 	controller.SaveData();
-	CUnicodeString commandArgs = L'"' + modulePath + L"\" \"Fangame:" + currentFangameName + L'"';
+	CUnicodeString commandArgs = L'"' + modulePath + L"\" \"Fangame:" + currentFangameName + L"\" \"AllowDuplicateProcess:true\"";
 	CProcess::CreateAndAbandon( move( commandArgs ) );
 	monitor.PreserveCurrentSession();
-	GetMainWindow().Close();
+	GetMainWindow().SendCloseCommand();
 }
 
 void CSettingsDialogFrame::restoreDefaultSettings()
