@@ -43,7 +43,8 @@ const void CNestedAddressFinder::FindGameValue( const CProcessMemoryScanner& sca
 		}
 	}
 	
-	scanner.ReadProcessData( dataPtr, dataPtr, dataSize );
+	const auto resultPtr = reinterpret_cast<const void*>( currentPtr );
+	scanner.ReadProcessData( resultPtr, dataPtr, dataSize );
 }
 
 //////////////////////////////////////////////////////////////////////////

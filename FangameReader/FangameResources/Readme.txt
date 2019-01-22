@@ -1,4 +1,4 @@
-DeadSplit v1.03
+DeadSplit v1.18
 
 This is a program for tracking your death count and other stats in fangames.
 =============================================================
@@ -14,6 +14,7 @@ Program behaviour, appearance and hotkeys can be changed in the Settings menu by
 List of supported fangames:
 
 - I Wanna Kill The Kamilia 3
+- I Wanna Break The Series Z3 ( up to Boss Rush )
 - I Wanna Buy The Crayon ( final boss )
 - I Wanna Call Me It ( extra boss )
 - I Wanna Touch The Entrance
@@ -27,7 +28,9 @@ List of supported fangames:
 - I Wanna Sunspike
 - I Wanna Appreciate Meteor Stream
 - I Wanna Break Things Into Pieces
-- I Wanna Be The Fish.
+- I Wanna Be The Fish
+- I Wanna Paradoxx
+- I Wanna Be The Rubik's Cube
 
 =============================================================
 

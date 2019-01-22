@@ -1,7 +1,2 @@
-Deadsplit v1.15 - Release Notes.
-Minor bugfixes.
-Fangames added:
-- I Wanna Kill The Kamilia 2 ( remake only )
-- I Wanna Break The Series Z3 ( up to BR )
-- I Wanna Rubik's Cube
-- I Wanna Paradoxx
+Deadsplit v1.18 - Release Notes.
+Fixed a major issue related to hp scanning.
