@@ -154,7 +154,7 @@ int CAutoUpdater::fetchManifestAction()
 	return 0;
 }
 
-const int deadsplitUpdateVersion = 9;
+const int deadsplitUpdateVersion = 10;
 void CAutoUpdater::parseManifestData()
 {
 	const char* manifestRawStr = reinterpret_cast<char*>( rawManifestData.Ptr() );

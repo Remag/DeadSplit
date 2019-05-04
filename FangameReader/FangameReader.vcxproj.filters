@@ -178,6 +178,9 @@
     <Filter Include="Resource Files\GameInfo\Rubik%27s Cube">
       <UniqueIdentifier>{894baf10-2d02-4883-b8c6-59d9f2337623}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\GameInfo\Soulless">
+      <UniqueIdentifier>{a3a574bf-f84f-4e82-bae7-4e1db58a0afc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="common.cpp">
@@ -833,6 +836,9 @@
     <ClInclude Include="FileAddressFinder.h">
       <Filter>Header Files\AddressScan</Filter>
     </ClInclude>
+    <ClInclude Include="NullTextTranlator.h">
+      <Filter>Header Files\General</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="messages.msg">
@@ -925,6 +931,9 @@
     </Xml>
     <Xml Include="FangameResources\FangameInfo\I wanna be the Rubik%27s Cube\layout.xml">
       <Filter>Resource Files\GameInfo\Rubik%27s Cube</Filter>
+    </Xml>
+    <Xml Include="FangameResources\FangameInfo\Soulless\layout.xml">
+      <Filter>Resource Files\GameInfo\Soulless</Filter>
     </Xml>
   </ItemGroup>
   <ItemGroup>

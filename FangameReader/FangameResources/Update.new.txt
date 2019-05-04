@@ -1,2 +1,2 @@
-Deadsplit v1.18 - Release Notes.
-Fixed a major issue related to hp scanning.
+Deadsplit v1.19 - Release Notes.
+Fixed a keyboard input bug.

@@ -661,11 +661,14 @@ void CBossTriggerCreater::addDoubleTrigger( const CXmlElement& elem, const CBoss
 	auto triggerFlags = CreateOwner<CPair<bool>>( false, false );
 	const auto flags = triggerFlags.Ptr();
 
-	const auto resetStateReaction = [flags]( CFangameVisualizerState& ) {
-		flags->First = flags->Second = false;
-	};
-	TTriggerReaction resetOwner( resetStateReaction );
-	addParentStartTrigger( move( resetOwner ), bossInfo, entityId, result );
+	// Add flag reset event when the parent changes.
+	if( bossInfo.EntryId != entityId ) {
+		const auto resetStateReaction = [flags]( CFangameVisualizerState& ) {
+			flags->First = flags->Second = false;
+		};
+		TTriggerReaction resetOwner( resetStateReaction );
+		addParentStartTrigger( move( resetOwner ), bossInfo, entityId, result );
+	}
 
 	auto firstTriggerReaction = [flags, mainReaction = reaction.GetAction()]( CFangameVisualizerState& visualizer ) {
 		if( flags->Second ) {

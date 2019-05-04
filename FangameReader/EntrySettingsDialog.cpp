@@ -8,6 +8,7 @@
 #include <GlobalStrings.h>
 #include <WindowUtils.h>
 #include <UserAliasFile.h>
+#include <NullTextTranlator.h>
 #include <resource.h>
 #include <Commctrl.h>
 #include <windowsx.h>
@@ -98,6 +99,9 @@ void CSettingsDialogData::saveEntryName( CEntryInfo& target, HWND dialogWnd )
 
 void CEntrySettingsDialog::openDialogBox( int dialogId )
 {
+	// Switch to text mode to get key messages.
+	CNullTextTranslator translator;
+	CTextTranslatorSwitcher swt( translator );
 	::DialogBox( ::GetModuleHandle( 0 ), MAKEINTRESOURCE( dialogId ), GetMainWindow().Handle(), dialogProcedure );
 }
 

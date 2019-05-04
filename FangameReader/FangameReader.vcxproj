@@ -151,6 +151,7 @@
     <ClInclude Include="MouseInputHandler.h" />
     <ClInclude Include="MouseTarget.h" />
     <ClInclude Include="GlobalStrings.h" />
+    <ClInclude Include="NullTextTranlator.h" />
     <ClInclude Include="PeekerActionController.h" />
     <ClInclude Include="PeekerMouseController.h" />
     <ClInclude Include="SaveReaderData.h" />
@@ -286,6 +287,7 @@
     </Xml>
     <Xml Include="FangameResources\FangameInfo\KiraKira\layout.xml" />
     <Xml Include="FangameResources\FangameInfo\perfect bear\layout.xml" />
+    <Xml Include="FangameResources\FangameInfo\Soulless\layout.xml" />
     <Xml Include="FangameResources\FangameInfo\userConnections.xml" />
     <Xml Include="FangameResources\TableView.xml">
       <SubType>Designer</SubType>
@@ -304,26 +306,26 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{577b74e6-5d2b-4ba6-a05a-27d1b29f79c1}</ProjectGuid>
     <RootNamespace>FangameReader</RootNamespace>
-    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='StaticRelease|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>

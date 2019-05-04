@@ -10,6 +10,7 @@
 #include <WindowSettings.h>
 #include <WindowUtils.h>
 #include <SessionMonitor.h>
+#include <NullTextTranlator.h>
 
 #include <resource.h>
 #include <CommCtrl.h>
@@ -33,6 +34,9 @@ CSettingsDialogFrame::~CSettingsDialogFrame()
 
 bool CSettingsDialogFrame::Show()
 {
+	// Switch to text mode to get key messages.
+	CNullTextTranslator translator;
+	CTextTranslatorSwitcher swt( translator );
 	::DialogBox( ::GetModuleHandle( 0 ), MAKEINTRESOURCE( IDD_Settings ), GetMainWindow().Handle(), dialogProcedure );
 	return changesDetected;
 }
