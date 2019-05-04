@@ -13,15 +13,15 @@ public:
 	CSaveDataValueGetter( CSaveDataValueGetter&& other );
 	~CSaveDataValueGetter();
 
-	int GetValueData( CFile& saveFile ) const;
-	bool RequestUpdatedValue( CFile& saveFile, int& result );
+	int GetValueData( CFileReadView saveFile ) const;
+	bool RequestUpdatedValue( CFileReadView saveFile, int& result );
 
 private:
 	CPtrOwner<IExpression> dataExpression;
 	CPtrOwner<CBaseFileValueGetter> fileGetter;
 	mutable int valueCache = NotFound;
 
-	int getValueFromFile( CFile& saveFile ) const;
+	int getValueFromFile( CFileReadView saveFile ) const;
 };
 
 //////////////////////////////////////////////////////////////////////////

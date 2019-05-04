@@ -14,10 +14,10 @@ public:
 	~CChangingFile();
 
 	// Get an underlying file without scanning for changes.
-	COptional<CFile> GetFile();
+	COptional<CDynamicFile> GetFile();
 
 	// Check if a given file has potential changes. Return an open file handle if changes are detected.
-	COptional<CFile> ScanForChanges();
+	COptional<CDynamicFile> ScanForChanges();
 
 	// Check if a folder with the given file has changed.
 	bool FolderHasChanges();
@@ -30,7 +30,7 @@ private:
 	CUnicodeString relPath;
 	const CProcessHandle* processHandle;
 
-	COptional<CFile> createOpenFile();
+	COptional<CDynamicFile> createOpenFile();
 	bool tryObtainFullFileName();
 };
 

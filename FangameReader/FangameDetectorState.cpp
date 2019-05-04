@@ -85,7 +85,7 @@ const CUnicodeView updateNewFileName = L"Update.new";
 void CFangameDetectorState::seekUpdateChanges()
 {
 	try {
-		const auto updateStr = CFile::ReadUnicodeText( updateNewFileName );
+		const auto updateStr = File::ReadUnicodeText( updateNewFileName );
 		::MessageBox( GetMainWindow().Handle(), updateStr.Ptr(), L"DeadSplit", MB_OK | MB_ICONINFORMATION );
 		FileSystem::Delete( updateNewFileName );
 	} catch( CFileException& ) {}

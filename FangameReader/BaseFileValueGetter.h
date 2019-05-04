@@ -13,7 +13,7 @@ public:
 	TFangameValueType GetValueType() const
 		{ return valueType; }
 
-	CFangameValue RequestValueFromFile( CFile& file, int offsetPos ) const;
+	CFangameValue RequestValueFromFile( CFileReadView file, int offsetPos ) const;
 
 protected:
 	int getValueSize() const
@@ -26,8 +26,8 @@ protected:
 		{ return valuesCache; }
 	void setInvalidCache() const;
 	void setEmptyCache() const;
-	void readAllValuesFromFile( CFile& file ) const;
-	void readValueFromFile( CFile& file, int valuePos ) const;
+	void readAllValuesFromFile( CFileReadView file ) const;
+	void readValueFromFile( CFileReadView file, int valuePos ) const;
 
 private:
 	CArray<long long> valueOffsets;
@@ -38,7 +38,7 @@ private:
 	CArray<BYTE> invalidFileDefault;
 	TFangameValueType valueType;
 
-	void readValueFromFile( CFile& file, long long offset, BYTE* target ) const;
+	void readValueFromFile( CFileReadView file, long long offset, BYTE* target ) const;
 
 	void getOffsetsFromChildren( const CXmlElement& elem );
 	void getOffsetFromAttribute( const CXmlElement& elem );
@@ -49,9 +49,9 @@ private:
 	void initFloat32Value( const CXmlElement& elem );
 	void initFloat64Value( const CXmlElement& elem );
 
-	void readSizedValue( CFile& file, int bytesCount, BYTE* target ) const;
-	void readInt24Base10Value( CFile& file, BYTE* target ) const;
-	void readInt32Base10Value( CFile& file, BYTE* target ) const;
+	void readSizedValue( CFileReadView file, int bytesCount, BYTE* target ) const;
+	void readInt24Base10Value( CFileReadView file, BYTE* target ) const;
+	void readInt32Base10Value( CFileReadView file, BYTE* target ) const;
 };
  
 

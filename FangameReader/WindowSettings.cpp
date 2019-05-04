@@ -178,13 +178,23 @@ const CUnicodeView unknownKey = L"Unknown key in window settings: %0.";
 const CUnicodeView unknownAction = L"Unknown action in window settings: %0.";
 void CWindowSettings::initInputs()
 {
-	const auto oldSectionsPtr = settingsFile.Sections().Get( oldInputsSection );
-	const auto uiSectionsPtr = settingsFile.Sections().Get( customizableInputsSection );
-	const auto additionalSectionsPtr = settingsFile.Sections().Get( additionalInputSection );
+	const auto oldSectionsPtr = findSection( oldInputsSection );
+	const auto uiSectionsPtr = findSection( customizableInputsSection );
+	const auto additionalSectionsPtr = findSection( additionalInputSection );
 	initInputs( oldSectionsPtr, customizableActions );
 	initInputs( uiSectionsPtr, customizableActions );
 	initInputs( additionalSectionsPtr, manualActions );
-}												
+}
+
+const CIniFileSection* CWindowSettings::findSection( CUnicodePart sectionName ) const
+{
+	for( const auto& section : settingsFile.Sections() ) {
+		if( section.Name() == sectionName ) {
+			return &section;
+		}
+	}
+	return nullptr;
+}
 
 void CWindowSettings::initInputs( const CIniFileSection* targetSection, CArray<CActionKeyInfo>& result )
 {
@@ -536,8 +546,8 @@ CColor CWindowSettings::GetDefaultTextShadowColor()
 void CWindowSettings::SetCustomizableActions( CArray<CActionKeyInfo> newValue )
 {
 	customizableActions = move( newValue );
-	settingsFile.DeleteSection( customizableInputsSection );
-	settingsFile.DeleteSection( oldInputsSection );
+	settingsFile.EmptySection( customizableInputsSection );
+	settingsFile.EmptySection( oldInputsSection );
 	for( const auto& action : customizableActions ) {
 		const auto keyStr = getKeyString( action.KeyCode, action.AdditionalKeyCode );
 		settingsFile.SetString( customizableInputsSection, keyStr, actionToName[action.Action] );

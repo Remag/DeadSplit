@@ -48,7 +48,7 @@ public:
 
 private:
 	CFileMapping logMapping;
-	CWriteView logView;
+	CMappingWriteView logView;
 	int logWritePos = 0;
 	CMutex logMutex;
 	const int logBufferSize = 64 * 1024;

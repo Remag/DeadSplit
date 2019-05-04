@@ -48,7 +48,7 @@ private:
 
 	void initSaveFile();
 	bool tryReadFromFile( CUnicodeView fileName );
-	bool tryReadFromFile( CFile& file );
+	bool tryReadFromFile( CFileReader& file );
 	void readFromArchive( CArchiveReader& src );
 
 	void saveAttackData( CArrayView<CBossInfo> bossesInfo, CUnicodeView name );

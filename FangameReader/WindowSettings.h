@@ -367,6 +367,7 @@ private:
 	void initColors();
 	void initTextFonts( CUnicodeView fontName, int fontSize );
 	void initInputs();
+	const CIniFileSection* findSection( CUnicodePart sectionName ) const;
 	void initInputs( const CIniFileSection* targetSection, CArray<CActionKeyInfo>& result );
 	CUnicodeString getKeyString( int mainCode, int additionalCode ) const;
 };

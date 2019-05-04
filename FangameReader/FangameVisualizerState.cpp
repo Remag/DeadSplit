@@ -122,7 +122,7 @@ void CFangameVisualizerState::initBossTable()
 	}
 }
 
-int CFangameVisualizerState::getSaveDataValue( CArrayView<CSaveDataValueGetter> getters, CFile& file, int defaultValue )
+int CFangameVisualizerState::getSaveDataValue( CArrayView<CSaveDataValueGetter> getters, CFileReadView file, int defaultValue )
 {
 	if( getters.IsEmpty() ) {
 		return defaultValue;
@@ -361,7 +361,7 @@ void CFangameVisualizerState::checkGameSaveFile( int filePos )
 	}
 }
 
-bool CFangameVisualizerState::updateSaveDataValue( CArrayBuffer<CSaveDataValueGetter> getters, CFile& file, int defaultValue, int& result )
+bool CFangameVisualizerState::updateSaveDataValue( CArrayBuffer<CSaveDataValueGetter> getters, CFileReadView file, int defaultValue, int& result )
 {
 	if( getters.IsEmpty() ) {
 		result = defaultValue;

@@ -56,7 +56,7 @@ void CFileAddressFinder::updateFileCache( int dataSize )
 	assert( dataSize <= cachedValue.Size() );
 	auto fileHandle = file->ScanForChanges();
 	if( fileHandle.IsValid() ) {
-		fileHandle->Seek( fileOffset, CFile::SP_Begin );
+		fileHandle->Seek( fileOffset, FSP_Begin );
 		fileHandle->Read( cachedValue.Ptr(), dataSize );
 	}
 }

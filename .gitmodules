@@ -1,0 +1,6 @@
+[submodule "ReversedLibrary"]
+	path = ReversedLibrary
+	url = https://github.com/Remag/ReversedLibrary.git
+[submodule "GraphicsInversed"]
+	path = GraphicsInversed
+	url = https://github.com/Remag/GraphicsInversed.git

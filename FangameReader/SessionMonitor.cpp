@@ -17,8 +17,8 @@ CSessionMonitor::CSessionMonitor( const CWindowSettings& _windowSettings ) :
 
 void CSessionMonitor::initializeSessionFromFile( CUnicodeView fileName )
 {
-	CFile sessionFile;
-	if( sessionFile.TryOpen( fileName, CFile::OF_Read | CFile::OF_ShareDenyWrite ) ) {
+	auto sessionFile = CFileReader::TryOpen( fileName, FCM_OpenExisting );
+	if( sessionFile.IsOpen() ) {
 		CArchiveReader sessionArchive( sessionFile );
 		sessionArchive >> sessionFangames;
 	}
@@ -46,7 +46,7 @@ bool CSessionMonitor::InitializeFangame( CUnicodeView fangamePath )
 	}
 
 	sessionFangames.Set( fangamePath );
-	CFile sessionFile( Paths::SessionFileName, CFile::OF_Write | CFile::OF_ShareDenyWrite | CFile::OF_CreateAlways );
+	CFileWriter sessionFile( Paths::SessionFileName, FCM_CreateAlways );
 	CArchiveWriter sessionArchive( sessionFile );
 	sessionArchive << sessionFangames;
 	return true;

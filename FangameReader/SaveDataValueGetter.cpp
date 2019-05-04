@@ -31,14 +31,14 @@ CSaveDataValueGetter::~CSaveDataValueGetter()
 
 }
 
-int CSaveDataValueGetter::GetValueData( CFile& saveFile ) const
+int CSaveDataValueGetter::GetValueData( CFileReadView saveFile ) const
 {
 	const int newValue = getValueFromFile( saveFile );
 	valueCache = newValue;
 	return newValue;
 }
 
-bool CSaveDataValueGetter::RequestUpdatedValue( CFile& saveFile, int& result )
+bool CSaveDataValueGetter::RequestUpdatedValue( CFileReadView saveFile, int& result )
 {
 	const int newValue = getValueFromFile( saveFile );
 	result = newValue;
@@ -51,7 +51,7 @@ bool CSaveDataValueGetter::RequestUpdatedValue( CFile& saveFile, int& result )
 	return false;
 }
 
-int CSaveDataValueGetter::getValueFromFile( CFile& saveFile ) const
+int CSaveDataValueGetter::getValueFromFile( CFileReadView saveFile ) const
 {
 	const auto fileValue = fileGetter->RequestValueFromFile( saveFile, 0 );
 	if( dataExpression != nullptr ) {

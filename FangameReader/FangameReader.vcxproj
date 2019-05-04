@@ -356,7 +356,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>.;"$(ReBuildRoot)\ReversedSolution\GraphicsInversed\Inc";"$(ReBuildRoot)\ReversedSolution\ReversedLibrary\Inc";"$(ReBuildRoot)\ReversedSolution\RapidXml\Inc"</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;"$(SolutionDir)\GraphicsInversed\Inc";"$(SolutionDir)\ReversedLibrary\Inc";"$(SolutionDir)\ReversedLibrary\Ext\Inc"</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>common.h</PrecompiledHeaderFile>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
@@ -366,7 +366,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(OutDir);$(ReBuildRoot)\ReversedSolution\GraphicsInversed\Lib\$(Configuration);$(ReBuildRoot)\ReversedSolution\ReversedLibrary\Lib\$(Configuration);</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(OutDir);.\GraphicsInversed\Lib\$(Configuration);.\ReversedLibrary\Lib\$(Configuration);</AdditionalLibraryDirectories>
       <EntryPointSymbol>wWinMainCRTStartup</EntryPointSymbol>
     </Link>
     <CustomBuildStep>
@@ -388,7 +388,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>.;"$(ReBuildRoot)\ReversedSolution\GraphicsInversed\Inc";"$(ReBuildRoot)\ReversedSolution\ReversedLibrary\Inc";"$(ReBuildRoot)\ReversedSolution\RapidXml\Inc"</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;"$(SolutionDir)\GraphicsInversed\Inc";"$(SolutionDir)\ReversedLibrary\Inc";"$(SolutionDir)\ReversedLibrary\Ext\Inc"</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>common.h</PrecompiledHeaderFile>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
@@ -405,7 +405,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(OutDir);$(ReBuildRoot)\ReversedSolution\GraphicsInversed\Lib\$(Configuration);$(ReBuildRoot)\ReversedSolution\ReversedLibrary\Lib\$(Configuration);</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(OutDir);.\GraphicsInversed\Lib\$(Configuration);.\ReversedLibrary\Lib\$(Configuration);</AdditionalLibraryDirectories>
       <EntryPointSymbol>wWinMainCRTStartup</EntryPointSymbol>
     </Link>
     <CustomBuildStep>
@@ -423,7 +423,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>.;"$(ReBuildRoot)\ReversedSolution\GraphicsInversed\Inc";"$(ReBuildRoot)\ReversedSolution\ReversedLibrary\Inc";"$(ReBuildRoot)\ReversedSolution\RapidXml\Inc"</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;"$(SolutionDir)\GraphicsInversed\Inc";"$(SolutionDir)\ReversedLibrary\Inc";"$(SolutionDir)\ReversedLibrary\Ext\Inc"</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>common.h</PrecompiledHeaderFile>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
@@ -441,7 +441,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(OutDir);$(ReBuildRoot)\ReversedSolution\GraphicsInversed\Lib\$(Configuration);$(ReBuildRoot)\ReversedSolution\ReversedLibrary\Lib\$(Configuration);$(ReBuildRoot)\ReversedSolution\FreeType\Lib\StaticRelease;$(ReBuildRoot)\ReversedSolution\LibVorbis\Lib\StaticRelease;$(ReBuildRoot)\ReversedSolution\LibOGG\Lib\StaticRelease;$(ReBuildRoot)\ReversedSolution\GlLoad\Lib\StaticRelease;$(ReBuildRoot)\ReversedSolution\OpenAL\Lib\Release;$(ReBuildRoot)\ReversedSolution\LibPNG\Lib\StaticRelease;$(ReBuildRoot)\ReversedSolution\LibCurl\Lib\$(Configuration);</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(OutDir);.\GraphicsInversed\Lib\$(Configuration);.\ReversedLibrary\Lib\$(Configuration);</AdditionalLibraryDirectories>
       <EntryPointSymbol>wWinMainCRTStartup</EntryPointSymbol>
     </Link>
     <CustomBuildStep>

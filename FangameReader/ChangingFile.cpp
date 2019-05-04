@@ -27,29 +27,29 @@ CChangingFile::~CChangingFile()
 
 }
 
-COptional<CFile> CChangingFile::GetFile()
+COptional<CDynamicFile> CChangingFile::GetFile()
 {
 	if( fullPath.IsEmpty() && !tryObtainFullFileName() ) {
-		return COptional<CFile>();
+		return COptional<CDynamicFile>();
 	}
 
 	return createOpenFile();
 }
 
-COptional<CFile> CChangingFile::ScanForChanges()
+COptional<CDynamicFile> CChangingFile::ScanForChanges()
 {
 	if( fullPath.IsEmpty() ) {
 		if( tryObtainFullFileName() ) {
 			return createOpenFile();			
 		} else {
-			return COptional<CFile>();
+			return COptional<CDynamicFile>();
 		}
 	}
 
 	if( folderNotifier->FolderHasChanges() ) {
 		return createOpenFile();
 	} else {
-		return COptional<CFile>();
+		return COptional<CDynamicFile>();
 	}
 }
 
@@ -74,15 +74,16 @@ bool CChangingFile::tryObtainFullFileName()
 	}
 }
 
-COptional<CFile> CChangingFile::createOpenFile()
+COptional<CDynamicFile> CChangingFile::createOpenFile()
 {
 	try {
 		assert( !fullPath.IsEmpty() );
-		CFile result( fullPath, CFile::OF_Read | CFile::OF_ShareDenyNone );
+		CDynamicFile result;
+		result.Open( fullPath, FRWM_Read, FCM_OpenExisting, FSM_DenyNone );
 		return CreateOptional( move( result ) );
 	} catch( CException& ) {
 		// Sharing violation, most likely.
-		return COptional<CFile>();
+		return COptional<CDynamicFile>();
 	}
 }
 

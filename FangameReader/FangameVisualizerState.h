@@ -152,8 +152,8 @@ private:
 	void checkGameSave();
 	void checkGameSaveFile( int filePos );
 	void initBossTable();
-	int getSaveDataValue( CArrayView<CSaveDataValueGetter> getters, CFile& file, int defaultValue );
-	bool updateSaveDataValue( CArrayBuffer<CSaveDataValueGetter> getters, CFile& file, int defaultValue, int& result );
+	int getSaveDataValue( CArrayView<CSaveDataValueGetter> getters, CFileReadView file, int defaultValue );
+	bool updateSaveDataValue( CArrayBuffer<CSaveDataValueGetter> getters, CFileReadView file, int defaultValue, int& result );
 	void initTextPanel();
 	void setTextPanelPosition( int roomId, int x, int y );
 

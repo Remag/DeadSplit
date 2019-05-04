@@ -144,28 +144,28 @@ void CBaseFileValueGetter::initFloat64Value( const CXmlElement& elem )
 
 }
 
-CFangameValue CBaseFileValueGetter::RequestValueFromFile( CFile& file, int offsetPos ) const
+CFangameValue CBaseFileValueGetter::RequestValueFromFile( CFileReadView file, int offsetPos ) const
 {
 	CArrayBuffer<BYTE> valueCache = getCachedValue( offsetPos );
 	readValueFromFile( file, valueOffsets[offsetPos], valueCache.Ptr() );
 	return CFangameValue{ valueType, valueCache };
 }
 
-void CBaseFileValueGetter::readAllValuesFromFile( CFile& file ) const
+void CBaseFileValueGetter::readAllValuesFromFile( CFileReadView file ) const
 {
 	for( int i = 0; i < valueOffsets.Size(); i++ ) {
 		readValueFromFile( file, i );
 	}
 }
 
-void CBaseFileValueGetter::readValueFromFile( CFile& file, int valuePos ) const
+void CBaseFileValueGetter::readValueFromFile( CFileReadView file, int valuePos ) const
 {
 	readValueFromFile( file, valueOffsets[valuePos], valuesCache.Ptr() + valuePos * valueSize );
 }
 
-void CBaseFileValueGetter::readValueFromFile( CFile& file, long long offset, BYTE* target ) const
+void CBaseFileValueGetter::readValueFromFile( CFileReadView file, long long offset, BYTE* target ) const
 {
-	file.Seek( offset, CFile::SP_Begin );
+	file.Seek( offset, FSP_Begin );
 	staticAssert( FVT_EnumCount == 6 );
 	switch( valueType ) {
 		case FVT_Byte:
@@ -205,7 +205,7 @@ void CBaseFileValueGetter::setEmptyCache() const
 	valuesCache = copy( noFileDefault );
 }
 
-void CBaseFileValueGetter::readSizedValue( CFile& file, int bytesCount, BYTE* target ) const
+void CBaseFileValueGetter::readSizedValue( CFileReadView file, int bytesCount, BYTE* target ) const
 {
 	const int bytesRead = file.Read( target, bytesCount );
 	if( bytesRead != bytesCount ) {
@@ -213,7 +213,7 @@ void CBaseFileValueGetter::readSizedValue( CFile& file, int bytesCount, BYTE* ta
 	}
 }
 
-void CBaseFileValueGetter::readInt24Base10Value( CFile& file, BYTE* target ) const
+void CBaseFileValueGetter::readInt24Base10Value( CFileReadView file, BYTE* target ) const
 {
 	const int bytesRead = file.Read( target, 3 );
 	if( bytesRead != 3 ) {
@@ -224,7 +224,7 @@ void CBaseFileValueGetter::readInt24Base10Value( CFile& file, BYTE* target ) con
 	}
 }
 
-void CBaseFileValueGetter::readInt32Base10Value( CFile& file, BYTE* target ) const
+void CBaseFileValueGetter::readInt32Base10Value( CFileReadView file, BYTE* target ) const
 {
 	const int bytesRead = file.Read( target, 4 );
 	if( bytesRead != 4 ) {

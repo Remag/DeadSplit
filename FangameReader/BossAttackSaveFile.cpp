@@ -27,13 +27,13 @@ CBossAttackSaveFile::CBossAttackSaveFile( CUnicodeView _fileName ) :
 
 void CBossAttackSaveFile::initSaveFile()
 {
-	CFile primaryFile;
-	if( !primaryFile.TryOpen( fileName, CFile::OF_ShareDenyNone ) ) {
+	auto primaryFile = CFileReader::TryOpen( fileName, FCM_OpenExisting );
+	if( !primaryFile.IsOpen() ) {
 		tryReadFromFile( backupFileName );
 		return;
 	}
-	CFile secondaryFile;
-	if( !secondaryFile.TryOpen( backupFileName, CFile::OF_ShareDenyNone ) ) {
+	auto secondaryFile = CFileReader::TryOpen( backupFileName, FCM_OpenExisting );
+	if( !secondaryFile.IsOpen() ) {
 		tryReadFromFile( primaryFile );
 		return;
 	}
@@ -57,7 +57,7 @@ bool CBossAttackSaveFile::isModifiedLater( FILETIME left, FILETIME right )
 bool CBossAttackSaveFile::tryReadFromFile( CUnicodeView name )
 {
 	try {
-		CFile saveFile( name, CFile::OF_ShareDenyNone );
+		CFileReader saveFile( name, FCM_OpenExisting );
 		CArchiveReader saveArchive( saveFile );
 		readFromArchive( saveArchive );
 		return true;
@@ -68,7 +68,7 @@ bool CBossAttackSaveFile::tryReadFromFile( CUnicodeView name )
 	}
 }
 
-bool CBossAttackSaveFile::tryReadFromFile( CFile& file )
+bool CBossAttackSaveFile::tryReadFromFile( CFileReader& file )
 {
 	try {
 		CArchiveReader saveArchive( file );
@@ -152,7 +152,7 @@ void CBossAttackSaveFile::saveEntryData( const CEntryInfo& entry, CBossSaveData&
 const auto currentSaveVersion = 4;
 void CBossAttackSaveFile::saveDataToFile( CUnicodeView name )
 {
-	CFile saveFile( name, CFile::OF_CreateOrOpen | CFile::OF_ShareDenyNone | CFile::OF_Write );
+	CFileWriter saveFile( name, FCM_CreateOrOpen );
 	CArchiveWriter saveArchive( saveFile );
 	saveArchive.WriteSmallValue( currentSaveVersion );
 	saveArchive << bossNameToData;
