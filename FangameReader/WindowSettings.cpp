@@ -203,8 +203,8 @@ void CWindowSettings::initInputs( const CIniFileSection* targetSection, CArray<C
 	}
 
 	for( const auto& pair : targetSection->KeyValuePairs() ) {
-		const CUnicodeView keyName = pair.Key();
-		const CUnicodeView actionName = pair.Value();
+		const auto keyName = pair.First;
+		const auto actionName = pair.Second;
 		const auto actionCombination = CInputSettings::ParseKeyCombination( keyName );
 		if( !actionCombination.IsValid() ) {
 			Log::Warning( unknownKey.SubstParam( keyName ), this );
