@@ -102,7 +102,6 @@
     <ClCompile Include="GlLine.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainApp.cpp" />
-    <ClCompile Include="messages.cpp" />
     <ClCompile Include="NestedAddressFinder.cpp" />
     <ClCompile Include="ProcessHandle.cpp" />
     <ClCompile Include="ProcessMemoryScanner.cpp" />
@@ -223,7 +222,6 @@
     <ClInclude Include="LazyFixedStepEngine.h" />
     <ClInclude Include="GlLine.h" />
     <ClInclude Include="MainApp.h" />
-    <ClInclude Include="messages.h" />
     <ClInclude Include="NestedAddressFinder.h" />
     <ClInclude Include="ProcessHandle.h" />
     <ClInclude Include="ProcessMemoryScanner.h" />
@@ -239,20 +237,6 @@
     <ClInclude Include="WindowTitleDeathGetter.h" />
     <ClInclude Include="WindowUtils.h" />
     <ClInclude Include="WinGdiRenderer.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <CustomBuild Include="messages.msg">
-      <FileType>Document</FileType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(OutDir)\MessageCompiler.exe" "$(ProjectDir)\messages.msg" "$(ProjectDir)\messages" "$(OutDir)\TextMessages.bin"</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(OutDir)\MessageCompiler.exe" "$(ProjectDir)\messages.msg" "$(ProjectDir)\messages" "$(OutDir)\TextMessages.bin"</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='StaticRelease|Win32'">"$(OutDir)\MessageCompiler.exe" "$(ProjectDir)\messages.msg" "$(ProjectDir)\messages" "$(OutDir)\TextMessages.bin"</Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compiling messages...</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Compiling messages...</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='StaticRelease|Win32'">Compiling messages...</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)\messages.cpp;$(ProjectDir)\messages.h;$(OutDir)\TextMessages.bin;%(Outputs)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)\messages.cpp;$(ProjectDir)\messages.h;$(OutDir)\TextMessages.bin;%(Outputs)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='StaticRelease|Win32'">$(ProjectDir)\messages.cpp;$(ProjectDir)\messages.h;$(OutDir)\TextMessages.bin;%(Outputs)</Outputs>
-    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\ManifestSite\index.html" />
@@ -343,13 +327,13 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>$(ReBuildRoot)\$(Platform)$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)Bin\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='StaticRelease|Win32'">
-    <OutDir>$(ReBuildRoot)\$(Platform)$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)Bin\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(ReBuildRoot)\$(Platform)$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)Bin\$(Configuration)\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -370,16 +354,25 @@
       <EntryPointSymbol>wWinMainCRTStartup</EntryPointSymbol>
     </Link>
     <CustomBuildStep>
-      <Command>"$(OutDir)ResourceCopy.exe" "$(ProjectDir)FangameResources" "$(OutDir)\"</Command>
+      <Command>
+      </Command>
     </CustomBuildStep>
     <CustomBuildStep>
       <Message>
       </Message>
     </CustomBuildStep>
     <CustomBuildStep>
-      <Outputs>FakeFile.fake</Outputs>
-      <TreatOutputAsContent>true</TreatOutputAsContent>
+      <Outputs>
+      </Outputs>
+      <TreatOutputAsContent>
+      </TreatOutputAsContent>
     </CustomBuildStep>
+    <PostBuildEvent>
+      <Command>xcopy "$(ProjectDir)FangameResources\*" "$(TargetDir)" /D /K /Y /E</Command>
+    </PostBuildEvent>
+    <PostBuildEvent>
+      <Message>Copying resources...</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -409,12 +402,21 @@
       <EntryPointSymbol>wWinMainCRTStartup</EntryPointSymbol>
     </Link>
     <CustomBuildStep>
-      <Command>"$(OutDir)ResourceCopy.exe" "$(ProjectDir)FangameResources" "$(OutDir)\"</Command>
+      <Command>
+      </Command>
       <Message>
       </Message>
-      <Outputs>FakeFile.fake</Outputs>
-      <TreatOutputAsContent>true</TreatOutputAsContent>
+      <Outputs>
+      </Outputs>
+      <TreatOutputAsContent>
+      </TreatOutputAsContent>
     </CustomBuildStep>
+    <PostBuildEvent>
+      <Command>xcopy "$(ProjectDir)FangameResources\*" "$(TargetDir)" /D /K /Y /E</Command>
+    </PostBuildEvent>
+    <PostBuildEvent>
+      <Message>Copying resources...</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='StaticRelease|Win32'">
     <ClCompile>
@@ -445,12 +447,21 @@
       <EntryPointSymbol>wWinMainCRTStartup</EntryPointSymbol>
     </Link>
     <CustomBuildStep>
-      <Command>"$(OutDir)ResourceCopy.exe" "$(ProjectDir)FangameResources" "$(OutDir)\"</Command>
+      <Command>
+      </Command>
       <Message>
       </Message>
-      <Outputs>FakeFile.fake</Outputs>
-      <TreatOutputAsContent>true</TreatOutputAsContent>
+      <Outputs>
+      </Outputs>
+      <TreatOutputAsContent>
+      </TreatOutputAsContent>
     </CustomBuildStep>
+    <PostBuildEvent>
+      <Command>xcopy "$(ProjectDir)FangameResources\*" "$(TargetDir)" /D /K /Y /E</Command>
+    </PostBuildEvent>
+    <PostBuildEvent>
+      <Message>Copying resources...</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

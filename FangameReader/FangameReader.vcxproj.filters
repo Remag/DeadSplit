@@ -16,9 +16,6 @@
     <Filter Include="Precompiled Headers">
       <UniqueIdentifier>{d916a83f-839f-4cee-a42e-13a71f2ccbaa}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resource Files\Messages">
-      <UniqueIdentifier>{fce2d822-1736-4293-8ed0-a77b8e4cc88b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Resource Files\Shaders">
       <UniqueIdentifier>{69be99fa-548f-4c91-9d3a-ed49bdb06e36}</UniqueIdentifier>
     </Filter>
@@ -185,9 +182,6 @@
   <ItemGroup>
     <ClCompile Include="common.cpp">
       <Filter>Precompiled Headers</Filter>
-    </ClCompile>
-    <ClCompile Include="messages.cpp">
-      <Filter>Resource Files\Messages</Filter>
     </ClCompile>
     <ClCompile Include="BossDeathTable.cpp">
       <Filter>Source Files\Visualization</Filter>
@@ -487,9 +481,6 @@
   <ItemGroup>
     <ClInclude Include="common.h">
       <Filter>Precompiled Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="messages.h">
-      <Filter>Resource Files\Messages</Filter>
     </ClInclude>
     <ClInclude Include="FangameDetector.h">
       <Filter>Header Files\Detection</Filter>
@@ -839,11 +830,6 @@
     <ClInclude Include="NullTextTranlator.h">
       <Filter>Header Files\General</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <CustomBuild Include="messages.msg">
-      <Filter>Resource Files\Messages</Filter>
-    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <None Include="FangameResources\Shaders\imageDrawing.frag">
