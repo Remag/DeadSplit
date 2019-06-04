@@ -56,14 +56,14 @@ CFangameVisualizerState::CFangameVisualizerState( CFangameProcessInfo _processIn
 
 CEventTarget CFangameVisualizerState::createWindowChangeEvent( CEventSystem& events )
 {
-	const auto onWindowChange = [this]( const TWindowChangeEvent& ) { onWindowSizeChange(); };
-	return events.AddEventTarget( Events::CWindowSizeChange{}, onWindowChange );
+	const auto onWindowChange = [this]( const CWindowChangeEvent& ) { onWindowSizeChange(); };
+	return events.AddEventTarget( onWindowChange );
 }
 
 CEventTarget CFangameVisualizerState::createStatusChangeEvent( CEventSystem& events )
 {
-	const auto onStatusChange = [this]( const CEvent<Events::CRecordStatusChange>& e ) { onRecordStatusChange( e ); };
-	return events.AddEventTarget( Events::CRecordStatusChange{}, onStatusChange );
+	const auto onStatusChange = [this]( const CRecordStatusEvent& e ) { onRecordStatusChange( e ); };
+	return events.AddEventTarget( onStatusChange );
 }
 
 bool CFangameVisualizerState::isFangameProcessActive() const
@@ -210,7 +210,7 @@ void CFangameVisualizerState::ShowBoss( CBossInfo& newBossInfo )
 {
 	if( newBossInfo.EntryId != visualizer->GetActiveId() ) {
 		setNewBossTable( newBossInfo, true );
-		eventSystem.Notify( CFangameEvent<Events::CBossShow>( *this ) );
+		eventSystem.Notify( CBossShowEvent( *this ) );
 	}
 }
 
@@ -436,10 +436,9 @@ void CFangameVisualizerState::onWindowSizeChange()
 	heroPosPanel->SetPanelSize( windowSize );
 }
 
-void CFangameVisualizerState::onRecordStatusChange( const CEvent<Events::CRecordStatusChange>& e )
+void CFangameVisualizerState::onRecordStatusChange( const CRecordStatusEvent& e )
 {
-	const auto& recordEvent = static_cast<const CRecordStatusEvent&>( e );
-	if( recordEvent.GetNewStatus() == BTS_Recording || !visualizer->HasActiveTable() ) {
+	if( e.GetNewStatus() == BTS_Recording || !visualizer->HasActiveTable() ) {
 		return;
 	}
 

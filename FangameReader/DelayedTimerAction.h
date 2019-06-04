@@ -7,11 +7,11 @@ namespace Fangame {
 
 // Action that fires another given action after a certain period of time has passed.
 template <class... ActionArgs>
-class CDelayedTimerAction : public IAction<void( const CEvent<Events::CTimePassedEvent>& )> {
+class CDelayedTimerAction : public IAction<void( const CUpdateEvent& )> {
 public:
 	CDelayedTimerAction( double delay, CActionOwner<void( ActionArgs... )> action, ActionArgs... args );
 
-	virtual void Invoke( const CEvent<Events::CTimePassedEvent>& ) const override final;
+	virtual void Invoke( const CUpdateEvent& ) const override final;
 
 private:
 	DWORD startTime;
@@ -33,12 +33,11 @@ CDelayedTimerAction<ActionArgs...>::CDelayedTimerAction( double _delay, CActionO
 }
 
 template <class... ActionArgs>
-void CDelayedTimerAction<ActionArgs...>::Invoke( const CEvent<Events::CTimePassedEvent>& e ) const
+void CDelayedTimerAction<ActionArgs...>::Invoke( const CUpdateEvent& e ) const
 {
 	const auto timeDelta = ::GetTickCount() - startTime;
 	if( timeDelta > delayMs ) {
-		const CUpdateEvent& timeEvent = static_cast<const CUpdateEvent&>( e );
-		auto timer = timeEvent.GetVisualizer().DetachTimerEvent( this );
+		auto timer = e.GetVisualizer().DetachTimerEvent( this );
 		TupleInvoke( action, args );
 	}
 }

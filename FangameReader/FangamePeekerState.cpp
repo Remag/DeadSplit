@@ -54,8 +54,8 @@ CFangamePeekerState::CFangamePeekerState( CUnicodeView _fangameFolder, CEventSys
 
 CEventTarget CFangamePeekerState::createWindowChangeEvent( CEventSystem& events )
 {
-	const auto onWindowChange = [this]( const TWindowChangeEvent& ) { onWindowSizeChange(); };
-	return events.AddEventTarget( Events::CWindowSizeChange{}, onWindowChange );
+	const auto onWindowChange = [this]( const CWindowChangeEvent& ) { onWindowSizeChange(); };
+	return events.AddEventTarget( onWindowChange );
 }
 
 void CFangamePeekerState::onWindowSizeChange()

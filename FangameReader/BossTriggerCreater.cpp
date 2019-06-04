@@ -33,7 +33,7 @@ static void showBoss( CEventSystem& events, double delay, CFangameVisualizerStat
 		doShowBoss( visualizer, bossInfo );
 	} else {
 		CDelayedTimerAction<CFangameVisualizerState&, CBossInfo&> timerAction( delay, doShowBoss, visualizer, bossInfo );
-		auto newTarget = events.AddEventTarget( Events::CTimePassedEvent(), move( timerAction ) );
+		auto newTarget = events.AddEventTarget( move( timerAction ) );
 		visualizer.AttachTimerEvent( move( newTarget ) );
 	}
 }
@@ -62,7 +62,7 @@ static void startBoss( CEventSystem& events, double delay, CFangameVisualizerSta
 		doStartBoss( visualizer );
 	} else {
 		CDelayedTimerAction<CFangameVisualizerState&> timerAction( delay, doStartBoss, visualizer );
-		auto newTarget = events.AddEventTarget( Events::CTimePassedEvent(), move( timerAction ) );
+		auto newTarget = events.AddEventTarget( move( timerAction ) );
 		visualizer.AttachTimerEvent( move( newTarget ) );
 	}
 }
@@ -87,7 +87,7 @@ static void clearBoss( CEventSystem& events, double delay, CFangameVisualizerSta
 		doClearBoss( visualizer );
 	} else {
 		CDelayedTimerAction<CFangameVisualizerState&> timerAction( delay, doClearBoss, visualizer );
-		auto newTarget = events.AddEventTarget( Events::CTimePassedEvent(), move( timerAction ) );
+		auto newTarget = events.AddEventTarget( move( timerAction ) );
 		visualizer.AttachTimerEvent( move( newTarget ) );
 	}
 }
@@ -113,7 +113,7 @@ static void abortBoss( CEventSystem& events, double delay, CFangameVisualizerSta
 		doAbortBoss( visualizer );
 	} else {
 		CDelayedTimerAction<CFangameVisualizerState&> timerAction( delay, doAbortBoss, visualizer );
-		auto newTarget = events.AddEventTarget( Events::CTimePassedEvent(), move( timerAction ) );
+		auto newTarget = events.AddEventTarget( move( timerAction ) );
 		visualizer.AttachTimerEvent( move( newTarget ) );
 	}
 }
@@ -173,7 +173,7 @@ static void startBossAttack( CEventSystem& events, double delay, CFangameVisuali
 		doStartBossAttack( visualizer, attackId );
 	} else {
 		CDelayedTimerAction<CFangameVisualizerState&, int> timerAction( delay, doStartBossAttack, visualizer, attackId );
-		auto newTarget = events.AddEventTarget( Events::CTimePassedEvent(), move( timerAction ) );
+		auto newTarget = events.AddEventTarget( move( timerAction ) );
 		visualizer.AttachTimerEvent( move( newTarget ) );
 	}
 }
@@ -200,7 +200,7 @@ static void endAttackReaction( CEventSystem& events, double delay, CFangameVisua
 		doEndAttackReaction( visualizer, attackId );
 	} else {
 		CDelayedTimerAction<CFangameVisualizerState&, int> timerAction( delay, doEndAttackReaction, visualizer, attackId );
-		auto newTarget = events.AddEventTarget( Events::CTimePassedEvent(), move( timerAction ) );
+		auto newTarget = events.AddEventTarget( move( timerAction ) );
 		visualizer.AttachTimerEvent( move( newTarget ) );
 	}
 }
@@ -227,7 +227,7 @@ static void abortAttackReaction( CEventSystem& events, double delay, CFangameVis
 		doAbortAttackReaction( visualizer, attackId );
 	} else {
 		CDelayedTimerAction<CFangameVisualizerState&, int> timerAction( delay, doAbortAttackReaction, visualizer, attackId );
-		auto newTarget = events.AddEventTarget( Events::CTimePassedEvent(), move( timerAction ) );
+		auto newTarget = events.AddEventTarget( move( timerAction ) );
 		visualizer.AttachTimerEvent( move( newTarget ) );
 	}
 }
@@ -254,7 +254,7 @@ static void pauseAttackReaction( CEventSystem& events, double delay, CFangameVis
 		doPauseAttackReaction( visualizer, attackId );
 	} else {
 		CDelayedTimerAction<CFangameVisualizerState&, int> timerAction( delay, doPauseAttackReaction, visualizer, attackId );
-		auto newTarget = events.AddEventTarget( Events::CTimePassedEvent(), move( timerAction ) );
+		auto newTarget = events.AddEventTarget( move( timerAction ) );
 		visualizer.AttachTimerEvent( move( newTarget ) );
 	}
 }
@@ -475,13 +475,12 @@ void CBossTriggerCreater::addTrigger( const CXmlElement& elem, const CBossInfo& 
 
 void CBossTriggerCreater::addAllAttacksClearTrigger( TTriggerReaction reaction, CArray<CBossEventData>& result ) const
 {
-	auto clearBoss = [action = move( reaction )]( const CEvent<Events::CAllAttacksClear>& e ) {
-		const auto& fangameEvent = static_cast<const CFangameEvent<Events::CAllAttacksClear>&>( e );
-		action( fangameEvent.GetVisualizer() );
+	auto clearBoss = [action = move( reaction )]( const CAllAttacksClearEvent& e ) {
+		action( e.GetVisualizer() );
 	};
 
-	CActionOwner<void( const CEvent<Events::CAllAttacksClear>& )> clearEvent{ move( clearBoss ) };
-	result.Add( CEvent<Events::CAllAttacksClear>::GetEventClassId(), move( clearEvent ) );
+	CActionOwner<void( const CAllAttacksClearEvent& )> clearEvent{ move( clearBoss ) };
+	result.Add( CAllAttacksClearEvent::GetEventClassId(), move( clearEvent ) );
 }
 
 const CUnicodeView attackNameAttrib = L"attackName";
@@ -490,56 +489,52 @@ void CBossTriggerCreater::addAttackEndTrigger( const CXmlElement& elem, TTrigger
 	const auto attackName{ elem.GetAttributeValue( attackNameAttrib, CUnicodePart() ) };
 
 
-	auto endAttackAction = [name = UnicodeStr( attackName ), action = move( reaction )]( const CEvent<Events::CBossAttackEnd>& e ) {
-		const auto& endEvent = static_cast<const CBossAttackEndEvent&>( e );
-		if( name == endEvent.GetAttackInfo().KeyName ) {
-			action( endEvent.GetVisualizer() );
+	auto endAttackAction = [name = UnicodeStr( attackName ), action = move( reaction )]( const CBossAttackEndEvent& e ) {
+		if( name == e.GetAttackInfo().KeyName ) {
+			action( e.GetVisualizer() );
 		}
 	};
 
-	CActionOwner<void( const CEvent<Events::CBossAttackEnd>& )> endEvent{ move( endAttackAction ) };
-	result.Add( CEvent<Events::CBossAttackEnd>::GetEventClassId(), move( endEvent ) );
+	CActionOwner<void( const CBossAttackEndEvent& )> endEvent{ move( endAttackAction ) };
+	result.Add( CBossAttackEndEvent::GetEventClassId(), move( endEvent ) );
 }
 
 void CBossTriggerCreater::addPrevAttackStartTrigger( TTriggerReaction reaction, int attackId, CArray<CBossEventData>& result ) const
 {
-	const auto startAttackCondition = [attackId]( const CFangameEvent<Events::CBossAttackStart>& e ) { 
-		const auto& attackEvent = static_cast<const CBossAttackStartEvent&>( e );
-		const auto& attackInfo = attackEvent.GetAttackInfo();
+	const auto startAttackCondition = [attackId]( const CBossAttackStartEvent& e ) { 
+		const auto& attackInfo = e.GetAttackInfo();
 		const auto& siblings = attackInfo.Parent.Children;
 		return ( attackInfo.ChildId < siblings.Size() - 1 ) && ( siblings[attackInfo.ChildId + 1].EntryId == attackId );
 	};
-	CAttackEventAction<Events::CBossAttackStart> startAction( startAttackCondition, move( reaction ) );
-	CActionOwner<void( const CEvent<Events::CBossAttackStart>& )> startEvent( move( startAction ) );
-	result.Add( CEvent<Events::CBossAttackStart>::GetEventClassId(), move( startEvent ) );
+	CAttackEventAction<CBossAttackStartEvent> startAction( startAttackCondition, move( reaction ) );
+	CActionOwner<void( const CBossAttackStartEvent& )> startEvent( move( startAction ) );
+	result.Add( CBossAttackStartEvent::GetEventClassId(), move( startEvent ) );
 }
 
 void CBossTriggerCreater::addAttackStartTrigger( const CXmlElement& elem, TTriggerReaction reaction, CArray<CBossEventData>& result ) const
 {
 	const auto attackName{ elem.GetAttributeValue( attackNameAttrib, CUnicodePart() ) };
 
-	auto startAttackAction = [name = UnicodeStr( attackName ), action = move( reaction )]( const CEvent<Events::CBossAttackStart>& e ) {
-		const auto& startEvent = static_cast<const CBossAttackStartEvent&>( e );
-		if( name == startEvent.GetAttackInfo().KeyName ) {
-			action( startEvent.GetVisualizer() );
+	auto startAttackAction = [name = UnicodeStr( attackName ), action = move( reaction )]( const CBossAttackStartEvent& e ) {
+		if( name == e.GetAttackInfo().KeyName ) {
+			action( e.GetVisualizer() );
 		}
 	};
 
-	CActionOwner<void( const CEvent<Events::CBossAttackStart>& )> startEvent{ move( startAttackAction ) };
-	result.Add( CEvent<Events::CBossAttackStart>::GetEventClassId(), move( startEvent ) );
+	CActionOwner<void( const CBossAttackStartEvent& )> startEvent{ move( startAttackAction ) };
+	result.Add( CBossAttackStartEvent::GetEventClassId(), move( startEvent ) );
 }
 
 void CBossTriggerCreater::addPrevBossClearTrigger( TTriggerReaction reaction, int bossId, CArray<CBossEventData>& result ) const
 {
-	auto endBossAction = [bossId, action = move( reaction )]( const CEvent<Events::CBossEnd>& e ) {
-		const auto& endEvent = static_cast<const CBossEndEvent&>( e );
-		if( bossId - 1 == endEvent.GetBossInfo().EntryId ) {
-			action( endEvent.GetVisualizer() );
+	auto endBossAction = [bossId, action = move( reaction )]( const CBossEndEvent& e ) {
+		if( bossId - 1 == e.GetBossInfo().EntryId ) {
+			action( e.GetVisualizer() );
 		}
 	};
 
-	CActionOwner<void( const CEvent<Events::CBossEnd>& )> endEvent{ move( endBossAction ) };
-	result.Add( CEvent<Events::CBossEnd>::GetEventClassId(), move( endEvent ) );
+	CActionOwner<void( const CBossEndEvent& )> endEvent{ move( endBossAction ) };
+	result.Add( CBossEndEvent::GetEventClassId(), move( endEvent ) );
 }
 
 const CUnicodeView timeStartAttrib = L"start";
@@ -564,55 +559,52 @@ void CBossTriggerCreater::addTimePassedTrigger( const CXmlElement& elem, TTrigge
 void CBossTriggerCreater::addTimePassedTrigger( double duration, TTriggerReaction reaction, int attackId, CArray<CBossEventData>& result ) const
 {
 	const auto msDuration = duration * 1000.0;
-	const auto durationCondition = [msDuration, attackId]( const CFangameEvent<Events::CTimePassedEvent>& e ) {
-		const auto& timeEvent = static_cast<const CUpdateEvent&>( e );
+	const auto durationCondition = [msDuration, attackId]( const CUpdateEvent& e ) {
 		const auto& visualizer = e.GetVisualizer();
 		const auto& timeline = visualizer.GetTimeline();
 		if( timeline.GetStatus() != BTS_Recording || !timeline.IsAttackCurrent( attackId ) ) {
 			return false;
 		}
 		const auto startTime = timeline.GetAttackStartTime( attackId );
-		const auto currentDelta = timeEvent.GetTime() - startTime;
-		const auto prevTime = timeEvent.GetPrevTime();
+		const auto currentDelta = e.GetTime() - startTime;
+		const auto prevTime = e.GetPrevTime();
 		const auto prevDelta = prevTime <= startTime ? 0 : prevTime - startTime;
 		return currentDelta > msDuration && prevDelta <= msDuration;
 	};
 
-	CAttackEventAction<Events::CTimePassedEvent> endAction( durationCondition, move( reaction ) );
-	CActionOwner<void( const CEvent<Events::CTimePassedEvent>& )> endEvent( move( endAction ) );
-	result.Add( CEvent<Events::CTimePassedEvent>::GetEventClassId(), move( endEvent ) );
+	CAttackEventAction<CUpdateEvent> endAction( durationCondition, move( reaction ) );
+	CActionOwner<void( const CUpdateEvent& )> endEvent( move( endAction ) );
+	result.Add( CUpdateEvent::GetEventClassId(), move( endEvent ) );
 }
 
 void CBossTriggerCreater::addTimeEndTrigger( double endTime, TTriggerReaction endReaction, CArray<CBossEventData>& result ) const
 {
 	const auto msEndTime = endTime * 1000.0;
-	const auto endCondition = [msEndTime]( const CFangameEvent<Events::CTimePassedEvent>& e ) {
-		const auto& timeEvent = static_cast<const CUpdateEvent&>( e );
+	const auto endCondition = [msEndTime]( const CUpdateEvent& e ) {
 		const auto& visualizer = e.GetVisualizer();
 		const auto& timeline = visualizer.GetTimeline();
 		if( timeline.GetStatus() != BTS_Recording ) {
 			return false;
 		}
 		const auto startTime = timeline.GetBossStartTime();
-		const auto currentDelta = timeEvent.GetTime() - startTime;
-		const auto prevDelta = timeEvent.GetPrevTime() - startTime;
+		const auto currentDelta = e.GetTime() - startTime;
+		const auto prevDelta = e.GetPrevTime() - startTime;
 		return currentDelta > msEndTime && prevDelta <= msEndTime;
 	};
 
-	CAttackEventAction<Events::CTimePassedEvent> endAction( endCondition, move( endReaction ) );
-	CActionOwner<void( const CEvent<Events::CTimePassedEvent>& )> endEvent( move( endAction ) );
-	result.Add( CEvent<Events::CTimePassedEvent>::GetEventClassId(), move( endEvent ) );
+	CAttackEventAction<CUpdateEvent> endAction( endCondition, move( endReaction ) );
+	CActionOwner<void( const CUpdateEvent& )> endEvent( move( endAction ) );
+	result.Add( CUpdateEvent::GetEventClassId(), move( endEvent ) );
 }
 
 void CBossTriggerCreater::addBossShowTrigger( TTriggerReaction reaction, CArray<CBossEventData>& result ) const
 {
-	auto bossShowAction = [action = move( reaction )]( const CEvent<Events::CBossShow>& e ) {
-		const auto& showEvent = static_cast<const CFangameEvent<Events::CBossShow>&>( e );
-		action( showEvent.GetVisualizer() );
+	auto bossShowAction = [action = move( reaction )]( const CBossShowEvent& e ) {
+		action( e.GetVisualizer() );
 	};
 
-	CActionOwner<void( const CEvent<Events::CBossShow>& )> showEvent( move( bossShowAction ) );
-	result.Add( CEvent<Events::CBossShow>::GetEventClassId(), move( showEvent ) );
+	CActionOwner<void( const CBossShowEvent& )> showEvent( move( bossShowAction ) );
+	result.Add( CBossShowEvent::GetEventClassId(), move( showEvent ) );
 }
 
 void CBossTriggerCreater::addParentStartTrigger( TTriggerReaction reaction, const CBossInfo& bossInfo, int attackId, CArray<CBossEventData>& result ) const
@@ -624,14 +616,13 @@ void CBossTriggerCreater::addParentStartTrigger( TTriggerReaction reaction, cons
 	}
 
 	const auto parentId = attack.Parent.EntryId;
-	const auto startAttackCondition = [parentId]( const CFangameEvent<Events::CBossAttackStart>& e ) { 
-		const auto& attackEvent = static_cast<const CBossAttackStartEvent&>( e );
-		const auto& attackInfo = attackEvent.GetAttackInfo();
+	const auto startAttackCondition = [parentId]( const CBossAttackStartEvent& e ) { 
+		const auto& attackInfo = e.GetAttackInfo();
 		return attackInfo.EntryId == parentId;
 	};
-	CAttackEventAction<Events::CBossAttackStart> startAction( startAttackCondition, move( reaction ) );
-	CActionOwner<void( const CEvent<Events::CBossAttackStart>& )> startEvent( move( startAction ) );
-	result.Add( CEvent<Events::CBossAttackStart>::GetEventClassId(), move( startEvent ) );
+	CAttackEventAction<CBossAttackStartEvent> startAction( startAttackCondition, move( reaction ) );
+	CActionOwner<void( const CBossAttackStartEvent& )> startEvent( move( startAction ) );
+	result.Add( CBossAttackStartEvent::GetEventClassId(), move( startEvent ) );
 }
 
 void CBossTriggerCreater::addParentEndTrigger( TTriggerReaction reaction, const CBossInfo& bossInfo, int attackId, CArray<CBossEventData>& result ) const
@@ -639,14 +630,13 @@ void CBossTriggerCreater::addParentEndTrigger( TTriggerReaction reaction, const 
 	const auto& attack = FindAttackById( bossInfo, attackId );
 	const auto parentId = attack.Parent.EntryId;
 
-	const auto endAttackCondition = [parentId]( const CFangameEvent<Events::CBossAttackEnd>& e ) { 
-		const CBossAttackEndEvent& attackEvent = static_cast<const CBossAttackEndEvent&>( e );
-		const auto& attackInfo = attackEvent.GetAttackInfo();
+	const auto endAttackCondition = [parentId]( const CBossAttackEndEvent& e ) { 
+		const auto& attackInfo = e.GetAttackInfo();
 		return attackInfo.EntryId == parentId;
 	};
-	CAttackEventAction<Events::CBossAttackEnd> endAction( endAttackCondition, move( reaction ) );
-	CActionOwner<void( const CEvent<Events::CBossAttackEnd>& )> endEvent( move( endAction ) );
-	result.Add( CEvent<Events::CBossAttackEnd>::GetEventClassId(), move( endEvent ) );
+	CAttackEventAction<CBossAttackEndEvent> endAction( endAttackCondition, move( reaction ) );
+	CActionOwner<void( const CBossAttackEndEvent& )> endEvent( move( endAction ) );
+	result.Add( CBossAttackEndEvent::GetEventClassId(), move( endEvent ) );
 }
 
 const CUnicodeView invalidTriggerChildrenErr = L"Invalid trigger children. Trigger name: %0";
@@ -737,19 +727,18 @@ void CBossTriggerCreater::addConditionTrigger( const CXmlElement& elem, const CB
 
 void CBossTriggerCreater::addDeathTrigger( TTriggerReaction reaction, CArray<CBossEventData>& result ) const
 {
-	auto deathAction = [action = move( reaction )]( const CEvent<Events::CDeath>& e ) {
-		const auto& fangameEvent = static_cast<const CFangameEvent<Events::CDeath>&>( e );
-		action( fangameEvent.GetVisualizer() );
+	auto deathAction = [action = move( reaction )]( const CDeathEvent& e ) {
+		action( e.GetVisualizer() );
 	};
-	CActionOwner<void( const CEvent<Events::CDeath>& )> deathEvent( move( deathAction ) );
-	result.Add( CEvent<Events::CDeath>::GetEventClassId(), move( deathEvent ) );
+	CActionOwner<void( const CDeathEvent& )> deathEvent( move( deathAction ) );
+	result.Add( CDeathEvent::GetEventClassId(), move( deathEvent ) );
 }
 
 void CBossTriggerCreater::addNullTrigger( CArray<CBossEventData>& result ) const
 {
-	auto emptyAction = []( const CEvent<Events::CAllAttacksClear>& ) {};
-	CActionOwner<void( const CEvent<Events::CAllAttacksClear>& )> emptyEvent( emptyAction );
-	result.Add( CEvent<Events::CAllAttacksClear>::GetEventClassId(), move( emptyEvent ) );
+	auto emptyAction = []( const CAllAttacksClearEvent& ) {};
+	CActionOwner<void( const CAllAttacksClearEvent& )> emptyEvent( emptyAction );
+	result.Add( CAllAttacksClearEvent::GetEventClassId(), move( emptyEvent ) );
 }
 
 void CBossTriggerCreater::addGameSaveTrigger( const CXmlElement& elem, TTriggerReaction reaction, CArray<CBossEventData>& result ) const
@@ -768,18 +757,17 @@ void CBossTriggerCreater::addGameSaveTrigger( const CXmlElement& elem, TTriggerR
 
 void CBossTriggerCreater::addGameSaveTrigger( int roomId, TIntAARect bounds, TTriggerReaction reaction, CArray<CBossEventData>& result ) const
 {
-	auto gameSaveAction = [roomId, bounds, action = move( reaction )]( const CEvent<Events::CGameSave>& e ) {
-		const auto& saveEvent = static_cast<const CGameSaveEvent&>( e );
-		if( roomId != NotFound && roomId != saveEvent.GetRoomId() ) {
+	auto gameSaveAction = [roomId, bounds, action = move( reaction )]( const CGameSaveEvent& e ) {
+		if( roomId != NotFound && roomId != e.GetRoomId() ) {
 			return;
 		}
-		if( bounds.Has( saveEvent.GetHeroPos() ) ) {
-			action( saveEvent.GetVisualizer() );
+		if( bounds.Has( e.GetHeroPos() ) ) {
+			action( e.GetVisualizer() );
 		}
 	};
 
-	CActionOwner<void( const CEvent<Events::CGameSave>& )> saveEvent( move( gameSaveAction ) );
-	result.Add( CEvent<Events::CGameSave>::GetEventClassId(), move( saveEvent ) );
+	CActionOwner<void( const CGameSaveEvent& )> saveEvent( move( gameSaveAction ) );
+	result.Add( CGameSaveEvent::GetEventClassId(), move( saveEvent ) );
 }
 
 void CBossTriggerCreater::addInitCounterTrigger( const CXmlElement& elem, TTriggerReaction reaction, CArray<CBossEventData>& result ) const
@@ -798,18 +786,17 @@ void CBossTriggerCreater::addInitCounterTrigger( const CXmlElement& elem, TTrigg
 
 void CBossTriggerCreater::addInitCounterTrigger( int roomId, TIntAARect bounds, TTriggerReaction reaction, CArray<CBossEventData>& result ) const
 {
-	auto initAction = [roomId, bounds, action = move( reaction )]( const CEvent<Events::CCounterInitialized>& e ) {
-		const auto& initEvent = static_cast<const CCounterInitializeEvent&>( e );
-		if( roomId != NotFound && roomId != initEvent.GetRoomId() ) {
+	auto initAction = [roomId, bounds, action = move( reaction )]( const CCounterInitializeEvent& e ) {
+		if( roomId != NotFound && roomId != e.GetRoomId() ) {
 			return;
 		}
-		if( bounds.Has( initEvent.GetHeroPos() ) ) {
-			action( initEvent.GetVisualizer() );
+		if( bounds.Has( e.GetHeroPos() ) ) {
+			action( e.GetVisualizer() );
 		}
 	};
 
-	CActionOwner<void( const CEvent<Events::CCounterInitialized>& )> initEvent( move( initAction ) );
-	result.Add( CEvent<Events::CCounterInitialized>::GetEventClassId(), move( initEvent ) );
+	CActionOwner<void( const CCounterInitializeEvent& )> initEvent( move( initAction ) );
+	result.Add( CCounterInitializeEvent::GetEventClassId(), move( initEvent ) );
 }
 
 auto CBossTriggerCreater::createAddressTargetValue( const CXmlElement& elem, const CAddressInfo& info, CUnicodePart attribName ) const
@@ -882,7 +869,7 @@ const CUnicodeView unknownAddressNameStr = L"Unknown address name: %0.";
 const CUnicodeView unknownAddressValueStr = L"Target address value for address %0 is unspecified.";
 auto CBossTriggerCreater::createAddressChangeCondition( const CXmlElement& elem, CDynamicBitSet<>& targetAddressMask ) const
 {
-	CActionOwner<bool( const CFangameEvent<Events::CFangameValueChange>& )> result;
+	CActionOwner<bool( const CValueChangeEvent& )> result;
 	if( !windowSettings.ShouldReadMemory() ) {
 		return result;
 	}
@@ -909,48 +896,41 @@ auto CBossTriggerCreater::createAddressChangeCondition( const CXmlElement& elem,
 	}
 
 	if( detectIncrease ) {
-		result = [address = *addressInfo]( const CFangameEvent<Events::CFangameValueChange>& e ) {
-			const auto& addressEvent = static_cast<const CValueChangeEvent&>( e );
-			const auto isIncrease = addressEvent.GetAddressId() == address.AddressId && compareAddressValues( addressEvent.GetNewValue(), addressEvent.GetOldValue(), address ) > 0;
+		result = [address = *addressInfo]( const CValueChangeEvent& e ) {
+			const auto isIncrease = e.GetAddressId() == address.AddressId && compareAddressValues( e.GetNewValue(), e.GetOldValue(), address ) > 0;
 			return isIncrease;
 		};
 		return result;
 	} else if( detectDecrease ) {
-		result = [address = *addressInfo]( const CFangameEvent<Events::CFangameValueChange>& e ) {
-			const auto& addressEvent = static_cast<const CValueChangeEvent&>( e );
-			return addressEvent.GetAddressId() == address.AddressId && compareAddressValues( addressEvent.GetNewValue(), addressEvent.GetOldValue(), address ) < 0;
+		result = [address = *addressInfo]( const CValueChangeEvent& e ) {
+			return e.GetAddressId() == address.AddressId && compareAddressValues( e.GetNewValue(), e.GetOldValue(), address ) < 0;
 		};
 		return result;
 	}
 
 	auto value = createAddressTargetValue( elem, *addressInfo, isTarget ? targetValueAttrib : isExclude ? excludeValueAttrib : isMax ? maxValueAttrib : minValueAttrib );
 	if( isTarget ) {
-		result = [targetValue = move( value ), addressId]( const CFangameEvent<Events::CFangameValueChange>& e ) {
-			const auto& addressEvent = static_cast<const CValueChangeEvent&>( e );
-			return addressEvent.GetAddressId() == addressId && ::memcmp( targetValue.Ptr(), addressEvent.GetNewValue().Ptr(), targetValue.Size() ) == 0;
+		result = [targetValue = move( value ), addressId]( const CValueChangeEvent& e ) {
+			return e.GetAddressId() == addressId && ::memcmp( targetValue.Ptr(), e.GetNewValue().Ptr(), targetValue.Size() ) == 0;
 		};
 	} else if( isExclude ) {
-		result = [excludeValue = move( value ), addressId]( const CFangameEvent<Events::CFangameValueChange>& e ) {
-			const auto& addressEvent = static_cast<const CValueChangeEvent&>( e );
-			return addressEvent.GetAddressId() == addressId && ::memcmp( excludeValue.Ptr(), addressEvent.GetNewValue().Ptr(), excludeValue.Size() ) != 0;
+		result = [excludeValue = move( value ), addressId]( const CValueChangeEvent& e ) {
+			return e.GetAddressId() == addressId && ::memcmp( excludeValue.Ptr(), e.GetNewValue().Ptr(), excludeValue.Size() ) != 0;
 		};
 	} else if( isMax && isMin ) {
 		auto minValueArr = createAddressTargetValue( elem, *addressInfo, minValueAttrib );
-		result = [maxValue = move( value ), minValue = move( minValueArr ), address = *addressInfo]( const CFangameEvent<Events::CFangameValueChange>& e ) {
-			const auto& addressEvent = static_cast<const CValueChangeEvent&>( e );
-			return addressEvent.GetAddressId() == address.AddressId && compareAddressValues( maxValue, addressEvent.GetNewValue(), address ) >= 0 
-				&& compareAddressValues( minValue, addressEvent.GetNewValue(), address ) <= 0;
+		result = [maxValue = move( value ), minValue = move( minValueArr ), address = *addressInfo]( const CValueChangeEvent& e ) {
+			return e.GetAddressId() == address.AddressId && compareAddressValues( maxValue, e.GetNewValue(), address ) >= 0 
+				&& compareAddressValues( minValue, e.GetNewValue(), address ) <= 0;
 		};
 	} else if( isMax ) {
-		result = [maxValue = move( value ), address = *addressInfo]( const CFangameEvent<Events::CFangameValueChange>& e ) {
-			const auto& addressEvent = static_cast<const CValueChangeEvent&>( e );
-			return addressEvent.GetAddressId() == address.AddressId && compareAddressValues( maxValue, addressEvent.GetNewValue(), address ) >= 0;
+		result = [maxValue = move( value ), address = *addressInfo]( const CValueChangeEvent& e ) {
+			return e.GetAddressId() == address.AddressId && compareAddressValues( maxValue, e.GetNewValue(), address ) >= 0;
 		};
 	} else {
 		assert( isMin );
-		result = [minValue = move( value ), address = *addressInfo]( const CFangameEvent<Events::CFangameValueChange>& e ) {
-			const auto& addressEvent = static_cast<const CValueChangeEvent&>( e );
-			return addressEvent.GetAddressId() == address.AddressId && compareAddressValues( minValue, addressEvent.GetNewValue(), address ) <= 0;
+		result = [minValue = move( value ), address = *addressInfo]( const CValueChangeEvent& e ) {
+			return e.GetAddressId() == address.AddressId && compareAddressValues( minValue, e.GetNewValue(), address ) <= 0;
 		};
 	}
 
@@ -964,46 +944,45 @@ void CBossTriggerCreater::addAddressChangeTrigger( const CXmlElement& elem, TTri
 		return;
 	}
 
-	CAttackEventAction<Events::CFangameValueChange> addressAction( move( addressChangeCondition ), move( reaction ) );
-	CActionOwner<void( const CEvent<Events::CFangameValueChange>& )> addressEvent( move( addressAction ) );
-	result.Add( CEvent<Events::CFangameValueChange>::GetEventClassId(), move( addressEvent ) );
+	CAttackEventAction<CValueChangeEvent> addressAction( move( addressChangeCondition ), move( reaction ) );
+	CActionOwner<void( const CValueChangeEvent& )> addressEvent( move( addressAction ) );
+	result.Add( CValueChangeEvent::GetEventClassId(), move( addressEvent ) );
 }
 
-static bool restartCondition( const CFangameEvent<Events::CGameRestart>& )
+static bool restartCondition( const CGameRestartEvent& )
 {
 	return true;
 }
 
 void CBossTriggerCreater::addGameRestartTrigger( TTriggerReaction reaction, CArray<CBossEventData>& result ) const
 {
-	CAttackEventAction<Events::CGameRestart> restartAction( restartCondition, move( reaction ) );
-	CActionOwner<void( const CEvent<Events::CGameRestart>& )> restartEvent( move( restartAction ) );
-	result.Add( CEvent<Events::CGameRestart>::GetEventClassId(), move( restartEvent ) );
+	CAttackEventAction<CGameRestartEvent> restartAction( restartCondition, move( reaction ) );
+	CActionOwner<void( const CGameRestartEvent& )> restartEvent( move( restartAction ) );
+	result.Add( CGameRestartEvent::GetEventClassId(), move( restartEvent ) );
 }
 
 void CBossTriggerCreater::addPrevAttackEndTrigger( TTriggerReaction reaction, int attackId, CArray<CBossEventData>& result ) const
 {
-	const auto endAttackCondition = [attackId]( const CFangameEvent<Events::CBossAttackEnd>& e ) { 
-		const CBossAttackEndEvent& attackEvent = static_cast<const CBossAttackEndEvent&>( e );
-		const auto& attackInfo = attackEvent.GetAttackInfo();
+	const auto endAttackCondition = [attackId]( const CBossAttackEndEvent& e ) { 
+		const auto& attackInfo = e.GetAttackInfo();
 		const auto& siblings = attackInfo.Parent.Children;
 		return ( attackInfo.ChildId < siblings.Size() - 1 ) && ( siblings[attackInfo.ChildId + 1].EntryId == attackId );
 	};
-	CAttackEventAction<Events::CBossAttackEnd> endAction( endAttackCondition, move( reaction ) );
-	CActionOwner<void( const CEvent<Events::CBossAttackEnd>& )> endEvent( move( endAction ) );
-	result.Add( CEvent<Events::CBossAttackEnd>::GetEventClassId(), move( endEvent ) );
+	CAttackEventAction<CBossAttackEndEvent> endAction( endAttackCondition, move( reaction ) );
+	CActionOwner<void( const CBossAttackEndEvent& )> endEvent( move( endAction ) );
+	result.Add( CBossAttackEndEvent::GetEventClassId(), move( endEvent ) );
 }
 
-static bool startBossCondition( const CFangameEvent<Events::CBossStart>& )
+static bool startBossCondition( const CBossStartEvent& )
 {
 	return true;
 }
 
 void CBossTriggerCreater::addBossStartAttackTrigger( TTriggerReaction reaction, CArray<CBossEventData>& result ) const
 {
-	CAttackEventAction<Events::CBossStart> bossStartAction( startBossCondition, move( reaction ) );
-	CActionOwner<void( const CEvent<Events::CBossStart>& )> bossStartEvent( move( bossStartAction ) );
-	result.Add( CEvent<Events::CBossStart>::GetEventClassId(), move( bossStartEvent ) );
+	CAttackEventAction<CBossStartEvent> bossStartAction( startBossCondition, move( reaction ) );
+	CActionOwner<void( const CBossStartEvent& )> bossStartEvent( move( bossStartAction ) );
+	result.Add( CBossStartEvent::GetEventClassId(), move( bossStartEvent ) );
 }
 
 CBossTriggerCreater::TTriggerReaction CBossTriggerCreater::createDelayedReaction( const CXmlElement& elem, TTriggerReaction reaction ) const
@@ -1017,7 +996,7 @@ CBossTriggerCreater::TTriggerReaction CBossTriggerCreater::createDelayedReaction
 				action->Invoke( visualizer );
 			};
 			CDelayedTimerAction<CFangameVisualizerState&> timerAction( delay, wrappedReaction, visualizer );
-			auto newTarget = visualizer.GetEventSystem().AddEventTarget( Events::CTimePassedEvent(), move( timerAction ) );
+			auto newTarget = visualizer.GetEventSystem().AddEventTarget( move( timerAction ) );
 			visualizer.AttachTimerEvent( move( newTarget ) );
 		};
 		return TTriggerReaction( move( delayedReaction ) );

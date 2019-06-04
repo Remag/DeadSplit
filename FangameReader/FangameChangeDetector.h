@@ -10,7 +10,7 @@ class CProcessMemoryScanner;
 //////////////////////////////////////////////////////////////////////////
 
 // An address value change event.
-class CValueChangeEvent : public CFangameEvent<Events::CFangameValueChange> {
+class CValueChangeEvent : public CFangameEvent<CValueChangeEvent> {
 public:
 	explicit CValueChangeEvent( CFangameVisualizerState& visualizer, int _addressId, CArrayView<BYTE> _newValue, CArrayView<BYTE> _oldValue ) :
 		CFangameEvent( visualizer ), addressId( _addressId ), newValue( _newValue ), oldValue( _oldValue ) {}

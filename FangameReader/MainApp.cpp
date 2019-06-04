@@ -30,7 +30,7 @@ CMainApp::~CMainApp()
 void CMainApp::OnMainWindowResize( CVector2<int> newSize, bool )
 {
 	windowSettings->SetWindowSize( newSize );
-	eventSystem.Notify( TWindowChangeEvent{} );
+	eventSystem.Notify( CWindowChangeEvent{} );
 }
 
 CPtrOwner<IState> CMainApp::onInitialize( CUnicodeView commandLine )

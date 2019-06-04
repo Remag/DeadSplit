@@ -158,7 +158,7 @@ private:
 	void setTextPanelPosition( int roomId, int x, int y );
 
 	void onWindowSizeChange();
-	void onRecordStatusChange( const CEvent<Events::CRecordStatusChange>& e );
+	void onRecordStatusChange( const CRecordStatusEvent& e );
 
 	void setNewBossTable( CBossInfo& bossInfo, bool setAddressEvents );
 	void addBossStartEvents( const CBossInfo& bossInfo );

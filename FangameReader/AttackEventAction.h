@@ -6,27 +6,25 @@ class CFangameVisualizerState;
 //////////////////////////////////////////////////////////////////////////
 
 template <class EventType>
-class CAttackEventAction : public IAction<void( const CEvent<EventType>& )> {
+class CAttackEventAction : public IAction<void( const EventType& )> {
 public:
-	CAttackEventAction( CActionOwner<bool( const CFangameEvent<EventType>& )> _condition, CActionOwner<void( CFangameVisualizerState& )> _reaction ) :
+	CAttackEventAction( CActionOwner<bool( const EventType& )> _condition, CActionOwner<void( CFangameVisualizerState& )> _reaction ) :
 		condition( move( _condition ) ), reaction( move( _reaction ) ) {}
 
-	virtual void Invoke( const CEvent<EventType>& ) const override final;
+	virtual void Invoke( const EventType& e ) const override final;
 
 private:
-	CActionOwner<bool( const CFangameEvent<EventType>& )> condition;
+	CActionOwner<bool( const EventType& )> condition;
 	CActionOwner<void( CFangameVisualizerState& )> reaction;
 };
 
 //////////////////////////////////////////////////////////////////////////
 
 template <class EventType>
-void CAttackEventAction<EventType>::Invoke( const CEvent<EventType>& e ) const
+void CAttackEventAction<EventType>::Invoke( const EventType& e ) const
 {
-	const auto& fangameEvent = static_cast<const CFangameEvent<EventType>&>( e );
-
-	if( condition( fangameEvent ) ) {
-		reaction( fangameEvent.GetVisualizer() );
+	if( condition( e ) ) {
+		reaction( e.GetVisualizer() );
 	}
 }
 

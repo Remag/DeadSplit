@@ -8,31 +8,8 @@ struct CBossInfo;
 enum TBossTimelineStatus;
 //////////////////////////////////////////////////////////////////////////
 
-// Event classes.
-namespace Events {
-	// Window size change event.
-	class CWindowSizeChange {};
-
-	// End of visualizer construction.
-	class CCounterInitialized {};
-	// Game restart.
-	class CGameRestart {};
-	// Progress save to a file.
-	class CGameSave{};
-	// Start of the avoidance recording.
-	class CRecordStatusChange {};
-	class CBossStart {};
-	class CBossEnd {};
-	class CBossShow {};
-	class CBossAttackStart {};
-	class CBossAttackEnd {};
-	class CAllAttacksClear {};
-	class CTimePassedEvent {};
-	class CFangameValueChange {};
-	class CDeath {};
-}
-
-typedef CEvent<Events::CWindowSizeChange> TWindowChangeEvent;
+// Window size change event.
+class CWindowChangeEvent : public CEvent<CWindowChangeEvent> {};
 //////////////////////////////////////////////////////////////////////////
 
 template <class EventClass>
@@ -49,7 +26,29 @@ private:
 
 //////////////////////////////////////////////////////////////////////////
 
-class CBossAttackStartEvent : public CFangameEvent<Events::CBossAttackStart> {
+class CAllAttacksClearEvent : public CFangameEvent<CAllAttacksClearEvent> {
+	using CFangameEvent::CFangameEvent;
+};
+
+class CBossShowEvent : public CFangameEvent<CBossShowEvent> {
+	using CFangameEvent::CFangameEvent;
+};
+
+class CDeathEvent : public CFangameEvent<CDeathEvent> {
+	using CFangameEvent::CFangameEvent;
+};
+
+class CGameRestartEvent : public CFangameEvent<CGameRestartEvent> {
+	using CFangameEvent::CFangameEvent;
+};
+
+class CBossStartEvent : public CFangameEvent<CBossStartEvent> {
+	using CFangameEvent::CFangameEvent;
+};
+
+//////////////////////////////////////////////////////////////////////////
+
+class CBossAttackStartEvent : public CFangameEvent<CBossAttackStartEvent> {
 public:
 	CBossAttackStartEvent( CFangameVisualizerState& visualizer, const CBossAttackInfo& _attackInfo ) : CFangameEvent( visualizer ), attackInfo( _attackInfo ) {}
 
@@ -60,7 +59,7 @@ private:
 	const CBossAttackInfo& attackInfo;
 };
 
-class CBossAttackEndEvent : public CFangameEvent<Events::CBossAttackEnd> {
+class CBossAttackEndEvent : public CFangameEvent<CBossAttackEndEvent> {
 public:
 	CBossAttackEndEvent( CFangameVisualizerState& visualizer, const CBossAttackInfo& _attackInfo ) : CFangameEvent( visualizer ), attackInfo( _attackInfo ) {}
 
@@ -71,7 +70,7 @@ private:
 	const CBossAttackInfo& attackInfo;
 };
 
-class CBossEndEvent : public CFangameEvent<Events::CBossEnd> {
+class CBossEndEvent : public CFangameEvent<CBossEndEvent> {
 public:
 	CBossEndEvent( CFangameVisualizerState& visualizer, const CBossInfo& _bossInfo ) : CFangameEvent( visualizer ), bossInfo( _bossInfo ) {}
 
@@ -82,7 +81,7 @@ private:
 	const CBossInfo& bossInfo;
 };
 
-class CUpdateEvent : public CFangameEvent<Events::CTimePassedEvent> {
+class CUpdateEvent : public CFangameEvent<CUpdateEvent> {
 public:
 	CUpdateEvent( CFangameVisualizerState& visualizer, DWORD _prevTime, DWORD _currentTime ) : 
 		CFangameEvent( visualizer ), prevTime( _prevTime ), currentTime( _currentTime ) {}
@@ -97,7 +96,7 @@ private:
 	DWORD currentTime;
 };
 
-class CRecordStatusEvent : public CFangameEvent<Events::CRecordStatusChange> {
+class CRecordStatusEvent : public CFangameEvent<CRecordStatusEvent> {
 public:
 	CRecordStatusEvent( CFangameVisualizerState& visualizer, TBossTimelineStatus _newStatus ) : CFangameEvent( visualizer ), newStatus( _newStatus ) {}
 
@@ -124,12 +123,14 @@ private:
 
 };
 
-class CCounterInitializeEvent : public CBaseGameSaveEvent<Events::CCounterInitialized> {
+// End of visualizer construction.
+class CCounterInitializeEvent : public CBaseGameSaveEvent<CCounterInitializeEvent> {
 public:
 	using CBaseGameSaveEvent::CBaseGameSaveEvent;
 };
 
-class CGameSaveEvent : public CBaseGameSaveEvent<Events::CGameSave> {
+// Progress save to a file.
+class CGameSaveEvent : public CBaseGameSaveEvent<CGameSaveEvent> {
 public:
 	using CBaseGameSaveEvent::CBaseGameSaveEvent;
 };

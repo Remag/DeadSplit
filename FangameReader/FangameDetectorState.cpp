@@ -45,7 +45,7 @@ CFangameDetectorState::CFangameDetectorState( CEventSystem& _eventSystem, CWindo
 
 CEventTarget CFangameDetectorState::createWindowChangeEvent( CEventSystem& events )
 {
-	return events.AddEventTarget( Events::CWindowSizeChange(), [this]( const TWindowChangeEvent& ){ onWindowSizeChange(); } );
+	return events.AddEventTarget( [this]( const CWindowChangeEvent& ){ onWindowSizeChange(); } );
 }
 
 const CUnicodeView scanningText = L"Scanning...";

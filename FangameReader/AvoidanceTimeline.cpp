@@ -85,7 +85,7 @@ void CAvoidanceTimeline::startBoss( DWORD currentTime )
 	GetBroadcaster().NotifyBossStart();
 	setRecordStatus( BTS_Recording );
 	auto& changeDetector = visualizer.GetChangeDetector();
-	events.Notify( CFangameEvent<Events::CBossStart>( visualizer ) );
+	events.Notify( CBossStartEvent( visualizer ) );
 	*bossChildrenExpansion = changeDetector.ExpandAddressSearch( bossInfo->ChildrenStartAddressMask, false );
 	changeDetector.ResendCurrentAddressChanges();
 }
@@ -250,7 +250,7 @@ void CAvoidanceTimeline::CheckBossAttacksFinish()
 		}
 	}
 
-	events.Notify( CFangameEvent<Events::CAllAttacksClear>( visualizer ) );
+	events.Notify( CAllAttacksClearEvent( visualizer ) );
 }
 
 void CAvoidanceTimeline::clearCurrentBoss()
@@ -315,7 +315,7 @@ void CAvoidanceTimeline::OnGameRestart()
 		recordIcon->AddBabyRage();
 	}
 
-	events.Notify( CFangameEvent<Events::CGameRestart>( visualizer ) );
+	events.Notify( CGameRestartEvent( visualizer ) );
 }
 
 void CAvoidanceTimeline::UndoRecording()
@@ -415,7 +415,7 @@ void CAvoidanceTimeline::signalHeroDeath( float secondDelta )
 		return;
 	}
 
-	events.Notify( CFangameEvent<Events::CDeath>( visualizer ) );
+	events.Notify( CDeathEvent( visualizer ) );
 	bool activeAttackFound = false;
 	for( int i = 0; i < attacksTimeline.Size(); i++ ) {
 		const auto attack = attacksTimeline[i];
