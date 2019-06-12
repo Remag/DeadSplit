@@ -61,8 +61,8 @@ CBossMap::CBossMap( CUnicodeView bossFolder, CFangameVisualizerState& _visualize
 		}
 	}
 
-	if( deathDetector == nullptr ) {
-		deathDetector = CreateOwner<CWindowTitleDeathGetter>( *processInfo );
+	if( deathDetectors.IsEmpty() ) {
+		deathDetectors.Add( CreateOwner<CWindowTitleDeathGetter>( *processInfo ) );
 	}
 }
 
@@ -109,7 +109,7 @@ void CBossMap::initDeathDetector( const CXmlElement& elem )
 	}
 	
 	try {
-		deathDetector = CreateUniqueObject<IValueGetter>( deathDetectorName, elem, *this );
+		deathDetectors.Add( CreateUniqueObject<IValueGetter>( deathDetectorName, elem, *this ) );
 	} catch( CException& e ) {
 		Log::Exception( e );
 	}

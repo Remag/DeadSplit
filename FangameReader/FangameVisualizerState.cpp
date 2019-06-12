@@ -285,8 +285,8 @@ void CFangameVisualizerState::OnStart()
 		saveFiles.Add( CreateOwner<CChangingFile>( reader.SaveFileName, processInfo.ProcessHandle ) );
 	}
 
-	const auto& deathDetector = bossInfo->GetDeathDetector();
-	currentTimeline = CreateOwner<CAvoidanceTimeline>( processInfo, deathDetector, eventSystem, *this );
+	const auto deathDetectors = bossInfo->GetDeathDetectors();
+	currentTimeline = CreateOwner<CAvoidanceTimeline>( processInfo, deathDetectors, eventSystem, *this );
 
 	if( sessionMonitor.InitializeFangame( processInfo.BossInfoPath ) ) {
 		bossInfo->EmptySessionCounts();

@@ -25,7 +25,7 @@ enum TBossTimelineStatus {
 // Mechanism for timing avoidances and updating death table information.
 class CAvoidanceTimeline {
 public:
-	explicit CAvoidanceTimeline( const CFangameProcessInfo& processInfo, const IValueGetter& deathDetector, CEventSystem& events, CFangameVisualizerState& visualizer );
+	explicit CAvoidanceTimeline( const CFangameProcessInfo& processInfo, CArrayView<CPtrOwner<IValueGetter>> deathDetectors, CEventSystem& events, CFangameVisualizerState& visualizer );
 	~CAvoidanceTimeline();
 
 	bool HasActiveData() const
@@ -67,14 +67,14 @@ public:
 private:
 	CEventSystem& events;
 	CFangameVisualizerState& visualizer;
-	const IValueGetter& deathDetector;
+	CArrayView<CPtrOwner<IValueGetter>> deathDetectors;
+	CArray<int> deathDetectorPastValues;
 	// Fangame window handle for title grabbing.
 	HWND windowHandle;
 	CBossInfo* bossInfo = nullptr;
 	CBossDeathTable* deathTable = nullptr;
 	DWORD bossStartTime = 0;
 	DWORD lastRestartTime = 0;
-	int deathStartCount;
 	double resetIgnoreTime = 0.0;
 	TBossTimelineStatus status = BTS_Waiting;
 
@@ -101,7 +101,8 @@ private:
 	void setRecordStatus( TBossTimelineStatus newValue );
 	void startBoss( DWORD currentTime );
 	void clearCurrentBoss();
-	int getCurrentDeathCount() const;
+	void initializeStartingDeaths();
+	bool detectPlayerDeath();
 	void signalHeroDeath( float secondDelta );
 	float getTimeDelta( DWORD current, DWORD prev ) const;
 };

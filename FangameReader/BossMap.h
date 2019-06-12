@@ -54,8 +54,8 @@ public:
 		
 	CUnicodeView GetFangameTitle() const
 		{ return fangameTitle; }
-	const IValueGetter& GetDeathDetector() const
-		{ return *deathDetector; }
+	CArrayView<CPtrOwner<IValueGetter>> GetDeathDetectors() const
+		{ return deathDetectors; }
 	CArrayView<CSaveReaderData> GetSaveReaders() const
 		{ return gameSaveReaders; }
 	CArrayBuffer<CSaveReaderData> GetSaveReaders() 
@@ -73,7 +73,7 @@ private:
 	CPtrOwner<CBossTriggerCreater> triggerCreater;
 	CStaticArray<CBossInfo> bossesInfo;
 	CUnicodeString fangameTitle;
-	CPtrOwner<IValueGetter> deathDetector;
+	CArray<CPtrOwner<IValueGetter>> deathDetectors;
 	CArray<CSaveReaderData> gameSaveReaders;
 	CArray<CBossEventData> bossShowEvents;
 	CDynamicBitSet<> globalAddressMask;

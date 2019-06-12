@@ -19,12 +19,13 @@ namespace Fangame {
 
 //////////////////////////////////////////////////////////////////////////
 
-CAvoidanceTimeline::CAvoidanceTimeline( const CFangameProcessInfo& processInfo, const IValueGetter& _deathDetector, CEventSystem& _events, CFangameVisualizerState& _visualizer ) :
+CAvoidanceTimeline::CAvoidanceTimeline( const CFangameProcessInfo& processInfo, CArrayView<CPtrOwner<IValueGetter>> _deathDetectors, CEventSystem& _events, CFangameVisualizerState& _visualizer ) :
 	events( _events ),
 	visualizer( _visualizer ),
 	windowHandle( processInfo.WndHandle ),
-	deathDetector( _deathDetector )
+	deathDetectors( _deathDetectors )
 {
+	deathDetectorPastValues.IncreaseSize( deathDetectors.Size() );
 	recordIcon = CreateOwner<CRecordStatusIcon>();
 	bossChildrenExpansion = CreateOwner<CAddressSearchExpansion>();
 	bossStartTime = ::GetTickCount();
@@ -80,7 +81,7 @@ void CAvoidanceTimeline::startBoss( DWORD currentTime )
 	attackChildrenExpansions.Empty();
 	attackChildrenExpansions.IncreaseSize( attackCount );
 	bossStartTime = currentTime;
-	deathStartCount = getCurrentDeathCount();
+	initializeStartingDeaths();
 	recordIcon->SetStatus( RS_Play );
 	GetBroadcaster().NotifyBossStart();
 	setRecordStatus( BTS_Recording );
@@ -365,29 +366,13 @@ void CAvoidanceTimeline::UpdateStatus( DWORD prevTicks, DWORD currentTicks )
 		return;
 	}
 
-	const int currentDeaths = getCurrentDeathCount();
-	if( currentDeaths == NotFound ) {
-		// Sometimes the title doesn't contain deaths, it's probably being updated.
-		return;
-	}
-
-	if( deathStartCount == NotFound ) {
-		deathStartCount = currentDeaths;
-		return;
-	}
-
-	if( currentDeaths == deathStartCount ) {
-		return;
-	}
-
+	const auto deathDetected = detectPlayerDeath();
 	// Super early deaths are most likely a result of the death count update lag, ignore them.
 	const float deathLagPeriod = 0.25f;
-	if( timePasseed > deathLagPeriod ) {
+	if( deathDetected && timePasseed > deathLagPeriod ) {
 		signalHeroDeath( timePasseed );
 		setRecordStatus( BTS_Dead );
 		recordIcon->SetStatus( RS_Death );
-	} else {
-		deathStartCount = currentDeaths;
 	}
 }
 
@@ -398,9 +383,27 @@ void CAvoidanceTimeline::Draw( const IRenderParameters& renderParams ) const
 	recordIcon->Draw( renderParams );
 }
 
-int CAvoidanceTimeline::getCurrentDeathCount() const
+void CAvoidanceTimeline::initializeStartingDeaths()
 {
-	return deathDetector.GetValueAs<int>();
+	const auto count = deathDetectors.Size();
+	for( int i = 0; i < count; i++ ) {
+		deathDetectorPastValues[i] = deathDetectors[i]->GetValueAs<int>();
+	}
+}
+
+bool CAvoidanceTimeline::detectPlayerDeath()
+{
+	// Check all death detectors and get the most recently changed value.
+	const auto count = deathDetectors.Size();
+	for( int i = 0; i < count; i++ ) {
+		const auto value = deathDetectors[i]->GetValueAs<int>();
+		// Ignore failed value gets.
+		if( value != NotFound && value != deathDetectorPastValues[i] ) {
+			deathDetectorPastValues[i] = value;
+			return true;
+		}
+	}
+	return false;
 }
 
 void CAvoidanceTimeline::signalHeroDeath( float secondDelta )
