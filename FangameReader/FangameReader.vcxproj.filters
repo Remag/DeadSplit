@@ -178,6 +178,9 @@
     <Filter Include="Resource Files\GameInfo\Soulless">
       <UniqueIdentifier>{a3a574bf-f84f-4e82-bae7-4e1db58a0afc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\GameInfo\DestructionState">
+      <UniqueIdentifier>{a92e42dd-c304-4bad-8cb5-9ac0dbbc6149}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="common.cpp">
@@ -920,6 +923,9 @@
     </Xml>
     <Xml Include="FangameResources\FangameInfo\Soulless\layout.xml">
       <Filter>Resource Files\GameInfo\Soulless</Filter>
+    </Xml>
+    <Xml Include="FangameResources\FangameInfo\I wanna be the Destruction State\layout.xml">
+      <Filter>Resource Files\GameInfo\DestructionState</Filter>
     </Xml>
   </ItemGroup>
   <ItemGroup>

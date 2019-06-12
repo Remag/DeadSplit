@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<Fangame title="I wanna be the Destruction State">
+
+<AddressSpace>
+  <RoomId type="fixed" valueType="int32">0x006c73c8</RoomId>
+</AddressSpace>
+  
+<DeathDetector type="file" name="save1" offset="11"/>
+<DeathDetector type="file" name="save2" offset="11"/>
+<DeathDetector type="file" name="save3" offset="11"/>
+
+<Boss name="Destruction State">
+  <StartTrigger type="AddressChange" addressName="RoomId" targetValue="150"/>
+  <StartTrigger type="GameRestart"/>
+  <AbortTrigger type="AddressChange" addressName="RoomId" excludeValue="150"/>
+
+  <Attack name="Intro Nonsense" icon="DestructionState\BulletPurple.png">
+    <Time end="20.45"/>
+  </Attack>
+  <Attack name="Mean Arrows" icon="DestructionState\ArrowPurple.png">
+  	<Time end="29.7"/>
+  </Attack>
+  <Attack name="The Fall" icon="DestructionState\BlockPurple.png">
+  	<Time end="49.9"/>
+  </Attack>
+  <Attack name="Purple 1" icon="DestructionState\BulletPurple.png">
+  	<Time end="59.5"/>
+  </Attack>
+  <Attack name="Jump Or Die" icon="DestructionState\BulletGreen.png">
+  	<Time end="64.7"/>
+  </Attack>
+  <Attack name="Walk Or Die" icon="DestructionState\BulletAzure.png">
+  	<Time end="69.5"/>
+  </Attack>
+  <Attack name="Choke And Die" icon="DestructionState\BulletBlue.png">
+  		<Time end="74.3"/>
+  </Attack>
+  <Attack name="The Shower" icon="DestructionState\BulletYellow.png">
+  		<Time end="79.3"/>
+  </Attack>
+  <Attack name="Falling Bursts" icon="DestructionState\BulletOrange.png">
+    <Time end="84.0"/>
+  </Attack>
+  <Attack name="Here We Go Again" icon="DestructionState\BulletPurple.png">
+  	<Time end="89.3"/>
+  </Attack>
+  <Attack name="Disgusting Arrows" icon="DestructionState\ArrowPurple.png">
+  	<Time end="99"/>
+  </Attack>
+  <Attack name="Why, Blue?" icon="RevKidHead.png">
+  	<Time end="109"/>
+  </Attack>
+  <Attack name="Disaster Blaster" icon="DestructionState\BulletViolet.png">
+  	<Time end="114"/>
+  </Attack>
+
+</Boss>
+
+</Fangame> 

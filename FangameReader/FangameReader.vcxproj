@@ -251,6 +251,7 @@
     <Xml Include="FangameResources\FangameInfo\Cosmo\layout.xml" />
     <Xml Include="FangameResources\FangameInfo\I wanna appreciate meteor stream\layout.xml" />
     <Xml Include="FangameResources\FangameInfo\i wanna be the contrary\layout.xml" />
+    <Xml Include="FangameResources\FangameInfo\I wanna be the Destruction State\layout.xml" />
     <Xml Include="FangameResources\FangameInfo\I wanna be the Fish\layout.xml" />
     <Xml Include="FangameResources\FangameInfo\I wanna be the Rubik%27s Cube\layout.xml" />
     <Xml Include="FangameResources\FangameInfo\I wanna be the Snow Drive\layout.xml" />
