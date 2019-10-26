@@ -9,9 +9,8 @@ namespace Fangame {
 
 CGlFont::CGlFont( CUnicodeView fontName, int fontSize ) :
 	font( fontName ),
-	renderer( font )
+	renderer( CreateOwner<CFreeTypeGlyphProvider>( font, fontSize ) )
 {
-	font.SetPixelSize( fontSize );
 	renderer.LoadBasicCharSet();
 }
 

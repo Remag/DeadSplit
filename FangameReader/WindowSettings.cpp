@@ -205,7 +205,7 @@ void CWindowSettings::initInputs( const CIniFileSection* targetSection, CArray<C
 	for( const auto& pair : targetSection->KeyValuePairs() ) {
 		const auto keyName = pair.First;
 		const auto actionName = pair.Second;
-		const auto actionCombination = CInputSettings::ParseKeyCombination( keyName );
+		const auto actionCombination = CInputSettings::ParseKeyCombination( Str( keyName ) );
 		if( !actionCombination.IsValid() ) {
 			Log::Warning( unknownKey.SubstParam( keyName ), this );
 			continue;
@@ -574,12 +574,12 @@ CArray<CActionKeyInfo> CWindowSettings::GetDefaultCustomizableActions()
 
 CUnicodeString CWindowSettings::getKeyString( int mainCode, int additionalCode ) const
 {
-	auto mainName = CInputSettings::GetKeyName( mainCode );
+	auto mainName = UnicodeStr( CInputSettings::GetKeyName( mainCode ) );
 	if( additionalCode == 0 ) {
 		return mainName;
 	}
 	
-	auto additionalName = CInputSettings::GetKeyName( additionalCode );
+	auto additionalName = UnicodeStr( CInputSettings::GetKeyName( additionalCode ) );
 	return additionalName + L'+' + mainName;
 }
 

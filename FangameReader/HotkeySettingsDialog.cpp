@@ -140,13 +140,13 @@ CUnicodeString CHotkeySettingsDialog::getKeyCombinationText( int mainKey, int ad
 		return CUnicodeString();
 	}
 
-	auto mainName = CInputSettings::GetKeyName( mainKey );
+	auto mainName = UnicodeStr( CInputSettings::GetKeyName( mainKey ) );
 	if( additionalKey == 0 ) {
-		return mainName;
+		return  mainName;
 	}
 	
-	auto additionalName = CInputSettings::GetKeyName( additionalKey );
-	return additionalName + L"+ " + mainName;
+	auto additionalName = UnicodeStr( CInputSettings::GetKeyName( additionalKey ) ); 
+	return  additionalName + L"+ " + mainName;
 }
 
 void CHotkeySettingsDialog::setControlText( int controlId, CUnicodeView text )
@@ -206,7 +206,7 @@ bool CHotkeySettingsDialog::processKeyPress( HWND controlWnd, int keyCode )
 
 	if( pressedMainKey == 0 ) {
 		pressedMainKey = keyCode;
-		setControlText( targetPressControlId, CInputSettings::GetKeyName( keyCode ) );
+		setControlText( targetPressControlId, UnicodeStr( CInputSettings::GetKeyName( keyCode ) ) );
 	} else if( pressedAdditionalKey == 0 ) {
 		pressedAdditionalKey = pressedMainKey;
 		pressedMainKey = keyCode;
@@ -232,7 +232,7 @@ bool CHotkeySettingsDialog::processKeyRelease( int keyCode )
 			return true;
 		}
 		pressedMainKey = keyCode;
-		setControlText( targetPressControlId, CInputSettings::GetKeyName( keyCode ) );
+		setControlText( targetPressControlId, UnicodeStr( CInputSettings::GetKeyName( keyCode ) ) );
 	}
 
 	collapseTargetKey();

@@ -270,6 +270,7 @@
     <Xml Include="FangameResources\FangameInfo\I wanna Touch the Entrance\layout.xml">
       <SubType>Designer</SubType>
     </Xml>
+    <Xml Include="FangameResources\FangameInfo\Invincible Alien\layout.xml" />
     <Xml Include="FangameResources\FangameInfo\KiraKira\layout.xml" />
     <Xml Include="FangameResources\FangameInfo\perfect bear\layout.xml" />
     <Xml Include="FangameResources\FangameInfo\Soulless\layout.xml" />

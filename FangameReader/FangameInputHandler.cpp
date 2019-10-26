@@ -18,7 +18,7 @@ void CFangameInputHandler::FlushKeyState()
 {
 	flushKeyState( windowSettings.GetCustomizableActions() );
 	flushKeyState( windowSettings.GetManualActions() );
-	actionKeyBitset.Empty();
+	actionKeyBitset.FillWithZeroes();
 }
 
 void CFangameInputHandler::flushKeyState( CArrayView<CActionKeyInfo> actions )

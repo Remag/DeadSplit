@@ -154,17 +154,11 @@
     <Filter Include="Resource Files\GameInfo\Sunspike">
       <UniqueIdentifier>{fc32f9ef-4289-42d8-8da2-e18bbe0f4c45}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resource Files\GameInfo\MeteorStream">
-      <UniqueIdentifier>{27829a04-dfee-474c-a6b4-bf09e826a01e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Broadcast">
       <UniqueIdentifier>{3af52366-bd41-4447-b102-0880206db9f6}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\Broadcast">
       <UniqueIdentifier>{7c5bddea-6825-41ac-a9f3-32f06c9045e4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Resource Files\GameInfo\BreakThingsIntoPieces">
-      <UniqueIdentifier>{5f6fc1d9-3f7c-45ef-affd-929070b73f6b}</UniqueIdentifier>
     </Filter>
     <Filter Include="Resource Files\GameInfo\TIS">
       <UniqueIdentifier>{615dff83-b0ba-4ac9-a2f0-4193217385b5}</UniqueIdentifier>
@@ -178,8 +172,17 @@
     <Filter Include="Resource Files\GameInfo\Soulless">
       <UniqueIdentifier>{a3a574bf-f84f-4e82-bae7-4e1db58a0afc}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resource Files\GameInfo\DestructionState">
+    <Filter Include="Resource Files\GameInfo\Invincible Alien">
+      <UniqueIdentifier>{3109abd9-2596-49f0-99d0-252879c68c79}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\GameInfo\Meteor Stream">
+      <UniqueIdentifier>{27829a04-dfee-474c-a6b4-bf09e826a01e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\GameInfo\Destruction State">
       <UniqueIdentifier>{a92e42dd-c304-4bad-8cb5-9ac0dbbc6149}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\GameInfo\Break Things Into Pieces">
+      <UniqueIdentifier>{5f6fc1d9-3f7c-45ef-affd-929070b73f6b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -904,10 +907,10 @@
       <Filter>Resource Files\GameInfo\Sunspike</Filter>
     </Xml>
     <Xml Include="FangameResources\FangameInfo\I wanna appreciate meteor stream\layout.xml">
-      <Filter>Resource Files\GameInfo\MeteorStream</Filter>
+      <Filter>Resource Files\GameInfo\Meteor Stream</Filter>
     </Xml>
     <Xml Include="FangameResources\FangameInfo\I wanna break Things into Pieces\layout.xml">
-      <Filter>Resource Files\GameInfo\BreakThingsIntoPieces</Filter>
+      <Filter>Resource Files\GameInfo\Break Things Into Pieces</Filter>
     </Xml>
     <Xml Include="FangameResources\FangameInfo\I wanna be the Fish\layout.xml">
       <Filter>Resource Files\GameInfo\Fish</Filter>
@@ -925,7 +928,10 @@
       <Filter>Resource Files\GameInfo\Soulless</Filter>
     </Xml>
     <Xml Include="FangameResources\FangameInfo\I wanna be the Destruction State\layout.xml">
-      <Filter>Resource Files\GameInfo\DestructionState</Filter>
+      <Filter>Resource Files\GameInfo\Destruction State</Filter>
+    </Xml>
+    <Xml Include="FangameResources\FangameInfo\Invincible Alien\layout.xml">
+      <Filter>Resource Files\GameInfo\Invincible Alien</Filter>
     </Xml>
   </ItemGroup>
   <ItemGroup>

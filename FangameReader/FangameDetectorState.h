@@ -23,7 +23,7 @@ struct CStartupInfo;
 // State that scans the current active process list for known fangames.
 class CFangameDetectorState : public IState {
 public:
-	explicit CFangameDetectorState( CEventSystem& eventSystem, CWindowSettings& windowSettings, CStartupInfo startInfo );
+	explicit CFangameDetectorState( CEventSystem& eventSystem, CWindowSettings& windowSettings, CPtrOwner<CStartupInfo> startInfo );
 	~CFangameDetectorState();
 
 	CDetectorActionController& GetActionController()

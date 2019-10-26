@@ -30,8 +30,8 @@ namespace Fangame {
 const CUnicodeView fangameInfoFolder = L"FangameInfo";
 //////////////////////////////////////////////////////////////////////////
 
-CFangameDetectorState::CFangameDetectorState( CEventSystem& _eventSystem, CWindowSettings& _windowSettings, CStartupInfo _startInfo ) :
-	startInfo( CreateOwner<CStartupInfo>( move( _startInfo ) ) ),
+CFangameDetectorState::CFangameDetectorState( CEventSystem& _eventSystem, CWindowSettings& _windowSettings, CPtrOwner<CStartupInfo> _startInfo ) :
+	startInfo( move( _startInfo ) ),
 	sessionMonitor( CreateOwner<CSessionMonitor>( _windowSettings ) ),
 	assets( CreateOwner<CAssetLoader>() ),
 	detector( CreateOwner<CFangameDetector>( fangameInfoFolder ) ),

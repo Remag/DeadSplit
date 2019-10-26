@@ -144,16 +144,6 @@ void InvalidateWindowRect( CPixelRect modelRect, const TMatrix3& modelToClip )
 	}
 }
 
-void StartMouseLeaveTracking()
-{
-	TRACKMOUSEEVENT e;
-	e.cbSize = sizeof( e );
-	e.dwFlags = TME_LEAVE;
-	e.dwHoverTime = 0;
-	e.hwndTrack = GetMainWindow().Handle();
-	::TrackMouseEvent( &e );
-}
-
 bool AskUser( CUnicodeView questionStr, HWND foregroundWnd )
 {
 	::SetForegroundWindow( GetMainWindow().Handle() );

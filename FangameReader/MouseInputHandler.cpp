@@ -22,13 +22,11 @@ void CMouseInputHandler::initializeInputTranslator()
 	auto dClickAction = CreateUserInputAction( &CMouseInputHandler::onMouseDClick );
 	mouseInputTranslator.SetAction( VK_LBUTTON, true, move( clickAction ) );
 	mouseInputTranslator.SetAction( 0x3A, true, move( dClickAction ) );
-	StartMouseLeaveTracking();	
 }
 
 void CMouseInputHandler::OnMouseMove()
 {
 	inputController->OnMouseMove();
-	StartMouseLeaveTracking();	
 }
 
 void CMouseInputHandler::OnMouseLeave()

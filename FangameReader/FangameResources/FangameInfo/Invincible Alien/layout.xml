@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<Fangame title="Invincible Alien" saveReader="Manual">
+
+<AddressSpace>
+  <RoomId type="fixed" valueType="int32">0x08452FC</RoomId>
+  <Seed type="fixed" valueType="int32">0x067C008</Seed>
+</AddressSpace>
+  
+<DeathDetector type="file" name="save1" offset="11"/>
+<DeathDetector type="file" name="save2" offset="11"/>
+<DeathDetector type="file" name="save3" offset="11"/>
+
+<Boss name="Invincible Alien">
+  <StartTrigger type="AddressChange" addressName="RoomId" targetValue="150"/>
+  <StartTrigger type="GameRestart"/>
+  <AbortTrigger type="AddressChange" addressName="RoomId" excludeValue="150"/>
+
+  <Attack name="Intro" icon="FruitBlue.png">
+  	<Time end="18.5"/>
+  </Attack>
+  <Attack name="Early Patterns" icon="Flandre\BlackCherry.png">
+  	<Time end="47"/>
+  </Attack>
+  <Attack name="Darkness 1" icon="FruitLightGrey.png">
+    <Time end="56.7"/>
+  </Attack>
+  <Attack name="Chorus" icon="FruitOrange.png">
+  	<Time end="81.85"/>
+  </Attack>
+  <Attack name="White Line" icon="FruitWhite.png">
+  	<Time end="94.5"/>
+  </Attack>
+  <Attack name="Central Dance" icon="FruitYellow.png">
+  	<Time end="116.5"/>
+  </Attack>
+  <Attack name="Darkness 2" icon="FruitGrey.png">
+  		<Time end="138.85"/>
+  </Attack>
+  <Attack name="That Jump" icon="FruitViolet.png">
+  	<Time end="143"/>
+  </Attack>
+  <Attack name="Meteors" icon="FruitGreen.png">
+  	<Time end="148"/>
+  </Attack>
+  <Attack name="Curving Teleport" icon="FruitAzure.png">
+    <Time end="151.5"/>
+  </Attack>
+  <Attack name="Timing Drop" icon="FruitPurple.png">
+  	<Time end="164"/>
+  </Attack>
+  <Attack name="Final" icon="FruitCyan.png">
+  	<Time end="177"/>
+  </Attack>
+</Boss>
+
+</Fangame> 

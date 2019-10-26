@@ -27,21 +27,22 @@ CMainApp::~CMainApp()
 {
 }
 
-void CMainApp::OnMainWindowResize( CVector2<int> newSize, bool )
+void CMainApp::OnWindowResize( CGlWindow&, CVector2<int> newSize, bool )
 {
 	windowSettings->SetWindowSize( newSize );
 	eventSystem.Notify( CWindowChangeEvent{} );
 }
 
-CPtrOwner<IState> CMainApp::onInitialize( CUnicodeView commandLine )
+CPtrOwner<IState> CMainApp::onInitialize( CPtrOwner<IStartupInfo> startupInfo )
 {
+	assert( startupInfo != nullptr );
+	auto startInfo = ptr_static_cast<CStartupInfo>( move( startupInfo ) );
 	Relib::SetAppTitle( L"DeadSplit" );
-	auto startInfo = parseCommandLine( commandLine );
-	if( !startInfo.FangameUpdateSource.IsEmpty() ) {
-		finalizeUpdateInstall( startInfo.FangameUpdateSource, startInfo.OpenAppAfterUpdate );
+	if( !startInfo->FangameUpdateSource.IsEmpty() ) {
+		finalizeUpdateInstall( startInfo->FangameUpdateSource, startInfo->OpenAppAfterUpdate );
 		return nullptr;
 	}
-	if( !initializeUniqueApplication( startInfo.AllowDuplicateProcess ) ) {
+	if( !initializeUniqueApplication( startInfo->AllowDuplicateProcess ) ) {
 		return nullptr;
 	}
 
@@ -56,6 +57,11 @@ CPtrOwner<IState> CMainApp::onInitialize( CUnicodeView commandLine )
 	return CreateOwner<CFangameDetectorState>( eventSystem, *windowSettings, move( startInfo ) );
 }
 
+CPtrOwner<IStartupInfo> CMainApp::createStrartupInfo( CUnicodeView commandLine )
+{
+	return parseCommandLine( commandLine );
+}
+
 void CMainApp::onExit()
 {
 	if( broadcaster != nullptr ) {
@@ -63,9 +69,9 @@ void CMainApp::onExit()
 	}
 }
 
-CStartupInfo CMainApp::parseCommandLine( CUnicodeView commandLine )
+CPtrOwner<CStartupInfo> CMainApp::parseCommandLine( CUnicodeView commandLine )
 {
-	CStartupInfo result;
+	CPtrOwner<CStartupInfo> result = CreateOwner<CStartupInfo>();
 
 	CStaticArray<CUnicodeString> commandArgs;
 	commandArgs.ResetSize( CAN_EnumCount );
@@ -77,16 +83,16 @@ CStartupInfo CMainApp::parseCommandLine( CUnicodeView commandLine )
 	}
 
 	if( !commandArgs[CAN_Fangame].IsEmpty() && FileSystem::DirAccessible( commandArgs[CAN_Fangame] ) ) {
-		result.InitialFangameName = move( commandArgs[CAN_Fangame] );
+		result->InitialFangameName = move( commandArgs[CAN_Fangame] );
 	}
 
-	result.FangameUpdateSource = move( commandArgs[CAN_UpdateFrom] );
+	result->FangameUpdateSource = move( commandArgs[CAN_UpdateFrom] );
 	
 	const auto updateOpenValue = Value<bool>( commandArgs[CAN_UpdateOpen] );
-	result.OpenAppAfterUpdate = !updateOpenValue.IsValid() || *updateOpenValue;
+	result->OpenAppAfterUpdate = !updateOpenValue.IsValid() || *updateOpenValue;
 
 	const auto allowDuplicateValue = Value<bool>( commandArgs[CAN_AllowDuplicate] );
-	result.AllowDuplicateProcess = allowDuplicateValue.IsValid() && *allowDuplicateValue;
+	result->AllowDuplicateProcess = allowDuplicateValue.IsValid() && *allowDuplicateValue;
 
 	return result;
 }
@@ -181,7 +187,7 @@ void CMainApp::initializeRenderer()
 {
 	const DWORD initialStyle = WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_OVERLAPPEDWINDOW;
 	const HICON headIcon = reinterpret_cast<HICON>( ::LoadIcon( ::GetModuleHandle( nullptr ), MAKEINTRESOURCE( IDI_ICON1 ) ) );
-	CGlWindowSettings initialSettings{ initialStyle, TIntVector2{}, windowSettings->GetWindowSize(), WOP_Center, false };
+	CGlWindowSettings initialSettings{ initialStyle, TIntVector2{}, windowSettings->GetWindowSize(), WOP_Center, false, true };
 
 	staticAssert( RT_EnumCount == 2 );
 	switch( windowSettings->GetRendererType() ) {

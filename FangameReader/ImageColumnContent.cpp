@@ -157,11 +157,10 @@ CPixelRect CImageColumnContent::getQuadRect( float imageHeight, TIntVector2 imag
 {
 	const auto widthToHeight = imageTextureSize.X() * 1.0f / imageTextureSize.Y();
 	const TVector2 imageSize{ widthToHeight * imageHeight, imageHeight };
-	auto centerRect = CreateCenterRect( imageSize );
+	const auto centerRect = CPixelRect( CreateCenterRect( imageSize ) );
 	const auto widthOffset = 0.5f * ( imageMargins.X() - imageMargins.Z() );
 	const auto heightOffset = 0.5f * ( imageMargins.W() - imageMargins.Y() );
-	centerRect.OffsetRect( TVector2( widthOffset, heightOffset ) );
-	return CPixelRect{ centerRect };
+	return centerRect.GetOffsetRect( CPixelVector( widthOffset, heightOffset ) );
 }
 
 const CImageColumnData& CImageColumnContent::getImageData( const IColumnContentData& data ) const

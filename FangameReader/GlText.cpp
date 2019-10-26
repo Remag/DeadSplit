@@ -10,12 +10,10 @@ namespace Fangame {
 
 //////////////////////////////////////////////////////////////////////////
 
-const auto textZOrder = 0.5f;
 CGlText::CGlText( CUnicodePart text, const CGlFont& glFont ) :
 	textStr( text )
 {
 	mesh = glFont.GetRenderer().RenderLine( text );
-	mesh.SetZOrder( textZOrder );
 }
 
 bool CGlText::SetText( CUnicodePart newValue )
@@ -24,7 +22,6 @@ bool CGlText::SetText( CUnicodePart newValue )
 	assert( renderer != nullptr )
 	if( textStr != newValue ) {
 		mesh = renderer->RenderLine( newValue );
-		mesh.SetZOrder( textZOrder );
 		return true;
 	}
 	return false;
@@ -35,6 +32,7 @@ CPixelRect CGlText::GetBoundRect() const
 	return mesh.BoundRect();
 }
 
+const auto textZOrder = 0.5f;
 void CGlText::Draw( const TMatrix3& modelToClip, CColor textColor, CColor shadowColor ) const
 {
 	const auto baseOffset = GetOffset( modelToClip );
@@ -42,10 +40,10 @@ void CGlText::Draw( const TMatrix3& modelToClip, CColor textColor, CColor shadow
 	const auto& pixelToClip = Coordinates::PixelToClip();
 	const TVector2 pixelOffset{ pixelToClip( 0, 0 ), -pixelToClip( 1, 1 ) };
 	SetOffset( textMatrix, baseOffset + pixelOffset );
-	mesh.DrawExact( textMatrix, shadowColor );
+	mesh.DrawExact( textMatrix, textZOrder, shadowColor );
 	SetOffset( textMatrix, baseOffset + pixelOffset + pixelOffset );
-	mesh.DrawExact( textMatrix, shadowColor );
-	mesh.DrawExact( modelToClip, textColor );
+	mesh.DrawExact( textMatrix, textZOrder, shadowColor );
+	mesh.DrawExact( modelToClip, textZOrder, textColor );
 }
 
 //////////////////////////////////////////////////////////////////////////

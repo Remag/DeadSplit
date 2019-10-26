@@ -22,10 +22,9 @@ COpenGlRenderer::COpenGlRenderer()
 	shaderInitializer = CreateOwner<Shaders::CShaderInitializer>();
 	try {
 		CRegistryKey fontKey( RRK_LocalMachine, fontKeyName, RAT_Read );
-		fontKey.GetValueNames( fontValues );
-		for( int i = fontValues.Size() - 1; i >= 0; i-- ) {
-			if( fontValues[i].IsEmpty() ) {
-				fontValues.DeleteAt( i );
+		for( auto value : fontKey.ValueNames() ) {
+			if( !value.IsEmpty() ) {
+				fontValues.Add( move( value ) );
 			}
 		}
 	} catch( CException& ) {

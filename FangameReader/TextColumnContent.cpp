@@ -126,7 +126,6 @@ CTextColumnContent::~CTextColumnContent()
 
 CPtrOwner<IColumnContentData> CTextColumnContent::CreateFooterData( const CBossInfo& bossInfo, float, TTableColumnZone zone ) const
 {
-
 	auto result = CreateOwner<CTextColumnData>( windowSettings, 1, textTemplate, params, zone, margins );
 	const auto textMessage = SubstituteEntryParams( textTemplate, params, bossInfo, zone );
 	const auto& font = bossInfo.BossFont;
