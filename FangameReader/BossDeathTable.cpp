@@ -1082,7 +1082,7 @@ void CBossDeathTable::drawAttackIcons( const IRenderParameters& renderParams ) c
 	const auto useSubsplits = windowSettings.ShouldUseSubsplits();
 	float subsplitOffset = 0.0f;
 	CAttackIterationPos nextPos;
-	for( auto currentPos = findFirstUnspoiledSplit(); ; currentPos = nextPos ) {
+	for( auto currentPos = findFirstUnspoiledSplit(); currentPos.AttackPos != NotFound; currentPos = nextPos ) {
 		float totalSubsplitOffset;
 		if( !currentPos.Attack->SrcAttack.Children.IsEmpty() ) {
 			totalSubsplitOffset = subsplitOffset + subsplitIconOffset;
@@ -1186,7 +1186,7 @@ void CBossDeathTable::drawAttackText( const IRenderParameters& renderParams ) co
 	const auto useSubsplits = windowSettings.ShouldUseSubsplits();
 	float subsplitOffset = 0.0f;
 	CAttackIterationPos nextPos;
-	for( auto currentPos = findFirstUnspoiledSplit(); ; currentPos = nextPos ) {
+	for( auto currentPos = findFirstUnspoiledSplit(); currentPos.AttackPos != NotFound; currentPos = nextPos ) {
 		const auto attackColor = currentPos.AttackPos == highlightedAttackPos ? highlightColor : rowColorList[currentPos.AttackPos];
 		const auto totalSubsplitOffset = currentPos.Attack->SrcAttack.Children.IsEmpty() ? subsplitOffset : subsplitOffset + subsplitIconOffset;
 		const int columnCount = columnList.Size();
@@ -1525,11 +1525,11 @@ float CBossDeathTable::getNameTextWidth() const
 
 int CBossDeathTable::findFirstVisibleSplit() const
 {
+	const auto attackCount = getAttackCount();
 	if( windowSettings.ShouldUseSubsplits() ) {
-		return 0;
+		return attackCount == 0 ? NotFound : 0;
 	}
 
-	const auto attackCount = getAttackCount();
 	for( int i = 0; i < attackCount; i++ ) {
 		if( rowList[i].SrcAttack.Children.IsEmpty() ) {
 			return i;
