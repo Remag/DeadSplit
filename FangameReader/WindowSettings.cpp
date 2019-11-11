@@ -518,7 +518,7 @@ void CWindowSettings::SetMouseHighlightColor( CColor newValue )
 
 CColor CWindowSettings::GetDefaultMouseHighlightColor()
 {
-	return CColor( 0xFFBE32 );
+	return CColor( 0xFFBE32, 255 );
 }
 
 void CWindowSettings::SetFinishedAttackColor( CColor newValue )
