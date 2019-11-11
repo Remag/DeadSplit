@@ -1,5 +1,6 @@
 #pragma once
 #include <EntrySettingsDialog.h>
+#include <BossInfo.h>
 
 namespace Fangame {
 
@@ -21,9 +22,17 @@ private:
 	CPtrOwner<CSettingsDialogData> commonData;
 	CPtrOwner<CDoubleSlider> sessionPB;
 	CPtrOwner<CDoubleSlider> totalPB;
+	CEntryStats initialSessionStats;
+	CEntryStats initialTotalStats;
 
 	void loadIconName( CBossAttackInfo& target, HWND dialogWnd );
 	void saveIconName( CAssetLoader& assets, CBossAttackInfo& target, HWND dialogWnd );
+	void propagateStatChanges( CBossAttackInfo& target ) const;
+	void propagatePassChangesToPrevAttacks( CBossAttackInfo& target, int sessionPassDelta, int totalPassDelta ) const;
+	void propagatePassChangesToParents( CBossAttackInfo& target, int sessionPassDelta, int totalPassDelta ) const;
+	void propagatePassChangesToChildren( CBossAttackInfo& target, int sessionPassDelta, int totalPassDelta ) const;
+	void setDeathTimeChanges( CEntryStats& targetStats, int deathDelta, double timeDelta ) const;
+	void setPassCountChanges( CEntryStats& targetStats, int passDelta ) const;
 };
 
 //////////////////////////////////////////////////////////////////////////

@@ -87,8 +87,6 @@ struct CBossInfo : public CEntryInfo {
 };
 
 extern const CEnumDictionary<TAttackCurrentStatus, ACS_EnumCount> AttackStatusToNameDict;
-void MakeParentsConsistentWithChildren( CBossAttackInfo& entry );
-void MakeConsistentWithChildData( CBossInfo& entry );
 const CBossAttackInfo& FindAttackById( const CBossInfo& boss, int id );
 CBossAttackInfo& FindAttackById( CBossInfo& boss, int id );
 

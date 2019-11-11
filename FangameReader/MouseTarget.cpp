@@ -46,7 +46,6 @@ void CAttackMouseTarget::editAttack( IUserActionController& controller )
 	settingsDlg.Open();
 
 	// Recount parent entry values.
-	MakeParentsConsistentWithChildren( targetAttack );
 	deathTable.RefreshTableData();
 	controller.OnCloseDialog();
 }

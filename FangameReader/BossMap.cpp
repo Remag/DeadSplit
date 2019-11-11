@@ -229,8 +229,6 @@ void CBossMap::loadBoss( CXmlElement& bossElem, int bossId, const CBossAttackSav
 	if( !startTriggerFound ) {
 		addDefaultBossStartTrigger( bossInfo );
 	}
-
-	MakeConsistentWithChildData( bossInfo );
 }
 
 void CBossMap::loadBossView( CXmlElement& bossElem, int bossId, const CBossAttackSaveFile& saveFile )
@@ -245,8 +243,6 @@ void CBossMap::loadBossView( CXmlElement& bossElem, int bossId, const CBossAttac
 			addBossAttackView( child, bossInfo, bossInfo, saveFile );
 		} 
 	}
-
-	MakeConsistentWithChildData( bossInfo );
 }
 
 const CUnicodeView consistentAttrib = L"consistentWithChildren";

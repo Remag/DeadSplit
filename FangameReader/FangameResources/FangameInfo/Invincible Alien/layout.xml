@@ -2,8 +2,7 @@
 <Fangame title="Invincible Alien" saveReader="Manual">
 
 <AddressSpace>
-  <RoomId type="fixed" valueType="int32">0x08452FC</RoomId>
-  <Seed type="fixed" valueType="int32">0x067C008</Seed>
+  <RoomId type="fixed" valueType="int32">0x006c73c8</RoomId>
 </AddressSpace>
   
 <DeathDetector type="file" name="save1" offset="11"/>
