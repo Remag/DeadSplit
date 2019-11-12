@@ -349,6 +349,7 @@
       <FloatingPointModel>Fast</FloatingPointModel>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <FloatingPointExceptions>false</FloatingPointExceptions>
+      <PreprocessorDefinitions>_UNICODE;UNICODE;GIN_NO_AUDIO;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -395,6 +396,7 @@
       <StringPooling>true</StringPooling>
       <TreatWarningAsError>true</TreatWarningAsError>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <PreprocessorDefinitions>_UNICODE;UNICODE;GIN_NO_AUDIO;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -427,7 +429,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>.;"$(SolutionDir)\GraphicsInversed\Inc";"$(SolutionDir)\ReversedLibrary\Inc";"$(SolutionDir)\ReversedLibrary\Ext\Inc"</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;"$(SolutionDir)\GraphicsInversed\Inc";"$(SolutionDir)\ReversedLibrary\Inc";"$(SolutionDir)\ReversedLibrary\Ext\Inc";"$(SolutionDir)\GraphicsInversed\Ext\Inc"</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>common.h</PrecompiledHeaderFile>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
@@ -439,7 +441,7 @@
       <StringPooling>true</StringPooling>
       <TreatWarningAsError>true</TreatWarningAsError>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <PreprocessorDefinitions>_UNICODE;UNICODE;USE_STATIC_RELIB;USE_STATIC_GIN;CURL_STATICLIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_UNICODE;UNICODE;USE_STATIC_RELIB;USE_STATIC_GIN;CURL_STATICLIB;GIN_NO_AUDIO;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
