@@ -62,10 +62,12 @@ private:
 	CFangameVisualizerState& visualizer;
 	CEventSystem& events;
 
+	typedef CStackArray<BYTE, 8> TAddressValueData;
+
 	struct CAddressData {
 		TAddressValueType AddressType;
 		int ValueSize;
-		CStackArray<BYTE, 8> ValueData;
+		TAddressValueData ValueData;
 		CPtrOwner<IAddressFinder> Finder;
 		int ScanRequestCount = 0;
 
@@ -73,14 +75,15 @@ private:
 	};
 
 	CArray<CAddressData> addressList;
+	CArray<TAddressValueData> oldValuesBuffer;
+	CDynamicBitSet<> updateRequiredBuffer;
 	
 	void expandAddressSearch( int bit, bool sendEvents );
 	void shrinkAddressSearch( const CDynamicBitSet<>& addressMask );
 	void shrinkAddressSearch( int bit );
 
 	void initAddressData( CAddressData& target );
-	void updateAddressData( CAddressData& target, int id, bool notifyListeners );
-	void reloadAndNotify( CAddressData& newValue, int id, bool notifyListeners, CArrayView<BYTE> oldData );
+	COptional<TAddressValueData> updateAddressData( CAddressData& target );
 	void notifyChangeEvent( CAddressData& newValue, int id, CArrayView<BYTE> oldData );
 };
 

@@ -33,6 +33,7 @@ int CFangameChangeDetector::RegisterAddress( CPtrOwner<IAddressFinder> addressFi
 {
 	const int result = addressList.Size();
 	addressList.Add( move( addressFinder ), addressSizesDict[addressInfo], addressInfo );
+	oldValuesBuffer.IncreaseSize( result + 1 );
 	return result;
 }
 
@@ -102,10 +103,18 @@ void CFangameChangeDetector::ResendCurrentAddressChanges()
 
 void CFangameChangeDetector::ScanForChanges()
 {
+	updateRequiredBuffer.FillWithZeroes();
 	for( int i = 0; i < addressList.Size(); i++ ) {
 		if( addressList[i].ScanRequestCount > 0 ) {
-			updateAddressData( addressList[i], i, true );
+			const auto oldData = updateAddressData( addressList[i] );
+			if( oldData.IsValid() ) {
+				oldValuesBuffer[i] = *oldData;
+				updateRequiredBuffer |= i;
+			}
 		}
+	}
+	for( auto addressId : updateRequiredBuffer.Ones() ) {
+		notifyChangeEvent( addressList[addressId], addressId, oldValuesBuffer[addressId] );
 	}
 }
 
@@ -113,7 +122,7 @@ void CFangameChangeDetector::RefreshCurrentValues()
 {
 	for( int i = 0; i < addressList.Size(); i++ ) {
 		if( addressList[i].ScanRequestCount > 0 ) {
-			updateAddressData( addressList[i], i, false );
+			updateAddressData( addressList[i] );
 		}
 	}
 }
@@ -124,28 +133,20 @@ void CFangameChangeDetector::initAddressData( CAddressData& target )
 	target.Finder->FindGameValue( *scanner, target.ValueData.Ptr(), target.ValueSize );
 }
 
-void CFangameChangeDetector::updateAddressData( CAddressData& target, int id, bool notifyListeners )
+COptional<CFangameChangeDetector::TAddressValueData> CFangameChangeDetector::updateAddressData( CAddressData& target )
 {
 	assert( target.ScanRequestCount > 0 );
 
-	CStackArray<BYTE, 8> newData;
+	TAddressValueData newData;
 	target.Finder->FindGameValue( *scanner, newData.Ptr(), target.ValueSize );
 	for( int i = 0; i < target.ValueSize; i++ ) {
 		if( newData[i] != target.ValueData[i] ) {
-			CStackArray<BYTE, 8> oldData;
-			oldData = target.ValueData;
+			TAddressValueData oldData( target.ValueData );
 			target.ValueData = newData;
-			reloadAndNotify( target, id, notifyListeners, oldData.Left( target.ValueSize ) );
-			return;
+			return CreateOptional( oldData );
 		}
 	}
-}
-
-void CFangameChangeDetector::reloadAndNotify( CAddressData& newValue, int id, bool notifyListeners, CArrayView<BYTE> oldData )
-{
-	if( notifyListeners ) {
-		notifyChangeEvent( newValue, id, oldData );
-	}
+	return COptional<TAddressValueData>();
 }
 
 void CFangameChangeDetector::notifyChangeEvent( CAddressData& newValue, int id, CArrayView<BYTE> oldData )

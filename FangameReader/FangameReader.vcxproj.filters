@@ -184,6 +184,9 @@
     <Filter Include="Resource Files\GameInfo\Break Things Into Pieces">
       <UniqueIdentifier>{5f6fc1d9-3f7c-45ef-affd-929070b73f6b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\GameInfo\Save The Series">
+      <UniqueIdentifier>{418c6e1d-21a1-4554-9e3f-41d942b2e698}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="common.cpp">
@@ -932,6 +935,9 @@
     </Xml>
     <Xml Include="FangameResources\FangameInfo\Invincible Alien\layout.xml">
       <Filter>Resource Files\GameInfo\Invincible Alien</Filter>
+    </Xml>
+    <Xml Include="FangameResources\FangameInfo\SaveTheSeries\layout.xml">
+      <Filter>Resource Files\GameInfo\Save The Series</Filter>
     </Xml>
   </ItemGroup>
   <ItemGroup>

@@ -304,6 +304,10 @@ void CFangameVisualizerState::OnStart()
 	::InvalidateRect( GetMainWindow().Handle(), nullptr, true );
 }
 
+void CFangameVisualizerState::OnFinish()
+{
+}
+
 void CFangameVisualizerState::Update( TTime )
 {
 	if( currentTimeline->GetStatus() != BTS_Recording ) {
@@ -315,9 +319,9 @@ void CFangameVisualizerState::Update( TTime )
 	}
 	currentFrameTime = ::GetTickCount();
 	const auto secondsPassed = ( currentFrameTime - prevUpdateTime ) / 1000.0f;
+	inputHandler.UpdateUserInput( *actionController );
 	changeDetector->ScanForChanges();
 	checkGameSave();
-	inputHandler.UpdateUserInput( *actionController );
 	if( visualizer->HasActiveTable() ) {
 		visualizer->Update( currentFrameTime, secondsPassed );
 		currentTimeline->UpdateStatus( prevUpdateTime, currentFrameTime );
@@ -570,8 +574,8 @@ void CFangameVisualizerState::onShowSettings()
 	const auto resetStateAction = [this]() {
 		auto newState = CreateOwner<CFangameVisualizerState>( move( processInfo ), eventSystem, windowSettings,
 			assets, inputHandler, detector, sessionMonitor, updater, footerIcons );
-		GetStateManager().ImmediatePopState();
-		GetStateManager().ImmediatePushState( move( newState ) );
+		GetStateManager().PopState();
+		GetStateManager().PushState( move( newState ) );
 	};
 	ExecutePostUpdate( resetStateAction );
 }
@@ -584,9 +588,10 @@ void CFangameVisualizerState::onOpenFangame()
 		return;
 	}
 
+	auto peekerState = CreateOwner<CFangamePeekerState>( fangameName, eventSystem, windowSettings, assets, inputHandler, 
+		detector, sessionMonitor, updater, footerIcons );
 	GetStateManager().PopState();
-	GetStateManager().PushState( CreateOwner<CFangamePeekerState>( fangameName, eventSystem, windowSettings, assets, inputHandler, 
-		detector, sessionMonitor, updater, footerIcons ) );
+	GetStateManager().PushState( move( peekerState ) );
 }
 
 void CFangameVisualizerState::updateViewCycle( float secondsPassed )

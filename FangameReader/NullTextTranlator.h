@@ -6,7 +6,7 @@ namespace Fangame {
 
 class CNullTextTranslator : public ITextTranslator {
 public:
-	virtual void OnSymbolInput( wchar_t ) override final {}
+	virtual void OnSymbolInput( int ) override final {}
 };
 
 //////////////////////////////////////////////////////////////////////////

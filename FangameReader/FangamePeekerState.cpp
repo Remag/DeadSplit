@@ -136,9 +136,10 @@ void CFangamePeekerState::ShowSettings()
 		return;
 	}
 	
+	auto peekerState = CreateOwner<CFangamePeekerState>( fangameFolder, eventSystem, windowSettings, assets, inputHandler,
+		detector, sessionMonitor, updater, footerIcons );
 	GetStateManager().PopState();
-	GetStateManager().PushState( CreateOwner<CFangamePeekerState>( fangameFolder, eventSystem, windowSettings, assets, inputHandler,
-		detector, sessionMonitor, updater, footerIcons ) );
+	GetStateManager().PushState( move( peekerState ) );
 }
 
 void CFangamePeekerState::OpenFangame()
@@ -149,9 +150,10 @@ void CFangamePeekerState::OpenFangame()
 		return;
 	}
 
+	auto peekerState = CreateOwner<CFangamePeekerState>( fangameName, eventSystem, windowSettings, assets, inputHandler,
+		detector, sessionMonitor, updater, footerIcons );
 	GetStateManager().PopState();
-	GetStateManager().PushState( CreateOwner<CFangamePeekerState>( fangameName, eventSystem, windowSettings, assets, inputHandler,
-		detector, sessionMonitor, updater, footerIcons ) );
+	GetStateManager().PushState( move( peekerState ) );
 }
 
 void CFangamePeekerState::SaveData()
@@ -168,6 +170,10 @@ void CFangamePeekerState::OnStart()
 {
 	inputSwt = CreateOwner<CMouseInputSwitcher>( *mouseController );
 	::InvalidateRect( GetMainWindow().Handle(), nullptr, true );
+}
+
+void CFangamePeekerState::OnFinish()
+{
 }
 
 void CFangamePeekerState::Update( TTime )
@@ -198,10 +204,11 @@ bool CFangamePeekerState::checkFangameProcessActivation()
 
 void CFangamePeekerState::initializeVisualizer( CFangameProcessInfo processInfo )
 {
-	GetStateManager().PopState();
 	detector.SuspendSearch();
-	GetStateManager().PushState( CreateOwner<CFangameVisualizerState>( move( processInfo ), eventSystem, windowSettings, assets, inputHandler,
-		detector, sessionMonitor, updater, footerIcons ) );
+	auto peekerState = CreateOwner<CFangameVisualizerState>( move( processInfo ), eventSystem, windowSettings, assets, inputHandler,
+		detector, sessionMonitor, updater, footerIcons );
+	GetStateManager().PopState();
+	GetStateManager().PushState( move( peekerState ) );
 }
 
 void CFangamePeekerState::Draw( const IRenderParameters& renderParams ) const

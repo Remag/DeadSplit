@@ -81,6 +81,10 @@ void CFangameDetectorState::OnStart()
 	}
 }
 
+void CFangameDetectorState::OnFinish()
+{
+}
+
 const CUnicodeView updateNewFileName = L"Update.new";
 void CFangameDetectorState::seekUpdateChanges()
 {
@@ -98,7 +102,7 @@ void CFangameDetectorState::detectFangame()
 	if( lastDetectResult.IsValid() ) {
 		lastDetectWnd = lastDetectResult->WndHandle;
 		detector->SuspendSearch();
-		GetStateManager().ImmediatePushState( CreateOwner<CFangameVisualizerState>( move( *lastDetectResult ), eventSystem, windowSettings, *assets, *inputHandler, 
+		GetStateManager().PushState( CreateOwner<CFangameVisualizerState>( move( *lastDetectResult ), eventSystem, windowSettings, *assets, *inputHandler, 
 			*detector, *sessionMonitor, *updater, *footerPanel ) );
 	}
 }

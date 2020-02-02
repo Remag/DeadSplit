@@ -83,6 +83,7 @@ public:
 	void SaveData();
 
 	virtual void OnStart() override final;
+	virtual void OnFinish() override final;
 	virtual void Update( TTime secondsPassed ) override final;
 	virtual void Draw( const IRenderParameters& ) const override final;
 	virtual void OnSleep() override final;
