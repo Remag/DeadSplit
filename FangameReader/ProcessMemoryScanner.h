@@ -13,6 +13,7 @@ public:
 	T ReadAddressValue( const void* address ) const;
 
 	void ReadProcessData( const void* address, void* dataBuffer, int dataSize ) const;
+	void* GetModuleBaseAddress( int moduleIndex ) const;
 
 private:
 	HANDLE processHandle;

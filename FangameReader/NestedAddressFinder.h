@@ -16,6 +16,7 @@ private:
 	CArray<unsigned> indirectionList;
 	unsigned cachedAddress = 0;
 	bool reloadOnUpdate;
+	int moduleIndex;
 };
 
 //////////////////////////////////////////////////////////////////////////

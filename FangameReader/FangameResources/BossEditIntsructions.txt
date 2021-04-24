@@ -357,7 +357,15 @@ Some of the variables are not defined by the game developer but exist as part of
 Their address is colored green during scanning, it is always stable. You will not need to perform pointer scans for them.
 Built-ins are defined as follows:
 
-<AddressName type="fixed" valueType="double">0x00711904</ViewY>
+<ViewY type="fixed" valueType="double">0x00711904</ViewY>
+
+If you need to define an address relative to a modules base address due to ASLR or similar mechanisms you can specify the modules index in the moduleBase attribute.
+Index 0 will always be the application. Other modules may change order and should only be used if you're absolutely sure you need to.
+
+Example:
+<RoomId type="fixed" valueType="int32" moduleBase="0">0x007BEB24</RoomId>
+
+will read the processes base address +0x007BEB24 as the room number.
 
 =============================================================
 Step 9: Additional layout attributes
