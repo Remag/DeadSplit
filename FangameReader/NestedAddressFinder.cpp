@@ -10,6 +10,7 @@ const CExternalNameConstructor<CNestedAddressFinder> fixedCreator{ L"AddressFind
 //////////////////////////////////////////////////////////////////////////
 
 const CUnicodeView basePtrAttrib = L"startValue";
+const CUnicodeView baseModuleAttrib = L"moduleBase";
 const CUnicodeView reloadOnChangeAttrib = L"reloadOnChange";
 const CUnicodeView reloadOnUpdateAttrib = L"reloadOnUpdate";
 const CUnicodeView unknownOffsetValueStr = L"Unknown offset value: %0";
@@ -18,6 +19,8 @@ CNestedAddressFinder::CNestedAddressFinder( const CXmlElement& elem )
 	reloadOnUpdate = elem.GetAttributeValue( reloadOnUpdateAttrib, false );
 	const auto basePtrValue = elem.GetAttributeValue( basePtrAttrib, 0U );
 	basePtr = reinterpret_cast<const void*>( basePtrValue );
+
+	moduleIndex = elem.GetAttributeValue( baseModuleAttrib, -1 );
 
 	indirectionList.ReserveBuffer( elem.GetChildrenCount() );
 	for( const auto& child : elem.Children() ) {
@@ -34,6 +37,16 @@ const void CNestedAddressFinder::FindGameValue( const CProcessMemoryScanner& sca
 {
 	auto currentPtr = cachedAddress;
 	if( currentPtr == 0 || reloadOnUpdate ) {
+		if ( moduleIndex >= 0 ) {
+			const auto moduleBaseAddress = scanner.GetModuleBaseAddress( moduleIndex );
+
+			// if it successfully got the base address for the module, update the base pointer and set moduleIndex to "no module"
+			if ( moduleBaseAddress != 0 ) {
+				basePtr = reinterpret_cast<const void*>( (char*)basePtr + (unsigned int)moduleBaseAddress );
+				moduleIndex = -1;
+			}
+		}
+
 		const auto startPointer = scanner.ReadAddressValue<unsigned>( basePtr );
 
 		currentPtr = startPointer + indirectionList[0];
